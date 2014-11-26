@@ -23,10 +23,16 @@
   <style_properties/>
   <templates/>
   <public_template_modifications>
-    <modification template="thread_view" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
-      <find><![CDATA[unreadlink="{$unreadLink}" />]]></find>
-      <replace><![CDATA[$0
-Foo!]]></replace>
+    <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
+      <find><![CDATA[</nav>]]></find>
+      <replace><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
+<ol>
+<xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
+  <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
+</xen:foreach>
+</ol>
+</xen:if>
+$0]]></replace>
     </modification>
   </public_template_modifications>
   <bb_code_media_sites/>
