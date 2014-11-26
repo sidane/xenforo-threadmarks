@@ -18,19 +18,101 @@
     <permissions/>
     <interface_groups/>
   </permissions>
-  <phrases/>
+  <phrases>
+    <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
+  </phrases>
   <route_prefixes/>
   <style_properties/>
-  <templates/>
+  <templates>
+    <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.PageNav {
+  overflow: visible;
+}
+
+.threadmarks {
+  position: relative;
+  z-index: 100;
+  float: left;
+}
+
+.threadmarks:hover .list {
+  display: block;
+}
+
+.threadmarks a.text {
+  position: relative;
+  z-index: 101;
+  background-color: #eee;
+  padding-right: 20px;
+}
+
+.threadmarks a.text:hover {
+  background-color: #eee;
+}
+
+.threadmarks a.text .arrowWidget {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  display: inline-block;
+  width: 13px;
+  height: 14px;
+  background: transparent url('/styles/default/xenforo/xenforo-ui-sprite.png') no-repeat -32px 0
+}
+
+.threadmarks:hover a.text {
+  border-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.threadmarks:hover a.text .arrowWidget {
+  background-position-x: -16px;
+}
+
+.list {
+  display: none;
+  position: absolute;
+  top: 1.45em;
+  left: 0;
+  z-index: 100;
+  background-color: #eee;
+  border: 1px solid #999;
+  border-radius: 3px;
+  border-top-left-radius: 0;
+}
+
+.threadmarks .list a {
+  float: none;
+  border: 0;
+  width: auto;
+  text-align: left;
+  padding: 4px;
+  margin-right: 0;
+  border-radius: 0;
+}
+
+.threadmarks .list li:first-child a {
+  border-top-right-radius: 3px;
+}
+
+.threadmarks .list li:last-child a {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}]]></template>
+  </templates>
   <public_template_modifications>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
       <replace><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
-<ol>
-<xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
-  <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
-</xen:foreach>
-</ol>
+<xen:require css="threadmarks.css"/>
+<div class="threadmarks">
+  <a href="#" class="text">{xen:phrase threadmarks} <span class="arrowWidget"></span></a>
+  <ol class="list">
+  <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
+    <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
+  </xen:foreach>
+  </ol>
+</div>
 </xen:if>
 $0]]></replace>
     </modification>
