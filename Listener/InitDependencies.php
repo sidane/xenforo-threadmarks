@@ -1,19 +1,13 @@
-// <?php
+<?php
 
-// class Sidane_Threadmarks_Listener_InitDependencies
-// {
+class Sidane_Threadmarks_Listener_InitDependencies
+{
 
-//   public static function initDependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
-//   {
-//     XenForo_Template_Helper_Core::$helperCallbacks = array_merge(
-//       XenForo_Template_Helper_Core::$helperCallbacks, array(
-//         'page_nav' => array('Sidane_Threadmarks_Helper_PageNav', 'pageNav')
-//       )
-//     );
+  public static function initDependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
+  {
+    XenForo_Template_Helper_Core::$helperCallbacks += array(
+      'render_threadmark_flag' => array('Sidane_Threadmarks_Helper_Threadmark', 'renderThreadmarkFlag')
+    );
+  }
 
-//     //  array(
-//     //   'page_nav' => array('Sidane_Threadmarks_Helper_PageNav', 'pageNav')
-//     // );
-//   }
-
-// }
+}

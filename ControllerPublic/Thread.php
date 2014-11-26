@@ -12,6 +12,10 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       $threadmarksModel = $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
       $threadmarks = $threadmarksModel->getByThreadId($thread['thread_id']);
       $parent->params['thread']['threadmarks'] = $threadmarks;
+
+      $parent->params['thread']['threadmarks_post_ids'] = array_map(function($threadmark) {
+        return $threadmark['post_id'];
+      }, $threadmarks);
     }
 
     return $parent;
