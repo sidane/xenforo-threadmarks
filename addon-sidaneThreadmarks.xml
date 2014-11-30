@@ -34,10 +34,41 @@
     <phrase title="option_threadmarksLimit_explain" version_id="1" version_string="1.0"><![CDATA[Limit the number of threadmarks to display in the drop down menu.]]></phrase>
     <phrase title="threadmark" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
+    <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
+    <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
   <templates>
+    <template title="threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+
+<xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
+
+<xen:container var="$head.noindex">
+  <meta name="robots" content="noindex" />
+</xen:container>
+
+<xen:navigation>
+  <xen:breadcrumb source="$nodeBreadCrumbs" />
+  <xen:breadcrumb href="{xen:link full:forums, $forum}">{$forum.title}</xen:breadcrumb>
+  <xen:breadcrumb href="{xen:link full:threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
+</xen:navigation>
+
+<div class="section">  
+  <ol class="overlayScroll">
+    <xen:foreach loop="$threadmarks" value="$threadmark">
+      <li class="primaryContent memberListItem">
+        <a href="{xen:link 'posts', $threadmark}">{$threadmark.label}</a>
+        
+        <div class="extra">
+          <xen:datetime time="{$threadmark.post_date}" />
+        </div>
+      </li>
+    </xen:foreach>
+  </ol>
+  
+  <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
+</div>]]></template>
     <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.PageNav {
   overflow: visible;
 }
@@ -176,13 +207,13 @@
   <a href="#" class="text">{xen:phrase threadmarks} <span class="arrowWidget"></span></a>
   <ol class="list">
   <xen:if is="{$linkData.more_threadmarks}">
-    <li><span class="mostRecent">Most recent:</span></li>
+    <li><span class="mostRecent">{xen:phrase most_recent}:</span></li>
   </xen:if>
   <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
     <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
   </xen:foreach>
   <xen:if is="{$linkData.more_threadmarks}">
-    <li class="allThreadmarks"><a href="#">All {$linkData.total_threadmarks} threadmarks</a></li>
+    <li class="allThreadmarks"><a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a></li>
   </xen:if>
   </ol>
 </div>

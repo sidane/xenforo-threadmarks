@@ -35,4 +35,27 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     return $parent;
   }
 
+  public function actionThreadmarks()
+  {
+    $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
+
+    if ($thread['has_threadmarks']) {
+      $threadmarksModel = $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
+      $threadmarks = $threadmarksModel->getByThreadIdWithPostDate($thread['thread_id']);
+
+      $viewParams = array(
+        'forum' => $forum,
+        'thread' => $thread,
+        'threadmarks' => $threadmarks
+      );
+
+      return $this->responseView('Sidane_Threadmarks_ViewPublic_Thread_View', 'threadmarks', $viewParams);
+    } else {
+      return $this->getNotFoundResponse();
+    }
+  }
+
 }
