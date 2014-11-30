@@ -71,7 +71,7 @@
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
     <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.threadmarks .popupTrigger {
-  width: auto;
+  width: auto !important;
   padding-left: 4px;
   padding-right: 4px;
 }
