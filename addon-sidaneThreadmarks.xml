@@ -28,6 +28,7 @@
     <interface_groups/>
   </permissions>
   <phrases>
+    <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
     <phrase title="option_threadmarksLimit" version_id="1" version_string="1.0"><![CDATA[Max threadmarks in menu]]></phrase>
@@ -69,92 +70,17 @@
   
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
-    <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.PageNav {
-  overflow: visible;
-}
-
-.threadmarks {
-  position: relative;
-  z-index: 100;
-  float: left;
-}
-
-.threadmarks:hover .list {
-  display: block;
-}
-
-.threadmarks a.text {
-  position: relative;
-  z-index: 101;
-  background-color: #eee;
-  padding-right: 20px;
-}
-
-.threadmarks a.text:hover {
-  cursor: pointer;
-  background-color: #eee;
-}
-
-.threadmarks a.text .arrowWidget {
-  position: absolute;
-  top: 1px;
-  right: 2px;
-  display: inline-block;
-  width: 13px;
-  height: 14px;
-  background: transparent url('/styles/default/xenforo/xenforo-ui-sprite.png') no-repeat -32px 0
-}
-
-.threadmarks:hover a.text {
-  border-bottom: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.threadmarks:hover a.text .arrowWidget {
-  background-position-x: -16px;
-}
-
-.threadmarks .list {
-  display: none;
-  position: absolute;
-  top: 16px;
-  left: 0;
-  z-index: 100;
-  background-color: #eee;
-  border: 1px solid #999;
-  border-radius: 3px;
-  border-top-left-radius: 0;
-}
-
-.threadmarks .list a {
-  float: none;
-  border: 0;
+    <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.threadmarks .popupTrigger {
   width: auto;
-  text-align: left;
-  padding: 4px;
-  margin-right: 0;
-  border-radius: 0;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
-.threadmarks .list li:first-child a {
-  border-top-right-radius: 3px;
-}
-
-.threadmarks .list li:last-child a {
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
-}
-
-.threadmarks .list .mostRecent {
-  display: block;
-  padding: 4px;
-  border-bottom: 1px dotted #999;
-}
-
-.threadmarks .list .allThreadmarks {
-  margin-top: 4px;
-  border-top: 1px dotted #999;
+.threadmarksMenu h4 {
+  font-size: 14px;
+  font-weight: bold;
+  background-color: transparent;
+  
 }
 
 .threadmarker {
@@ -176,25 +102,10 @@
 <xen:if is="{xen:property enableResponsive}">
 @media (max-width:{xen:property maxResponsiveMediumWidth})
 {
-  .threadmarks {
+  .threadmarks .popupTrigger {
     clear: left;
     margin-top: 7px;
   }
-
-  /*.threadmarks .list {
-    left: auto;
-    right: 3px;
-  }
-  
-  .threadmarks .list {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 0;
-  }
-  
-  .threadmarks .list li:first-child a {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 0;
-  }*/
 }
 </xen:if>]]></template>
   </templates>
@@ -202,21 +113,29 @@
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
       <replace><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
-<xen:require css="threadmarks.css"/>
-<div class="threadmarks">
-  <a href="#" class="text">{xen:phrase threadmarks} <span class="arrowWidget"></span></a>
-  <ol class="list">
-  <xen:if is="{$linkData.more_threadmarks}">
-    <li><span class="mostRecent">{xen:phrase most_recent}:</span></li>
-  </xen:if>
-  <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
-    <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
-  </xen:foreach>
-  <xen:if is="{$linkData.more_threadmarks}">
-    <li class="allThreadmarks"><a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a></li>
-  </xen:if>
-  </ol>
-</div>
+  <xen:require css="threadmarks.css"/>
+  <div class="Popup threadmarks">
+    <a rel="Menu" class="popupTrigger">{xen:phrase threadmarks}</a>
+    <div class="Menu threadmarksMenu">
+      <xen:if is="{$linkData.more_threadmarks}">
+        <div class="primaryContent menuHeader">
+          <h4>{xen:phrase most_recent_threadmarks}:</h4>
+        </div>
+      </xen:if>
+
+      <ul class="secondaryContent blockLinksList">
+        <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
+          <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
+        </xen:foreach>
+      </ul>
+
+      <xen:if is="{$linkData.more_threadmarks}">
+        <div class="primaryContent menuHeader">
+          <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a>
+        </div>
+      </xen:if>
+    </div>
+  </div>
 </xen:if>
 $0]]></replace>
     </modification>
