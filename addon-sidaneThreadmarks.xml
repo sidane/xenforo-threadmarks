@@ -114,28 +114,32 @@
       <find><![CDATA[</nav>]]></find>
       <replace><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
   <xen:require css="threadmarks.css"/>
-  <div class="Popup threadmarks">
-    <a rel="Menu" class="popupTrigger">{xen:phrase threadmarks}</a>
-    <div class="Menu threadmarksMenu">
-      <xen:if is="{$linkData.more_threadmarks}">
-        <div class="primaryContent menuHeader">
-          <h4>{xen:phrase most_recent_threadmarks}:</h4>
-        </div>
-      </xen:if>
+  <xen:if is="{$linkData.logged_in}">
+    <div class="Popup threadmarks">
+      <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
+      <div class="Menu threadmarksMenu">
+        <xen:if is="{$linkData.more_threadmarks}">
+          <div class="primaryContent menuHeader">
+            <h4>{xen:phrase most_recent_threadmarks}:</h4>
+          </div>
+        </xen:if>
 
-      <ul class="secondaryContent blockLinksList">
-        <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
-          <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
-        </xen:foreach>
-      </ul>
+        <ul class="secondaryContent blockLinksList">
+          <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
+            <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
+          </xen:foreach>
+        </ul>
 
-      <xen:if is="{$linkData.more_threadmarks}">
-        <div class="primaryContent menuHeader">
-          <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a>
-        </div>
-      </xen:if>
+        <xen:if is="{$linkData.more_threadmarks}">
+          <div class="primaryContent menuHeader">
+            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a>
+          </div>
+        </xen:if>
+      </div>
     </div>
-  </div>
+  <xen:else/>
+    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
+  </xen:if>
 </xen:if>
 $0]]></replace>
     </modification>

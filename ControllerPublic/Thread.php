@@ -19,6 +19,10 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
         return $parent;
       }
 
+      // to allow for changing the template modification
+      // based on whether user is logged in or not
+      $parent->params['thread']['logged_in'] = XenForo_Visitor::getUserId() != 0;
+
       if ($totalThreadmarks > $menuLimit) {
         $threadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
         $parent->params['thread']['more_threadmarks'] = true;
