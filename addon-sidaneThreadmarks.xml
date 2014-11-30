@@ -13,13 +13,25 @@
   <cron/>
   <email_templates/>
   <email_template_modifications/>
-  <optiongroups/>
+  <optiongroups>
+    <group group_id="sidaneThreadmarks" display_order="30000" debug_only="0"/>
+    <option option_id="threadmarksLimit" edit_format="spinbox" data_type="integer" can_backup="1">
+      <default_value>8</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="sidaneThreadmarks" display_order="1"/>
+    </option>
+  </optiongroups>
   <permissions>
     <permission_groups/>
     <permissions/>
     <interface_groups/>
   </permissions>
   <phrases>
+    <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
+    <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
+    <phrase title="option_threadmarksLimit" version_id="1" version_string="1.0"><![CDATA[Max threadmarks in menu]]></phrase>
+    <phrase title="option_threadmarksLimit_explain" version_id="1" version_string="1.0"><![CDATA[Limit the number of threadmarks to display in the drop down menu.]]></phrase>
     <phrase title="threadmark" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
   </phrases>
@@ -103,6 +115,17 @@
   border-bottom-right-radius: 3px;
 }
 
+.threadmarks .list .mostRecent {
+  display: block;
+  padding: 4px;
+  border-bottom: 1px dotted #999;
+}
+
+.threadmarks .list .allThreadmarks {
+  margin-top: 4px;
+  border-top: 1px dotted #999;
+}
+
 .threadmarker {
   display: inline-block;
   margin: 0 0 0 3px;
@@ -150,11 +173,17 @@
       <replace><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
 <xen:require css="threadmarks.css"/>
 <div class="threadmarks">
-  <a rel="Menu" class="text">{xen:phrase threadmarks} <span class="arrowWidget"></span></a>
+  <a href="#" class="text">{xen:phrase threadmarks} <span class="arrowWidget"></span></a>
   <ol class="list">
+  <xen:if is="{$linkData.more_threadmarks}">
+    <li><span class="mostRecent">Most recent:</span></li>
+  </xen:if>
   <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
     <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
   </xen:foreach>
+  <xen:if is="{$linkData.more_threadmarks}">
+    <li class="allThreadmarks"><a href="#">All {$linkData.total_threadmarks} threadmarks</a></li>
+  </xen:if>
   </ol>
 </div>
 </xen:if>
