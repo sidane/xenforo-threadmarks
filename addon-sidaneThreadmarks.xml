@@ -8,7 +8,7 @@
   <code_events/>
   <code_event_listeners>
     <listener event_id="init_dependencies" execute_order="10" callback_class="Sidane_Threadmarks_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
-    <listener event_id="load_class_controller" execute_order="100" callback_class="Sidane_Threadmarks_Listener_LoadClassController" callback_method="loadClassController" active="1" hint="" description=""/>
+    <listener event_id="load_class_controller" execute_order="5" callback_class="Sidane_Threadmarks_Listener_LoadClassController" callback_method="loadClassController" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -120,7 +120,7 @@
 }
 
 <xen:if is="{xen:property enableResponsive}">
-@media (max-width:{xen:property maxResponsiveNarrowWidth})
+@media (max-width:{xen:property maxResponsiveMediumWidth})
 {
   .threadmarks {
     clear: left;
