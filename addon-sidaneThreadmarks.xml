@@ -55,22 +55,22 @@
   <xen:breadcrumb href="{xen:link full:threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
 </xen:navigation>
 
-<div class="section">  
+<div class="section">
   <ol class="overlayScroll">
     <xen:foreach loop="$threadmarks" value="$threadmark">
       <li class="primaryContent memberListItem">
         <a href="{xen:link 'posts', $threadmark}">{$threadmark.label}</a>
-        
+
         <div class="extra">
           <xen:datetime time="{$threadmark.post_date}" />
         </div>
       </li>
     </xen:foreach>
   </ol>
-  
+
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
-    <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.threadmarks .popupTrigger {
+    <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.PageNav a.threadmarksTrigger {
   width: auto !important;
   padding-left: 4px;
   padding-right: 4px;
@@ -80,7 +80,7 @@
   font-size: 14px;
   font-weight: bold;
   background-color: transparent;
-  
+
 }
 
 .threadmarker {
