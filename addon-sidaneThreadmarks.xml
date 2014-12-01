@@ -102,7 +102,7 @@
 <xen:if is="{xen:property enableResponsive}">
 @media (max-width:{xen:property maxResponsiveMediumWidth})
 {
-  .threadmarks .popupTrigger {
+  .PageNav a.threadmarksTrigger {
     clear: left;
     margin-top: 7px;
   }
