@@ -6,6 +6,11 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
   public function actionIndex()
   {
     $parent = parent::actionIndex();
+
+    if (get_class($parent) == 'XenForo_ControllerResponse_Redirect') {
+      return $parent;
+    }
+
     $thread = $parent->params['thread'];
 
     if ($thread['has_threadmarks']) {
