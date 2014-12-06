@@ -9,6 +9,7 @@
   <code_event_listeners>
     <listener event_id="init_dependencies" execute_order="10" callback_class="Sidane_Threadmarks_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="5" callback_class="Sidane_Threadmarks_Listener_LoadClassController" callback_method="loadClassController" active="1" hint="" description=""/>
+    <listener event_id="template_hook" execute_order="10" callback_class="Sidane_Threadmarks_Listener_Hook" callback_method="templateHook" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -41,6 +42,35 @@
   <route_prefixes/>
   <style_properties/>
   <templates>
+    <template title="page_nav_threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
+  <xen:require css="threadmarks.css"/>
+  <xen:if is="{$linkData.logged_in}">
+    <div class="Popup threadmarks">
+      <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
+      <div class="Menu threadmarksMenu">
+        <xen:if is="{$linkData.more_threadmarks}">
+          <div class="primaryContent menuHeader">
+            <h4>{xen:phrase most_recent_threadmarks}:</h4>
+          </div>
+        </xen:if>
+
+        <ul class="secondaryContent blockLinksList">
+          <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
+            <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
+          </xen:foreach>
+        </ul>
+
+        <xen:if is="{$linkData.more_threadmarks}">
+          <div class="primaryContent menuHeader">
+            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a>
+          </div>
+        </xen:if>
+      </div>
+    </div>
+  <xen:else/>
+    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
+  </xen:if>
+</xen:if>]]></template>
     <template title="threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
@@ -112,35 +142,7 @@
   <public_template_modifications>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
-      <replace><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
-  <xen:require css="threadmarks.css"/>
-  <xen:if is="{$linkData.logged_in}">
-    <div class="Popup threadmarks">
-      <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
-      <div class="Menu threadmarksMenu">
-        <xen:if is="{$linkData.more_threadmarks}">
-          <div class="primaryContent menuHeader">
-            <h4>{xen:phrase most_recent_threadmarks}:</h4>
-          </div>
-        </xen:if>
-
-        <ul class="secondaryContent blockLinksList">
-          <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
-            <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
-          </xen:foreach>
-        </ul>
-
-        <xen:if is="{$linkData.more_threadmarks}">
-          <div class="primaryContent menuHeader">
-            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a>
-          </div>
-        </xen:if>
-      </div>
-    </div>
-  <xen:else/>
-    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
-  </xen:if>
-</xen:if>
+      <replace><![CDATA[<xen:hook name="post_pagination_links" params="{xen:array 'linkData={$linkData}'}" />
 $0]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
