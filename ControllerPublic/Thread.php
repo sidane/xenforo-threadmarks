@@ -17,6 +17,8 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       $threadmarksModel = $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
       $menuLimit = intval(XenForo_Application::get('options')->threadmarksLimit);
 
+      $threadmarksParams = array();
+
       $threadmarks = $threadmarksModel->getByThreadId($thread['thread_id']);
       $totalThreadmarks = count($threadmarks);
 
@@ -26,19 +28,21 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
 
       // to allow for changing the template modification
       // based on whether user is logged in or not
-      $parent->params['thread']['logged_in'] = XenForo_Visitor::getUserId() != 0;
+      $threadmarksParams['logged_in'] = XenForo_Visitor::getUserId() != 0;
 
       if ($totalThreadmarks > $menuLimit) {
         $threadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
-        $parent->params['thread']['more_threadmarks'] = true;
+        $threadmarksParams['more_threadmarks'] = true;
       }
 
-      $parent->params['thread']['threadmarks'] = $threadmarks;
-      $parent->params['thread']['total_threadmarks'] = $totalThreadmarks;
+      $threadmarksParams['all'] = $threadmarks;
+      $threadmarksParams['count'] = $totalThreadmarks;
 
-      $parent->params['thread']['threadmarks_post_ids'] = array_map(function($threadmark) {
+      $threadmarksParams['threadmarks_post_ids'] = array_map(function($threadmark) {
         return $threadmark['post_id'];
       }, $threadmarks);
+
+      $parent->params['thread']['threadmarks'] = $threadmarksParams;
     }
 
     return $parent;

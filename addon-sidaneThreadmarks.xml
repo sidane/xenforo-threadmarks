@@ -42,27 +42,27 @@
   <route_prefixes/>
   <style_properties/>
   <templates>
-    <template title="page_nav_threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$linkData.has_threadmarks}">
+    <template title="page_nav_threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$linkData.threadmarks}">
   <xen:require css="threadmarks.css"/>
-  <xen:if is="{$linkData.logged_in}">
+  <xen:if is="{$linkData.threadmarks.logged_in}">
     <div class="Popup threadmarks">
       <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
       <div class="Menu threadmarksMenu">
-        <xen:if is="{$linkData.more_threadmarks}">
+        <xen:if is="{$linkData.threadmarks.more_threadmarks}">
           <div class="primaryContent menuHeader">
             <h4>{xen:phrase most_recent_threadmarks}:</h4>
           </div>
         </xen:if>
 
         <ul class="secondaryContent blockLinksList">
-          <xen:foreach loop="{$linkData.threadmarks}" value="{$threadmark}">
+          <xen:foreach loop="{$linkData.threadmarks.all}" value="{$threadmark}">
             <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
           </xen:foreach>
         </ul>
 
-        <xen:if is="{$linkData.more_threadmarks}">
+        <xen:if is="{$linkData.threadmarks.more_threadmarks}">
           <div class="primaryContent menuHeader">
-            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.total_threadmarks}'}</a>
+            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.threadmarks.count}'}</a>
           </div>
         </xen:if>
       </div>
@@ -147,8 +147,8 @@ $0]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<li id="{$messageId}"]]></find>
-      <replace><![CDATA[<xen:if is="{$thread.has_threadmarks}">
-  {xen:helper render_threadmark_flag, $post.post_id, $thread.threadmarks}
+      <replace><![CDATA[<xen:if is="{$thread.threadmarks}">
+  {xen:helper render_threadmark_flag, $post.post_id, $thread.threadmarks.all}
 </xen:if>
 $0]]></replace>
     </modification>
