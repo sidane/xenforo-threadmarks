@@ -6,6 +6,8 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function createThreadMark($thread, $post, $label) {
     $db = $this->_getDb();
 
+    XenForo_Db::beginTransaction($db);
+
     $db->query('
       INSERT IGNORE INTO threadmarks
         (thread_id, post_id, label)
@@ -13,15 +15,37 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         (?, ?, ?)
     ', array($thread['thread_id'], $post['post_id'], $label));
 
+    $db->query('
+      UPDATE xf_thread
+      SET has_threadmarks = 1
+      WHERE thread_id = ?
+    ', $thread['thread_id']);
+
+    XenForo_Db::commit($db);
+
     return true;
   }
 
   public function deleteThreadMark($threadmark) {
     $db = $this->_getDb();
 
+    XenForo_Db::beginTransaction($db);
+
     $db->query('
       DELETE FROM threadmarks WHERE threadmark_id = ?
     ', $threadmark['threadmark_id']);
+
+    $threadmarks = $this->getByThreadId($threadmark['thread_id']);
+
+    if (count($threadmarks) == 0) {
+      $db->query('
+        UPDATE xf_thread
+        SET has_threadmarks = 0
+        WHERE thread_id = ?
+      ', $threadmark['thread_id']);
+    }
+
+    XenForo_Db::commit($db);
 
     return true;
   }
