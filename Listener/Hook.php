@@ -8,6 +8,7 @@ class Sidane_Threadmarks_Listener_Hook
     if ($templateName == 'page_nav')
     {
       $template->preloadTemplate('page_nav_threadmarks');
+      $template->preloadTemplate('new_threadmark_control');
     }
   }
 
@@ -15,6 +16,10 @@ class Sidane_Threadmarks_Listener_Hook
   {
     if ($hookName == 'post_pagination_links') {
       $contents .= $template->create('page_nav_threadmarks', $hookParams);
+    }
+
+    if ($hookName == 'post_private_controls') {
+      $contents .= $template->create('new_threadmark_control', $hookParams);
     }
   }
 

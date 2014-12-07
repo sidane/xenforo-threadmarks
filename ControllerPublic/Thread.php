@@ -31,11 +31,12 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       $threadmarksParams['logged_in'] = XenForo_Visitor::getUserId() != 0;
 
       if ($totalThreadmarks > $menuLimit) {
-        $threadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
+        $recentThreadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
         $threadmarksParams['more_threadmarks'] = true;
       }
 
       $threadmarksParams['all'] = $threadmarks;
+      $threadmarksParams['recent'] = $recentThreadmarks;
       $threadmarksParams['count'] = $totalThreadmarks;
 
       $threadmarksParams['threadmarks_post_ids'] = array_map(function($threadmark) {

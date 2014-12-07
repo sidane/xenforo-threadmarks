@@ -3,6 +3,29 @@
 class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 {
 
+  public function createThreadMark($thread, $post, $label) {
+    $db = $this->_getDb();
+
+    $db->query('
+      INSERT IGNORE INTO threadmarks
+        (thread_id, post_id, label)
+      VALUES
+        (?, ?, ?)
+    ', array($thread['thread_id'], $post['post_id'], $label));
+
+    return true;
+  }
+
+  public function deleteThreadMark($threadmark) {
+    $db = $this->_getDb();
+
+    $db->query('
+      DELETE FROM threadmarks WHERE threadmark_id = ?
+    ', $threadmark['threadmark_id']);
+
+    return true;
+  }
+
   public function getByThreadId($threadId) {
     return $this->fetchAllKeyed("
       SELECT *
@@ -10,6 +33,15 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       WHERE thread_id = ?
       ORDER BY post_id ASC
     ", 'post_id', $threadId);
+  }
+
+  public function getByThreadIdAndPostId($threadId, $postId) {
+    return $this->_getDb()->fetchRow("
+      SELECT *
+      FROM threadmarks
+      WHERE thread_id = ?
+        AND post_id = ?
+    ", array($threadId, $postId));
   }
 
   public function getByThreadIdWithPostDate($threadId) {
@@ -20,6 +52,19 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       WHERE threadmarks.thread_id = ?
       ORDER BY post_id ASC
     ", 'post_id', $threadId);
+  }
+
+  public function updateThreadmark($threadmark, $newLabel) {
+    $db = $this->_getDb();
+
+    $db->query('
+      UPDATE threadmarks
+        SET label = ?
+      WHERE thread_id = ?
+        AND post_id = ?
+    ', array($newLabel, $threadmark['thread_id'], $threadmark['post_id']));
+
+    return true;
   }
 
 }

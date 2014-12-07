@@ -9,6 +9,7 @@
   <code_event_listeners>
     <listener event_id="init_dependencies" execute_order="10" callback_class="Sidane_Threadmarks_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="5" callback_class="Sidane_Threadmarks_Listener_LoadClassController" callback_method="loadClassController" active="1" hint="" description=""/>
+    <listener event_id="load_class_model" execute_order="100" callback_class="Sidane_Threadmarks_Listener_LoadClassModel" callback_method="loadClassModel" active="1" hint="" description=""/>
     <listener event_id="template_hook" execute_order="10" callback_class="Sidane_Threadmarks_Listener_Hook" callback_method="templateHook" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
@@ -25,23 +26,93 @@
   </optiongroups>
   <permissions>
     <permission_groups/>
-    <permissions/>
+    <permissions>
+      <permission permission_group_id="forum" permission_id="sidaneManageThreadmarks" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="50000"/>
+    </permissions>
     <interface_groups/>
   </permissions>
   <phrases>
+    <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
+    <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
     <phrase title="option_threadmarksLimit" version_id="1" version_string="1.0"><![CDATA[Max threadmarks in menu]]></phrase>
     <phrase title="option_threadmarksLimit_explain" version_id="1" version_string="1.0"><![CDATA[Limit the number of threadmarks to display in the drop down menu.]]></phrase>
+    <phrase title="permission_forum_sidaneManageThreadmarks" version_id="1" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
+    <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
     <phrase title="threadmark" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
+    <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
+    <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
+    <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
+    <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
+    <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
+    <phrase title="you_do_not_have_permission_to_manage_threadmarks" version_id="1" version_string="1.0"><![CDATA[You do not have permission to manage threadmarks.]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
   <templates>
+    <template title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
+<xen:h1>{xen:phrase edit_threadmark}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link full:posts, $post}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:container var="$bodyClasses">{xen:helper nodeClasses, $nodeBreadCrumbs, $forum}</xen:container>
+<xen:container var="$searchBar.thread"><xen:include template="search_bar_thread_only" /></xen:container>
+<xen:container var="$searchBar.forum"><xen:include template="search_bar_forum_only" /></xen:container>
+
+<form action="{xen:link 'posts/threadmark', $post}" method="post" class="xenForm formOverlay AutoValidator" data-redirect="on">
+
+	<dl class="ctrlUnit">
+		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
+		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="100"/></dd>
+		
+                <dt>&nbsp;</dt>
+                <dd><label><input type="checkbox" name="_xfConfirm" value="1" /> {xen:phrase delete_threadmark}</label></dd>
+	</dl>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd><input type="submit" value="{xen:phrase update_threadmark}" accesskey="s" class="button primary" /></dd>
+	</dl>
+
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+    <template title="new_threadmark" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
+<xen:h1>{xen:phrase add_threadmark}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link full:posts, $post}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:container var="$bodyClasses">{xen:helper nodeClasses, $nodeBreadCrumbs, $forum}</xen:container>
+<xen:container var="$searchBar.thread"><xen:include template="search_bar_thread_only" /></xen:container>
+<xen:container var="$searchBar.forum"><xen:include template="search_bar_forum_only" /></xen:container>
+
+<form action="{xen:link 'posts/threadmark', $post}" method="post" class="xenForm formOverlay AutoValidator" data-redirect="on">
+
+	<dl class="ctrlUnit">
+		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
+		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" maxlength="100" /></dd>
+	</dl>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd><input type="submit" value="{xen:phrase add_threadmark}" accesskey="s" class="button primary" /></dd>
+	</dl>
+
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+    <template title="new_threadmark_control" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$post.canManageThreadmarks}">
+  <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
+</xen:if>]]></template>
     <template title="page_nav_threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$linkData.threadmarks}">
   <xen:require css="threadmarks.css"/>
   <xen:if is="{$linkData.threadmarks.logged_in}">
@@ -55,7 +126,7 @@
         </xen:if>
 
         <ul class="secondaryContent blockLinksList">
-          <xen:foreach loop="{$linkData.threadmarks.all}" value="{$threadmark}">
+          <xen:foreach loop="{$linkData.threadmarks.recent}" value="{$threadmark}">
             <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
           </xen:foreach>
         </ul>
