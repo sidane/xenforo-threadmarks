@@ -33,6 +33,8 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       if ($totalThreadmarks > $menuLimit) {
         $recentThreadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
         $threadmarksParams['more_threadmarks'] = true;
+      } else {
+        $recentThreadmarks = $threadmarks;
       }
 
       $threadmarksParams['all'] = $threadmarks;
