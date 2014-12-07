@@ -31,6 +31,7 @@ class Sidane_Threadmarks_Install
   {
     $db = XenForo_Application::get('db');
     $db->query("ALTER TABLE xf_thread DROP COLUMN has_threadmarks");
+    $db->query("DROP TABLE threadmarks");
   }
 }
 
