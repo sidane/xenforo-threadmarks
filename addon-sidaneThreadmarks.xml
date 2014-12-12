@@ -210,6 +210,7 @@
   }
 }
 </xen:if>]]></template>
+    <template title="threadmarks_css" version_id="1" version_string="1.0"><![CDATA[<xen:require css="threadmarks.css"/>]]></template>
   </templates>
   <public_template_modifications>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
