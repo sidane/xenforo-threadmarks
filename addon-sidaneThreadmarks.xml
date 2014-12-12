@@ -182,23 +182,22 @@
   font-size: 14px;
   font-weight: bold;
   background-color: transparent;
-
 }
 
 .threadmarker {
   display: inline-block;
-  margin: 0 0 0 3px;
-  padding: 2px 8px 2px 6px;
+  margin: 0;
+  padding: 3px 8px 2px 6px;
   font-style: italics;
-  color: #fff;
-  background-color: #000;
+  color: {xen:property contentText};
+  background-color: {xen:property primaryLighterStill};
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
 .threadmarker strong {
-  color: #fff000;
-  font-weight: normal;
+  color: {xen:property secondaryMedium};
+  font-weight: bold;
 }
 
 <xen:if is="{xen:property enableResponsive}">
