@@ -17,11 +17,17 @@
   <email_template_modifications/>
   <optiongroups>
     <group group_id="sidaneThreadmarks" display_order="30000" debug_only="0"/>
+    <option option_id="sidaneThreadmarksHideMenuFromGuests" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="sidaneThreadmarks" display_order="1"/>
+    </option>
     <option option_id="threadmarksLimit" edit_format="spinbox" data_type="integer" can_backup="1">
       <default_value>8</default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
-      <relation group_id="sidaneThreadmarks" display_order="1"/>
+      <relation group_id="sidaneThreadmarks" display_order="2"/>
     </option>
   </optiongroups>
   <permissions>
@@ -38,6 +44,8 @@
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
+    <phrase title="option_sidaneThreadmarksHideMenuFromGuests" version_id="1" version_string="1.0"><![CDATA[Hide threadmarks drop down menu from guests]]></phrase>
+    <phrase title="option_sidaneThreadmarksHideMenuFromGuests_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, guests will have to click the threadmarks link to see the list of threadmarks.]]></phrase>
     <phrase title="option_threadmarksLimit" version_id="1" version_string="1.0"><![CDATA[Max threadmarks in menu]]></phrase>
     <phrase title="option_threadmarksLimit_explain" version_id="1" version_string="1.0"><![CDATA[Limit the number of threadmarks to display in the drop down menu.]]></phrase>
     <phrase title="permission_forum_sidaneManageThreadmarks" version_id="1" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
@@ -116,7 +124,7 @@
 </xen:if>]]></template>
     <template title="page_nav_threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$linkData.threadmarks}">
   <xen:require css="threadmarks.css"/>
-  <xen:if is="{$linkData.threadmarks.logged_in}">
+  <xen:if is="{$linkData.threadmarks.logged_in} OR !{$hide_menu_from_guests}">
     <div class="Popup threadmarks">
       <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
       <div class="Menu threadmarksMenu">
