@@ -63,3 +63,7 @@ Existing threadmarks can also be updated and deleted from this overlay.
 * Show threadmarks menu on thread list pages
 * Allow users to request a threadmark on a post
 * Template hooks for extending threadmark templates
+
+## Copyright
+
+Copyright 2014 Niall Mullally. See [MIT-LICENCE](https://github.com/Sidane/xenforo-threadmarks/blob/master/MIT-LICENCE) for details.
