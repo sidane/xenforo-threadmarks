@@ -32,35 +32,78 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     XenForo_Db::commit($db);
 
     return true;
-  }
+  } 
 
-  public function deleteThreadMark($threadmark) {
-    $db = $this->_getDb();
+    public function deleteThreadMark($threadmark, $decrementCount = false) 
+    {
+        $db = $this->_getDb();
 
-    XenForo_Db::beginTransaction($db);
+        XenForo_Db::beginTransaction($db);
 
-    $db->query('
-      DELETE FROM threadmarks WHERE threadmark_id = ?
-    ', $threadmark['threadmark_id']);
+        $db->query('
+            DELETE FROM threadmarks WHERE threadmark_id = ?
+        ', $threadmark['threadmark_id']);
 
+        if ($decrementCount)
+        {
+            $this->modifyThreadMarkCount($threadmark['thread_id'], -1);
+        }
+        
+        XenForo_Db::commit($db);
 
-    $db->query('
-      UPDATE xf_thread
-      SET threadmark_count = threadmark_count - 1
-      WHERE thread_id = ? and threadmark_count > 0
-    ', $threadmark['thread_id']);
+        return true;
+    }
+
+    public function modifyThreadMarkCount($thread_id, $increment)
+    {
+        $db = $this->_getDb();
+        $db->query('
+            UPDATE xf_thread
+            SET threadmark_count = threadmark_count + ?
+            WHERE thread_id = ? and threadmark_count + ? > 0 
+        ', array($increment, $thread_id, $increment));
+    }
+  
+    public function rebuildThreadMarkCache($thread_id)
+    {
+        $db = $this->_getDb();
+        
+        // remove orphaned threadmarks
+        $db->query('
+            DELETE `threadmarks`
+            FROM `threadmarks`
+            LEFT JOIN xf_post AS post on post.thread_id = threadmarks.thread_id and post.post_id = threadmarks.post_id
+            where `threadmarks`.thread_id = ? 
+        ', $thread_id);
+        
+        // recompute threadmark totals
+        $db->query("
+            UPDATE xf_thread
+            SET threadmark_count = (SELECT count(threadmarks.threadmark_id) 
+                                    FROM threadmarks 
+                                    JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+                                    where xf_thread.thread_id = threadmarks.thread_id and post.message_state = 'visible')
+            WHERE thread_id = ?
+        ", $thread_id);
+    }
     
-    XenForo_Db::commit($db);
-
-    return true;
-  }
-
+    public function getThreadIdsWithThreadMarks($limit =0, $offset = 0) 
+    {
+        $db = $this->_getDb();
+        return $db->fetchAll($this->limitQueryResults("
+          SELECT distinct thread_id
+          FROM threadmarks    
+          ORDER BY threadmarks.thread_id ASC
+        ",$limit, $offset));
+    }    
+  
   public function getByThreadId($threadId) {
     return $this->fetchAllKeyed("
       SELECT *
       FROM threadmarks
-      WHERE thread_id = ?
-      ORDER BY post_id ASC
+      JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+      WHERE threadmarks.thread_id = ? and post.message_state = 'visible'      
+      ORDER BY threadmarks.post_id ASC
     ", 'post_id', $threadId);
   }
 
@@ -69,16 +112,16 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       SELECT *
       FROM threadmarks
       WHERE thread_id = ?
-        AND post_id = ?
+        AND post_id = ? 
     ", array($threadId, $postId));
   }
 
   public function getByThreadIdWithPostDate($threadId) {
     return $this->fetchAllKeyed("
-      SELECT threadmarks.*, xf_post.post_date
+      SELECT threadmarks.*, post.post_date
       FROM threadmarks
-      INNER JOIN xf_post ON (threadmarks.post_id = xf_post.post_id)
-      WHERE threadmarks.thread_id = ?
+      JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+      WHERE threadmarks.thread_id = ? and post.message_state = 'visible' 
       ORDER BY post_id ASC
     ", 'post_id', $threadId);
   }
