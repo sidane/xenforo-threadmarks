@@ -3,24 +3,32 @@
 class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 {
 
-  public function createThreadMark($thread, $post, $label) {
+  public function SetThreadMark($thread_id, $post_id, $label) {
     $db = $this->_getDb();
-
+    
     XenForo_Db::beginTransaction($db);
-
-    $db->query('
-      INSERT IGNORE INTO threadmarks
+    
+    $stmt =  $db->query('
+      INSERT INTO threadmarks
         (thread_id, post_id, label)
       VALUES
         (?, ?, ?)
-    ', array($thread['thread_id'], $post['post_id'], $label));
-
-    $db->query('
-      UPDATE xf_thread
-      SET has_threadmarks = 1
-      WHERE thread_id = ?
-    ', $thread['thread_id']);
-
+      ON DUPLICATE KEY UPDATE  
+        label = values(label)
+    ', array($thread_id, $post_id, $label));
+    $rowsAffected = $stmt->rowCount();
+    
+    // http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
+    // 1 - new row, 2 - update
+    if ($rowsAffected == 1)
+    {
+        $db->query('
+          UPDATE xf_thread
+          SET threadmark_count = threadmark_count + 1
+          WHERE thread_id = ?
+        ', $thread['thread_id']);
+    }
+    
     XenForo_Db::commit($db);
 
     return true;
@@ -35,16 +43,13 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       DELETE FROM threadmarks WHERE threadmark_id = ?
     ', $threadmark['threadmark_id']);
 
-    $threadmarks = $this->getByThreadId($threadmark['thread_id']);
 
-    if (count($threadmarks) == 0) {
-      $db->query('
-        UPDATE xf_thread
-        SET has_threadmarks = 0
-        WHERE thread_id = ?
-      ', $threadmark['thread_id']);
-    }
-
+    $db->query('
+      UPDATE xf_thread
+      SET threadmark_count = threadmark_count - 1
+      WHERE thread_id = ? and threadmark_count > 0
+    ', $threadmark['thread_id']);
+    
     XenForo_Db::commit($db);
 
     return true;
@@ -77,18 +82,4 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       ORDER BY post_id ASC
     ", 'post_id', $threadId);
   }
-
-  public function updateThreadmark($threadmark, $newLabel) {
-    $db = $this->_getDb();
-
-    $db->query('
-      UPDATE threadmarks
-        SET label = ?
-      WHERE thread_id = ?
-        AND post_id = ?
-    ', array($newLabel, $threadmark['thread_id'], $threadmark['post_id']));
-
-    return true;
-  }
-
 }
