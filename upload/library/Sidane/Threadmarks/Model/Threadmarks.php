@@ -26,7 +26,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
           UPDATE xf_thread
           SET threadmark_count = threadmark_count + 1
           WHERE thread_id = ?
-        ', $thread['thread_id']);
+        ', $thread_id);
     }
     
     XenForo_Db::commit($db);
