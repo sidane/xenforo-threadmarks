@@ -3,7 +3,7 @@
 class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 {
 
-  public function SetThreadMark($thread_id, $post_id, $label) {
+  public function setThreadMark($thread_id, $post_id, $label) {
     $db = $this->_getDb();
     
     XenForo_Db::beginTransaction($db);
@@ -73,7 +73,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
             DELETE `threadmarks`
             FROM `threadmarks`
             LEFT JOIN xf_post AS post on post.thread_id = threadmarks.thread_id and post.post_id = threadmarks.post_id
-            where `threadmarks`.thread_id = ? 
+            where `threadmarks`.thread_id = ? and post.post_id is null;
         ', $thread_id);
         
         // recompute threadmark totals
