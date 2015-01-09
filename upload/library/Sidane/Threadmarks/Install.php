@@ -26,7 +26,7 @@ class Sidane_Threadmarks_Install
         if ($version == 1)
         {
             $db->query("ALTER TABLE xf_thread DROP COLUMN has_threadmarks");
-            $db->query("ALTER TABLE xf_thread DROP INDEX thread_id ");
+            $db->query("ALTER TABLE threadmarks DROP INDEX thread_id ");
         }
 
         if ($version < 2)
@@ -34,7 +34,6 @@ class Sidane_Threadmarks_Install
             $db->query("ALTER TABLE xf_thread ADD COLUMN threadmark_count INT UNSIGNED DEFAULT 0 NOT NULL");
             if (!$tables_created)
             {
-                $db->query("ALTER TABLE threadmarks add unique index thread_post_id (`thread_id`,`post_id`)");
                 $db->query("ALTER TABLE threadmarks add unique index thread_post_id (`thread_id`,`post_id`)");
             }
         }        
