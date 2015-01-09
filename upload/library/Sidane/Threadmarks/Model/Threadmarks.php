@@ -99,11 +99,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
   public function getByThreadId($threadId) {
     return $this->fetchAllKeyed("
-      SELECT *
+      SELECT threadmarks.*
       FROM threadmarks
       JOIN xf_post AS post ON post.post_id = threadmarks.post_id
       WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
-      ORDER BY threadmarks.post_id ASC
+      ORDER BY post.position ASC
     ", 'post_id', $threadId);
   }
 
@@ -122,7 +122,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       FROM threadmarks
       JOIN xf_post AS post ON post.post_id = threadmarks.post_id
       WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
-      ORDER BY post_id ASC
+      ORDER BY post.position ASC
     ", 'post_id', $threadId);
   }
 }
