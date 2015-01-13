@@ -37,6 +37,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function deleteThreadMark($threadmark, $decrementCount = false)
   {
     $db = $this->_getDb();
+    if (empty($threadmark['threadmark_id']))
+    {
+        XenForo_Error::debug("Require a threadmark_id in:".var_export($threadmark, true));
+        return;
+    }
 
     XenForo_Db::beginTransaction($db);
 
@@ -44,7 +49,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         DELETE FROM threadmarks WHERE threadmark_id = ?
     ', $threadmark['threadmark_id']);
 
-    if ($decrementCount)
+    if ($decrementCount && !empty($threadmark['thread_id']))
     {
         $this->modifyThreadMarkCount($threadmark['thread_id'], -1);
     }

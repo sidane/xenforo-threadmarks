@@ -32,7 +32,7 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
     if (!empty($threadmark))
     {
       $decrementCount = ($this->isUpdate() && $this->getExisting('message_state') == 'visible');
-      $this->_getThreadMarkModel()->deleteThreadMark($threadmark['threadmark_id'], $decrementCount);
+      $this->_getThreadMarkModel()->deleteThreadMark($threadmark, $decrementCount);
     }
   }
 
