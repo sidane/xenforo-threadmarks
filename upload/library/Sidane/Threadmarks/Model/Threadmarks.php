@@ -60,7 +60,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     $db->query('
         UPDATE xf_thread
         SET threadmark_count = threadmark_count + ?
-        WHERE thread_id = ? and threadmark_count + ? > 0
+        WHERE thread_id = ? and threadmark_count + ? >= 0
     ', array($increment, $thread_id, $increment));
   }
 
