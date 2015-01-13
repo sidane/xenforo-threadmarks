@@ -23,7 +23,7 @@ class Sidane_Threadmarks_Listener_Hook
       $contents .= $template->create('new_threadmark_control', $hookParams);
     }
 
-    if ($hookName == 'thread_view_pagenav_before' && $hookParams['thread']['has_threadmarks']) {
+    if ($hookName == 'thread_view_pagenav_before' && $hookParams['thread']['threadmark_count']) {
       $contents .= $template->create('threadmarks_css', $hookParams);;
     }
   }
