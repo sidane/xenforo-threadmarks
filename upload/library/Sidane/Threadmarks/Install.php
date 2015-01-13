@@ -25,14 +25,23 @@ class Sidane_Threadmarks_Install
 
     if ($version == 1)
     {
-      $db->query("ALTER TABLE xf_thread DROP COLUMN has_threadmarks");
-      $db->query("ALTER TABLE threadmarks DROP INDEX thread_id ");
+      if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'has_threadmarks'))
+      {
+        $db->query("ALTER TABLE xf_thread DROP COLUMN has_threadmarks");
+      }
+      if ($db->fetchRow("SHOW INDEX FROM threadmarks WHERE Column_name = ?", 'thread_id'))
+      {
+        $db->query("ALTER TABLE threadmarks DROP INDEX thread_id ");
+      }
     }
 
     if ($version < 2)
     {
-      $db->query("ALTER TABLE xf_thread ADD COLUMN threadmark_count INT UNSIGNED DEFAULT 0 NOT NULL");
-      if (!$tables_created)
+      if (!$db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'threadmark_count'))
+      {    
+        $db->query("ALTER TABLE xf_thread ADD COLUMN threadmark_count INT UNSIGNED DEFAULT 0 NOT NULL");
+      }
+      if (!$db->fetchRow("SHOW INDEX FROM threadmarks WHERE Key_name = ?", 'thread_post_id'))
       {
           $db->query("ALTER TABLE threadmarks add unique index thread_post_id (`thread_id`,`post_id`)");
       }
@@ -44,7 +53,10 @@ class Sidane_Threadmarks_Install
   public static function uninstall()
   {
     $db = XenForo_Application::get('db');
-    $db->query("ALTER TABLE xf_thread DROP COLUMN threadmark_count");
-    $db->query("DROP TABLE threadmarks");
+    if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'has_threadmarks'))
+    {
+      $db->query("ALTER TABLE xf_thread DROP COLUMN threadmark_count");
+    }  
+    $db->query("DROP TABLE IF EXISTS threadmarks");
   }
 }
