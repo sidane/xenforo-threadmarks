@@ -3,6 +3,102 @@
 class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 {
 
+  public function getMenuLimit(array $thread, array $nodePermissions = null, array $viewingUser = null)
+  {
+    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+    
+    $menulimit = XenForo_Permission::hasContentPermission($nodePermissions, 'permission_forum_sidane_tm_menu_limit'); 
+    if($menulimit > 0)
+    {
+      return $menulimit;
+    }
+    
+    return 0;
+  }
+  
+  public function canViewThreadmark(array $thread, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
+  {
+    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+  
+    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
+    {
+      return true;
+    }
+
+    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_view'))
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  public function canAddThreadmark(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
+  {
+    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+
+    if (!$viewingUser['user_id'])
+    {
+      return false;
+    }
+    
+    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
+    {
+      return true;
+    }
+
+    if ( ($thread['user_id'] == $viewingUser['user_id']) && XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_add'))
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  public function canDeleteThreadmark(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
+  {
+    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+
+    if (!$viewingUser['user_id'])
+    {
+      return false;
+    }
+    
+    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
+    {
+      return true;
+    }
+
+    if (($thread['user_id'] == $viewingUser['user_id']) && XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_delete'))
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  public function canEditThreadmark(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
+  {
+    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+
+    if (!$viewingUser['user_id'])
+    {
+      return false;
+    }
+    
+    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
+    {
+      return true;
+    }
+
+    if (($thread['user_id'] == $viewingUser['user_id']) && XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_edit'))
+    {
+      return true;
+    }
+
+    return false;
+  } 
+
   public function setThreadMark($thread_id, $post_id, $label) {
     $db = $this->_getDb();
 

@@ -27,9 +27,8 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
 
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
-
-    if (!empty($thread['threadmark_count'])) {
-      $threadmarksModel = $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
+    $threadmarksModel = $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
+    if (!empty($thread['threadmark_count']) && $threadmarksModel->canViewThreadmark($thread)) {
       $threadmarks = $threadmarksModel->getByThreadIdWithPostDate($thread['thread_id']);
 
       $viewParams = array(
