@@ -14,11 +14,6 @@ class Sidane_Threadmarks_Listener_Hook
 
   public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template)
   {
-    if ($hookName == 'post_pagination_links') {
-      $hookParams['hide_menu_from_guests'] = XenForo_Application::get('options')->sidaneThreadmarksHideMenuFromGuests;
-      $contents .= $template->create('page_nav_threadmarks', $hookParams);
-    }
-
     if ($hookName == 'post_private_controls') {
       $contents .= $template->create('new_threadmark_control', $hookParams);
     }
