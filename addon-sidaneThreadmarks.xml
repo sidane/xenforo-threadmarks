@@ -7,7 +7,6 @@
   <admin_template_modifications/>
   <code_events/>
   <code_event_listeners>
-    <listener event_id="init_dependencies" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
     <listener event_id="load_class" execute_order="5" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Thread" description=""/>
     <listener event_id="load_class" execute_order="5" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Post" description=""/>
     <listener event_id="load_class" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_DiscussionMessage_Post" description=""/>
@@ -52,7 +51,7 @@
     <phrase title="permission_forum_sidaneManageThreadmarks" version_id="1" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
     <phrase title="please_enter_label_for_threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
-    <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
+    <phrase title="threadmark" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
     <phrase title="threadmark_created" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
@@ -218,6 +217,9 @@
   }
 }
 </xen:if>]]></template>
+    <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmark}">
+  <span class='threadmarker' id='post-{$postId}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+</xen:if>]]></template>
   </templates>
   <public_template_modifications>
     <modification template="post" modification_key="sidaneThreadmarkPostControl" description="Add 'Threadmarks' link to post controls" execution_order="10" enabled="1" action="str_replace">
@@ -241,9 +243,10 @@ $0]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<li id="{$messageId}"]]></find>
-      <replace><![CDATA[<xen:if is="{$thread.threadmarks}">
-  {xen:helper render_threadmark_flag, $post.post_id, $thread.threadmarks.all}
-</xen:if>
+      <replace><![CDATA[<xen:include template="threadmarks_render_flag">
+  <xen:map from="$thread.threadmarks.all.{$post.post_id}" to="$threadmark" />
+  <xen:map from="$post.post_id" to="$postId" />
+</xen:include>
 $0]]></replace>
     </modification>
   </public_template_modifications>
