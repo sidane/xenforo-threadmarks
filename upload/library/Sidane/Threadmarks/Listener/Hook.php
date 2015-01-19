@@ -14,9 +14,6 @@ class Sidane_Threadmarks_Listener_Hook
 
   public static function templateHook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template)
   {
-    if ($hookName == 'thread_view_pagenav_before' && $hookParams['thread']['threadmark_count']) {
-      $contents .= $template->create('threadmarks_css', $hookParams);;
-    }
   }
 
 }

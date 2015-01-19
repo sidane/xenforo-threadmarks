@@ -129,7 +129,6 @@
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
     <template title="page_nav_threadmarks" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks}">
-  <xen:require css="threadmarks.css"/>
   <xen:if is="{$threadmarks.logged_in} OR !{$threadmarks.hide_menu_from_guests}">
     <div class="Popup threadmarks">
       <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
@@ -223,12 +222,18 @@
   }
 }
 </xen:if>]]></template>
-    <template title="threadmarks_css" version_id="1" version_string="1.0"><![CDATA[<xen:require css="threadmarks.css"/>]]></template>
   </templates>
   <public_template_modifications>
     <modification template="post" modification_key="sidaneThreadmarkPostControl" description="Add 'Threadmarks' link to post controls" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<xen:if is="{$post.canReport}">]]></find>
       <replace><![CDATA[<xen:include template="new_threadmark_control"/>
+$0]]></replace>
+    </modification>
+    <modification template="thread_view" modification_key="sidaneThreadmarksCss" description="Add threadmarks CSS to threads with threadmarks" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:container var="$head.canonical">]]></find>
+      <replace><![CDATA[<xen:if is="{$thread.threadmark_count} > 0">
+  <xen:require css="threadmarks.css"/>
+</xen:if>
 $0]]></replace>
     </modification>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
