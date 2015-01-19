@@ -33,12 +33,12 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
           $phrase = 'threadmark_deleted';
           XenForo_Model_Log::logModeratorAction('post', $post, 'delete_threadmark', array(), $thread);
         } else {
-          $threadmarksModel->updateThreadmark($existingThreadmark, $label);
+          $threadmarksModel->setThreadMark($thread['thread_id'], $post['post_id'], $label);
           $phrase = 'threadmark_updated';
           XenForo_Model_Log::logModeratorAction('post', $post, 'update_threadmark', array(), $thread);
         }
       } else {
-        $threadmarksModel->createThreadmark($thread, $post, $label);
+        $threadmarksModel->setThreadMark($thread['thread_id'], $post['post_id'], $label);
         $phrase = 'threadmark_created';
         XenForo_Model_Log::logModeratorAction('post', $post, 'create_threadmark', array(), $thread);
       }
