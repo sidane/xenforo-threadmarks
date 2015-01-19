@@ -147,7 +147,7 @@
 
         <xen:if is="{$threadmarks.more_threadmarks}">
           <div class="primaryContent menuHeader">
-            <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$threadmarks.count}'}</a>
+            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$threadmarks.count}'}</a>
           </div>
         </xen:if>
       </div>
