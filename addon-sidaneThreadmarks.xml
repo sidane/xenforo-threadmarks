@@ -181,7 +181,12 @@
 
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
-    <template title="threadmarks.css" version_id="1" version_string="1.0"><![CDATA[.PageNav a.threadmarksTrigger {
+    <template title="threadmarks.css" version_id="2" version_string="1.0"><![CDATA[.PageNav.threadmarksSinglePage {
+  float: left;
+  min-width: 0;
+}
+
+.PageNav a.threadmarksTrigger {
   width: auto !important;
   padding-left: 4px;
   padding-right: 4px;
@@ -232,7 +237,19 @@ $0]]></replace>
 </xen:if>
 $0]]></replace>
     </modification>
-    <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
+    <modification template="thread_view" modification_key="sidaneThreadmarksMenuOnSinglePageThreads" description="Display threadmarks menu on single page threads" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:pagenav]]></find>
+      <replace><![CDATA[<xen:if is="{$totalPosts} <= {$postsPerPage}">
+<div class="PageNav threadmarksSinglePage">
+  <xen:include template="page_nav_threadmarks">
+    <xen:map from="$thread.threadmarks" to="$threadmarks" />
+  </xen:include>
+</div>
+</xen:if>
+
+$0]]></replace>
+    </modification>
+    <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Display threadmarks menu on multi-page threads" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
       <replace><![CDATA[<xen:include template="page_nav_threadmarks">
   <xen:map from="$linkData.threadmarks" to="$threadmarks" />
