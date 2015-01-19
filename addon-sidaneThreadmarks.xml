@@ -54,15 +54,15 @@
     <phrase title="option_threadmarksLimit" version_id="1" version_string="1.0"><![CDATA[Max threadmarks in menu]]></phrase>
     <phrase title="option_threadmarksLimit_explain" version_id="1" version_string="1.0"><![CDATA[Limit the number of threadmarks to display in the drop down menu.]]></phrase>
     <phrase title="permission_forum_sidaneManageThreadmarks" version_id="1" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
-    <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
+    <phrase title="please_enter_label_for_threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
-    <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
-    <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
+    <phrase title="threadmark_created" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
+    <phrase title="threadmark_deleted" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
     <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
-    <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
+    <phrase title="threadmark_updated" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
     <phrase title="you_do_not_have_permission_to_manage_threadmarks" version_id="1" version_string="1.0"><![CDATA[You do not have permission to manage threadmarks.]]></phrase>
