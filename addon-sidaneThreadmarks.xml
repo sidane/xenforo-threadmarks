@@ -10,13 +10,8 @@
     <listener event_id="init_dependencies" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
     <listener event_id="load_class" execute_order="5" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Thread" description=""/>
     <listener event_id="load_class" execute_order="5" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Post" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_DiscussionMessage_Post" description=""/>
     <listener event_id="load_class" execute_order="100" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Post" description=""/>
-    <listener event_id="load_class" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_DiscussionMessage_Post" description=""/>    
-    
-    <listener event_id="template_create" execute_order="10" callback_class="Sidane_Threadmarks_Listener_Hook" callback_method="templateCreate" active="1" hint="page_nav" description=""/>
-    <listener event_id="template_hook" execute_order="10" callback_class="Sidane_Threadmarks_Listener_Hook" callback_method="templateHook" active="1" hint="post_pagination_links" description=""/>
-    <listener event_id="template_hook" execute_order="10" callback_class="Sidane_Threadmarks_Listener_Hook" callback_method="templateHook" active="1" hint="post_private_controls" description=""/>
-    <listener event_id="template_hook" execute_order="10" callback_class="Sidane_Threadmarks_Listener_Hook" callback_method="templateHook" active="1" hint="thread_view_pagenav_before" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -56,7 +51,8 @@
     <phrase title="option_threadmarksLimit_explain" version_id="1" version_string="1.0"><![CDATA[Limit the number of threadmarks to display in the drop down menu.]]></phrase>
     <phrase title="permission_forum_sidaneManageThreadmarks" version_id="1" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
     <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
-    <phrase title="threadmark" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
+    <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
+    <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
@@ -65,7 +61,6 @@
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
-    <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
     <phrase title="you_do_not_have_permission_to_manage_threadmarks" version_id="1" version_string="1.0"><![CDATA[You do not have permission to manage threadmarks.]]></phrase>
   </phrases>
   <route_prefixes/>
@@ -129,33 +124,32 @@
     <template title="new_threadmark_control" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$post.canManageThreadmarks}">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
-    <template title="page_nav_threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$linkData.threadmarks}">
-  <xen:require css="threadmarks.css"/>
-  <xen:if is="{$linkData.threadmarks.logged_in} OR !{$hide_menu_from_guests}">
+    <template title="page_nav_threadmarks" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks}">
+  <xen:if is="{$threadmarks.logged_in} OR !{$threadmarks.hide_menu_from_guests}">
     <div class="Popup threadmarks">
       <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
       <div class="Menu threadmarksMenu">
-        <xen:if is="{$linkData.threadmarks.more_threadmarks}">
+        <xen:if is="{$threadmarks.more_threadmarks}">
           <div class="primaryContent menuHeader">
             <h4>{xen:phrase most_recent_threadmarks}:</h4>
           </div>
         </xen:if>
 
         <ul class="secondaryContent blockLinksList">
-          <xen:foreach loop="{$linkData.threadmarks.recent}" value="{$threadmark}">
+          <xen:foreach loop="{$threadmarks.recent}" value="{$threadmark}">
             <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
           </xen:foreach>
         </ul>
 
-        <xen:if is="{$linkData.threadmarks.more_threadmarks}">
+        <xen:if is="{$threadmarks.more_threadmarks}">
           <div class="primaryContent menuHeader">
-            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$linkData.threadmarks.count}'}</a>
+            <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$threadmarks.count}'}</a>
           </div>
         </xen:if>
       </div>
     </div>
   <xen:else/>
-    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
+    <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
     <template title="threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
@@ -224,12 +218,25 @@
   }
 }
 </xen:if>]]></template>
-    <template title="threadmarks_css" version_id="1" version_string="1.0"><![CDATA[<xen:require css="threadmarks.css"/>]]></template>
   </templates>
   <public_template_modifications>
+    <modification template="post" modification_key="sidaneThreadmarkPostControl" description="Add 'Threadmarks' link to post controls" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:if is="{$post.canReport}">]]></find>
+      <replace><![CDATA[<xen:include template="new_threadmark_control"/>
+$0]]></replace>
+    </modification>
+    <modification template="thread_view" modification_key="sidaneThreadmarksCss" description="Add threadmarks CSS to threads with threadmarks" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:container var="$head.canonical">]]></find>
+      <replace><![CDATA[<xen:if is="{$thread.threadmark_count} > 0">
+  <xen:require css="threadmarks.css"/>
+</xen:if>
+$0]]></replace>
+    </modification>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Add threadmarks HTML after thread pagination links" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
-      <replace><![CDATA[<xen:hook name="post_pagination_links" params="{xen:array 'linkData={$linkData}'}" />
+      <replace><![CDATA[<xen:include template="page_nav_threadmarks">
+  <xen:map from="$linkData.threadmarks" to="$threadmarks" />
+</xen:include>
 $0]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">

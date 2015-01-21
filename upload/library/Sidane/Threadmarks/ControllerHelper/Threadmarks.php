@@ -17,6 +17,8 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
         return null;
       }
 
+      $threadmarksParams['hide_menu_from_guests'] = XenForo_Application::get('options')->sidaneThreadmarksHideMenuFromGuests;
+
       // to allow for changing the template modification
       // based on whether user is logged in or not
       $threadmarksParams['logged_in'] = XenForo_Visitor::getUserId() != 0;
