@@ -152,6 +152,13 @@
     <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
+    <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
+  <div class="PageNav threadmarksSinglePage">
+    <xen:include template="page_nav_threadmarks">
+      <xen:map from="$thread.threadmarks" to="$threadmarks"/>
+    </xen:include>
+  </div>
+</xen:if>]]></template>
     <template title="threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
@@ -239,13 +246,7 @@ $0]]></replace>
     </modification>
     <modification template="thread_view" modification_key="sidaneThreadmarksMenuOnSinglePageThreads" description="Display threadmarks menu on single page threads" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<xen:pagenav]]></find>
-      <replace><![CDATA[<xen:if is="{$totalPosts} <= {$postsPerPage}">
-<div class="PageNav threadmarksSinglePage">
-  <xen:include template="page_nav_threadmarks">
-    <xen:map from="$thread.threadmarks" to="$threadmarks" />
-  </xen:include>
-</div>
-</xen:if>
+      <replace><![CDATA[<xen:include template="single_page_thread_threadmarks_menu"/>
 
 $0]]></replace>
     </modification>

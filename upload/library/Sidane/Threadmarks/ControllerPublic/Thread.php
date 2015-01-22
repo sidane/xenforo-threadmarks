@@ -14,6 +14,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     $threadmarksHelper = $this->_threadmarksHelper();
     $threadmarks = $threadmarksHelper->getThreadmarks($parent->params['thread']);
     if (!empty($threadmarks)) {
+      $parent->params['singlePageThread'] = $parent->params['totalPosts'] <= $parent->params['postsPerPage'];
       $parent->params['thread']['threadmarks'] = $threadmarks;
     }
 
