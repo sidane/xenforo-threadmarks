@@ -7,7 +7,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   {
     $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
     
-    $menulimit = XenForo_Permission::hasContentPermission($nodePermissions, 'permission_forum_sidane_tm_menu_limit'); 
+    $menulimit = XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_menu_limit'); 
     if($menulimit > 0)
     {
       return $menulimit;
