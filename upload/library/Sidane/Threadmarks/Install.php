@@ -73,7 +73,7 @@ class Sidane_Threadmarks_Install
         ");
 
       $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-        select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'sidane_tm_menu_limit', ".self::default_menu_limit.", permission_value_int
+        select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'sidane_tm_menu_limit', 'use_int', ".self::default_menu_limit."
         from xf_permission_entry
         where permission_group_id = 'forum' and  permission_id in ('viewContent')
         ");
