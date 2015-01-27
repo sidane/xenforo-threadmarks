@@ -2,13 +2,6 @@
 
 class Sidane_Threadmarks_Listener
 {
-  public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
-  {
-    XenForo_Template_Helper_Core::$helperCallbacks += array(
-      'render_threadmark_flag' => array('Sidane_Threadmarks_Helper_Threadmark', 'renderThreadmarkFlag')
-    );
-  }
-
   public static function load_class($class, array &$extend)
   {
     switch($class)
