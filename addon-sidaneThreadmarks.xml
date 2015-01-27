@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.0" version_id="2" url="" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.0" version_id="3" url="" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -154,13 +154,13 @@
       </div>
     </div>
   <xen:else/>
-    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
+    <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
     <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
   <div class="PageNav threadmarksSinglePage">
     <xen:include template="page_nav_threadmarks">
-      <xen:map from="$thread.threadmarks" to="$threadmarks"/>
+      <xen:map from="$thread.recentThreadmarks" to="$threadmarks"/>
       <xen:map from="$thread" to="$linkData"/>
     </xen:include>
   </div>
@@ -236,8 +236,10 @@
   }
 }
 </xen:if>]]></template>
-    <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
-  <span class='threadmarker' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+    <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks} and {$threadmarkCategories} and {$post.canViewThreadmarks}">
+  <xen:foreach loop="$threadmarks" value="$threadmark">
+    <span class='threadmarker {$threadmarkCategories.{$threadmark.category}.css}' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+  </xen:foreach>
 </xen:if>]]></template>
   </templates>
   <public_template_modifications>
@@ -262,14 +264,15 @@ $0]]></replace>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Display threadmarks menu on multi-page threads" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
       <replace><![CDATA[<xen:include template="page_nav_threadmarks">
-  <xen:map from="$linkData.threadmarks" to="$threadmarks" />
+  <xen:map from="$linkData.recentThreadmarks" to="$threadmarks" />
 </xen:include>
 $0]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<li id="{$messageId}"]]></find>
       <replace><![CDATA[<xen:include template="threadmarks_render_flag">
-  <xen:map from="$thread.threadmarks.all.{$post.post_id}" to="$threadmark" />
+  <xen:map from="$thread.threadmarkCategories" to="$threadmarkCategories" />
+  <xen:map from="$post.threadmarks" to="$threadmarks" />
 </xen:include>
 $0]]></replace>
     </modification>

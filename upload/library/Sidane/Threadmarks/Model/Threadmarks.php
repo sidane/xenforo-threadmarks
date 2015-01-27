@@ -198,14 +198,14 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ",$limit, $offset));
   }
 
-  public function getByThreadId($threadId) {
-    return $this->fetchAllKeyed("
+  public function getRecentByThreadId($threadId, $limit = 0, $offset = 0) {
+    return $this->fetchAllKeyed($this->limitQueryResults("
       SELECT threadmarks.*
       FROM threadmarks
       JOIN xf_post AS post ON post.post_id = threadmarks.post_id
       WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
       ORDER BY post.position ASC
-    ", 'post_id', $threadId);
+    ",$limit, $offset), 'post_id', $threadId);
   }
 
   public function getByThreadIdAndPostId($threadId, $postId) {
@@ -225,5 +225,19 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
       ORDER BY post.position ASC
     ", 'post_id', $threadId);
+  }
+
+  public function getThreadmarkTypes() {
+    // in the future this would be dynamically queried to permit user provided threadmark labels
+    return array
+      (
+        1 => array
+        (
+          'threadmarktype_id' => 1,
+          'primary' => 0,
+          'css' => '',
+          'label' => 'threadmark',
+        )
+      );
   }
 }

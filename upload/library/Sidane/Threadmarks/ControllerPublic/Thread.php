@@ -2,6 +2,18 @@
 
 class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks_ControllerPublic_Thread
 {
+  protected function _getPostFetchOptions(array $thread, array $forum)
+  {
+    $postFetchOptions = parent::_getPostFetchOptions($thread, $forum);
+    $threadmarkmodel = $this->_getThreadmarksModel();
+
+    if ($threadmarkmodel->canViewThreadmark($thread))
+    {
+      $postFetchOptions['join'] |= Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS;
+    }
+
+    return $postFetchOptions;
+  }
 
   public function actionIndex()
   {
@@ -12,10 +24,15 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     }
 
     $threadmarksHelper = $this->_threadmarksHelper();
-    $threadmarks = $threadmarksHelper->getThreadmarks($parent->params['thread']);
-    if (!empty($threadmarks)) {
+    $recentThreadmarks = $threadmarksHelper->getRecentThreadmarks($parent->params['thread']);
+    if (!empty($recentThreadmarks)) {
       $parent->params['singlePageThread'] = $parent->params['totalPosts'] <= $parent->params['postsPerPage'];
-      $parent->params['thread']['threadmarks'] = $threadmarks;
+      $parent->params['thread']['recentThreadmarks'] = $recentThreadmarks;
+    }
+
+    if (!empty($parent->params['thread']['threadmark_count'])) { 
+      $threadmarksModel = $this->_getThreadmarksModel();
+      $parent->params['thread']['threadmarkCategories'] = $threadmarksModel->getThreadmarkTypes();
     }
 
     return $parent;
@@ -27,7 +44,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
 
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
-    $threadmarksModel = $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
+    $threadmarksModel = $this->_getThreadmarksModel();
     if (!empty($thread['threadmark_count']) && $threadmarksModel->canViewThreadmark($thread)) {
       $threadmarks = $threadmarksModel->getByThreadIdWithPostDate($thread['thread_id']);
 
@@ -47,4 +64,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     return $this->getHelper('Sidane_Threadmarks_ControllerHelper_Threadmarks');
   }
 
+  private function _getThreadmarksModel() {
+    return $this->getHelper('Sidane_Threadmarks_Model_Threadmarks');
+  }
 }
