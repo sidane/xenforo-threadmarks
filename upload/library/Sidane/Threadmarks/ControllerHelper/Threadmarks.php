@@ -4,9 +4,14 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
 {
 
   public function getThreadmarks($thread) {
+  
     if (!empty($thread['threadmark_count'])) {
       $threadmarksModel = $this->_controller->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
-      $menuLimit = intval(XenForo_Application::get('options')->threadmarksLimit);
+  
+      if (!$threadmarksModel->canViewThreadmark($thread)) {
+        return null;
+      }
+      $menuLimit = $threadmarksModel->getMenuLimit($thread);
 
       $threadmarksParams = array();
 
