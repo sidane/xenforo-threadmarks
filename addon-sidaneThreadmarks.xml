@@ -28,10 +28,10 @@
   <permissions>
     <permission_groups/>
     <permissions>
-      <permission permission_group_id="forum" permission_id="sidane_tm_manage" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="50000"/>
       <permission permission_group_id="forum" permission_id="sidane_tm_add" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="1230"/>
       <permission permission_group_id="forum" permission_id="sidane_tm_delete" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="1250"/>
       <permission permission_group_id="forum" permission_id="sidane_tm_edit" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="1240"/>
+      <permission permission_group_id="forum" permission_id="sidane_tm_manage" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="50000"/>
       <permission permission_group_id="forum" permission_id="sidane_tm_menu_limit" permission_type="integer" default_value_int="0" interface_group_id="forumPermissions" display_order="1220"/>
       <permission permission_group_id="forum" permission_id="sidane_tm_view" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="1210"/>
     </permissions>
@@ -46,16 +46,16 @@
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests" version_id="1" version_string="1.0"><![CDATA[Hide threadmarks drop down menu from guests]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, guests will have to click the threadmarks link to see the list of threadmarks.]]></phrase>
+    <phrase title="permission_forum_sidane_tm_add" version_id="2" version_string="1.0"><![CDATA[Add Threadmarks to Own Thread]]></phrase>
+    <phrase title="permission_forum_sidane_tm_delete" version_id="2" version_string="1.0"><![CDATA[Delete Threadmarks in Own Thread]]></phrase>
+    <phrase title="permission_forum_sidane_tm_edit" version_id="2" version_string="1.0"><![CDATA[Edit Threadmarks in Own Thread]]></phrase>
+    <phrase title="permission_forum_sidane_tm_manage" version_id="2" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
+    <phrase title="permission_forum_sidane_tm_menu_limit" version_id="2" version_string="1.0"><![CDATA[Max Threadmarks In Menu]]></phrase>
+    <phrase title="permission_forum_sidane_tm_view" version_id="2" version_string="1.0"><![CDATA[View Threadmarks]]></phrase>
     <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
-    <phrase title="permission_forum_sidane_tm_manage" version_id="2" version_string="1.0"><![CDATA[Manage threadmarks]]></phrase>
-    <phrase title="permission_forum_sidane_tm_add" version_id="2" version_string="1.0"><![CDATA[Add Threadmarks to Own Thread]]></phrase>
-    <phrase title="permission_forum_sidane_tm_delete" version_id="2" version_string="1.0"><![CDATA[Delete Threadmarks in Own Thread]]></phrase>
-    <phrase title="permission_forum_sidane_tm_edit" version_id="2" version_string="1.0"><![CDATA[Edit Threadmarks in Own Thread]]></phrase>
-    <phrase title="permission_forum_sidane_tm_menu_limit" version_id="2" version_string="1.0"><![CDATA[Max Threadmarks In Menu]]></phrase>
-    <phrase title="permission_forum_sidane_tm_view" version_id="2" version_string="1.0"><![CDATA[View Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
@@ -64,13 +64,13 @@
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
     <phrase title="you_do_not_have_permission_to_add_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to add threadmarks.]]></phrase>
-    <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
     <phrase title="you_do_not_have_permission_to_delete_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to delete threadmarks.]]></phrase>
+    <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
   <templates>
-    <template title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
+    <template title="edit_threadmark" version_id="2" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
 <xen:h1>{xen:phrase edit_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -87,7 +87,7 @@
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
 		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="100" <xen:if is="!{$post.canEditThreadmarks}">readonly</xen:if> /></dd>
-		
+
         <xen:if is="{$post.canDeleteThreadmarks}">
         <dt>&nbsp;</dt>
         <dd><label><input type="checkbox" name="_xfConfirm" value="1" /> {xen:phrase delete_threadmark}</label></dd>
@@ -127,11 +127,11 @@
 
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 </form>]]></template>
-    <template title="new_threadmark_control" version_id="1" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
+    <template title="new_threadmark_control" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
     <template title="page_nav_threadmarks" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks}">
-  <xen:if is="{$threadmarks.logged_in} OR !{$threadmarks.hide_menu_from_guests}">
+  <xen:if is="{$threadmarks.logged_in} OR {$threadmarks.hide_menu_from_guests} != '1'">
     <div class="Popup threadmarks">
       <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
       <div class="Menu threadmarksMenu">
