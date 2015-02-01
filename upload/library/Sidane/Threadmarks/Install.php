@@ -48,9 +48,9 @@ class Sidane_Threadmarks_Install
           $db->query("ALTER TABLE threadmarks add unique index thread_post_id (`thread_id`,`post_id`)");
       }
 
-      $db->query("insert ignore into xf_permission_entry_content (content_type, content_id, user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-        select distinct content_type, content_id, user_group_id, user_id, convert(permission_group_id using utf8), 'sidane_tm_manage', permission_value, permission_value_int
-        from xf_permission_entry_content
+      $db->query("insert ignore into xf_permission_entry (content_type, content_id, user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+        select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'sidane_tm_manage', permission_value, permission_value_int
+        from xf_permission_entry
         where permission_group_id = 'forum' and permission_id in ('warn','editAnyPost','deleteAnyPost')
         ");
 
