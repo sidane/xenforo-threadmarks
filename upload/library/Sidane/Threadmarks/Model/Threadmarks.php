@@ -204,7 +204,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       FROM threadmarks
       JOIN xf_post AS post ON post.post_id = threadmarks.post_id
       WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
-      ORDER BY post.position ASC
+      ORDER BY post.position DESC
     ",$limit, $offset), 'post_id', $threadId);
   }
 

@@ -15,7 +15,7 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
 
       $threadmarksParams = array();
 
-      $threadmarks = $threadmarksModel->getRecentByThreadId($thread['thread_id'],  0, $menuLimit + 1);
+      $threadmarks = $threadmarksModel->getRecentByThreadId($thread['thread_id'], $menuLimit + 1);
       $totalThreadmarks = count($threadmarks);
 
       if ($totalThreadmarks == 0) {
@@ -29,13 +29,13 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       $threadmarksParams['logged_in'] = XenForo_Visitor::getUserId() != 0;
 
       if ($totalThreadmarks > $menuLimit) {
-        $recentThreadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
+        $recentThreadmarks = array_slice($threadmarks, 0, $menuLimit, true);
         $threadmarksParams['more_threadmarks'] = true;
       } else {
         $recentThreadmarks = $threadmarks;
       }
 
-      $threadmarksParams['recent'] = $recentThreadmarks;
+      $threadmarksParams['recent'] = array_reverse($recentThreadmarks);
       $threadmarksParams['count'] = $thread['threadmark_count'];
 
       $threadmarksParams['threadmarks_post_ids'] = array_map(function($threadmark) {
