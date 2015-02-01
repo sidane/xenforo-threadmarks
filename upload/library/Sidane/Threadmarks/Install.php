@@ -18,7 +18,7 @@ class Sidane_Threadmarks_Install
           threadmark_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
           thread_id INT UNSIGNED NOT NULL,
           post_id INT UNSIGNED NOT NULL,
-          label VARCHAR(100) NOT NULL,
+          label VARCHAR(255) NOT NULL,
           UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci
       ");
@@ -83,6 +83,13 @@ class Sidane_Threadmarks_Install
         from xf_permission_entry
         where permission_group_id = 'forum' and  permission_id in ('viewContent')
         ");
+    }
+    if ($version < 3)
+    {
+      if (!$db->fetchRow("SHOW COLUMNS FROM threadmarks WHERE Field = ? and Type = 'varchar(100)'", 'label'))
+      {
+        $db->query("ALTER TABLE threadmarks MODIFY COLUMN label VARCHAR(255) NOT NULL");
+      }
     }
 
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
