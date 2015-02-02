@@ -141,7 +141,7 @@ class Sidane_Threadmarks_Install
     }
   }
 
-  public function addIndex($table, $index, array $columns)
+  public static function addIndex($table, $index, array $columns)
   {
     $db = XenForo_Application::get('db');
     if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
@@ -151,7 +151,7 @@ class Sidane_Threadmarks_Install
     }
   }
 
-  public function dropIndex($table, $index)
+  public static function dropIndex($table, $index)
   {
     $db = XenForo_Application::get('db');
     if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
