@@ -27,26 +27,14 @@ class Sidane_Threadmarks_Install
 
     if ($version == 1)
     {
-      if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'has_threadmarks'))
-      {
-        $db->query("ALTER TABLE xf_thread DROP COLUMN has_threadmarks");
-      }
-      if ($db->fetchRow("SHOW INDEX FROM threadmarks WHERE Column_name = ?", 'thread_id'))
-      {
-        $db->query("ALTER TABLE threadmarks DROP INDEX thread_id ");
-      }
+      self::dropColumn('xf_thread', 'has_threadmarks');
+      self::dropIndex('threadmarks', 'thread_id');
     }
 
     if ($version < 2)
     {
-      if (!$db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'threadmark_count'))
-      {
-        $db->query("ALTER TABLE xf_thread ADD COLUMN threadmark_count INT UNSIGNED DEFAULT 0 NOT NULL");
-      }
-      if (!$db->fetchRow("SHOW INDEX FROM threadmarks WHERE Key_name = ?", 'thread_post_id'))
-      {
-          $db->query("ALTER TABLE threadmarks add unique index thread_post_id (`thread_id`,`post_id`)");
-      }
+      self::addColumn('threadmarks', 'threadmark_count', 'INT UNSIGNED DEFAULT 0 NOT NULL');
+      self::addIndex('threadmarks', 'thread_post_id', array('thread_id','post_id'));
 
       $db->query("insert ignore into xf_permission_entry_content (content_type, content_id, user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
         select distinct content_type, content_id, user_group_id, user_id, convert(permission_group_id using utf8), 'sidane_tm_manage', permission_value, permission_value_int
@@ -86,10 +74,7 @@ class Sidane_Threadmarks_Install
     }
     if ($version < 3)
     {
-      if (!$db->fetchRow("SHOW COLUMNS FROM threadmarks WHERE Field = ? and Type = 'varchar(100)'", 'label'))
-      {
-        $db->query("ALTER TABLE threadmarks MODIFY COLUMN label VARCHAR(255) NOT NULL");
-      }
+      self::modifyColumn('threadmarks', 'label', 'varchar(100)', 'VARCHAR(255) NOT NULL');
     }
 
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
@@ -118,4 +103,61 @@ class Sidane_Threadmarks_Install
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_menu_limit'");
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_view'");
   }
+
+  public static function modifyColumn($table, $column, $oldDefinition, $definition)
+  {
+    $db = XenForo_Application::get('db');
+    $hasColumn = false;
+    if (empty($oldDefinition))
+    {
+      $hasColumn = !$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column);
+    }
+    else
+    {
+      $hasColumn = !$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ? and Type = ?', array($column,$oldDefinition));
+    }
+    
+    if($hasColumn)
+    {
+      $db->query('ALTER TABLE `'.$table.'` MODIFY COLUMN `'.$column.'` '.$definition);
+    }
+  }
+
+  public static function dropColumn($table, $column)
+  {
+    $db = XenForo_Application::get('db');
+    if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
+    {
+      $db->query('ALTER TABLE `'.$table.'` drop COLUMN `'.$column.'` ');
+    }
+  }
+
+  public static function addColumn($table, $column, $definition)
+  {
+    $db = XenForo_Application::get('db');
+    if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
+    {
+      $db->query('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
+    }
+  }
+
+  public function addIndex($table, $index, array $columns)
+  {
+    $db = XenForo_Application::get('db');
+    if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
+    {
+      $cols = '`'. implode('`,`', $columns). '`';
+      $db->query('ALTER TABLE `'.$table.'` add index `'.$index.'` '. $cols);
+    }
+  }
+
+  public function dropIndex($table, $index)
+  {
+    $db = XenForo_Application::get('db');
+    if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
+    {
+      $cols = '`'. implode('`,`', $columns). '`';
+      $db->query('ALTER TABLE `'.$table.'` drp[ index `'.$index.'` ');
+    }
+  } 
 }
