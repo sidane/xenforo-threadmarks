@@ -146,7 +146,7 @@ class Sidane_Threadmarks_Install
     $db = XenForo_Application::get('db');
     if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
     {
-      $cols = '`'. implode('`,`', $columns). '`';
+      $cols = '(`'. implode('`,`', $columns). '`)';
       $db->query('ALTER TABLE `'.$table.'` add index `'.$index.'` '. $cols);
     }
   }
@@ -156,7 +156,6 @@ class Sidane_Threadmarks_Install
     $db = XenForo_Application::get('db');
     if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
     {
-      $cols = '`'. implode('`,`', $columns). '`';
       $db->query('ALTER TABLE `'.$table.'` drp[ index `'.$index.'` ');
     }
   } 
