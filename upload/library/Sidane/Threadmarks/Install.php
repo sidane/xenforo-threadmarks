@@ -91,7 +91,7 @@ class Sidane_Threadmarks_Install
   public static function uninstall()
   {
     $db = XenForo_Application::get('db');
-    if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'has_threadmarks'))
+    if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'threadmark_count'))
     {
       $db->query("ALTER TABLE xf_thread DROP COLUMN threadmark_count");
     }
