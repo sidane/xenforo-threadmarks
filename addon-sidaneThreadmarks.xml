@@ -236,10 +236,8 @@
   }
 }
 </xen:if>]]></template>
-    <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks} and {$threadmarkCategories} and {$post.canViewThreadmarks}">
-  <xen:foreach loop="$threadmarks" value="$threadmark">
-    <span class='threadmarker {$threadmarkCategories.{$threadmark.category}.css}' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
-  </xen:foreach>
+    <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+    <span class='threadmarker' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
 </xen:if>]]></template>
   </templates>
   <public_template_modifications>
@@ -271,8 +269,7 @@ $0]]></replace>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<li id="{$messageId}"]]></find>
       <replace><![CDATA[<xen:include template="threadmarks_render_flag">
-  <xen:map from="$thread.threadmarkCategories" to="$threadmarkCategories" />
-  <xen:map from="$post.threadmarks" to="$threadmarks" />
+  <xen:map from="$post.threadmark" to="$threadmark" />
 </xen:include>
 $0]]></replace>
     </modification>

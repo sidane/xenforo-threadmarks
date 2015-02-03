@@ -226,18 +226,4 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       ORDER BY post.position ASC
     ", 'post_id', $threadId);
   }
-
-  public function getThreadmarkTypes() {
-    // in the future this would be dynamically queried to permit user provided threadmark labels
-    return array
-      (
-        1 => array
-        (
-          'threadmarktype_id' => 1,
-          'primary' => 0,
-          'css' => '',
-          'label' => 'threadmark',
-        )
-      );
-  }
 }

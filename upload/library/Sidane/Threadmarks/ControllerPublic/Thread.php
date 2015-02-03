@@ -30,11 +30,6 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       $parent->params['thread']['recentThreadmarks'] = $recentThreadmarks;
     }
 
-    if (!empty($parent->params['thread']['threadmark_count'])) { 
-      $threadmarksModel = $this->_getThreadmarksModel();
-      $parent->params['thread']['threadmarkCategories'] = $threadmarksModel->getThreadmarkTypes();
-    }
-
     return $parent;
   }
 

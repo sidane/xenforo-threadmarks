@@ -36,16 +36,10 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
 
     if (!empty($post['threadmark_id']))
     {    
-      // in the future cache the list of threadmarks associated with a post as a comma separated list
-      // for now only support 1 type.
-      $post['threadmarks'] = array
+      $post['threadmark'] = array
       (
-        array
-        (
-          'type' => 1,
-          'threadmark_id' => $post['threadmark_id'],
-          'label' => $post['threadmark_label'],
-        )
+        'threadmark_id' => $post['threadmark_id'],
+        'label' => $post['threadmark_label'],
       );
       unset($post['threadmark_id']);
       unset($post['threadmark_label']);
