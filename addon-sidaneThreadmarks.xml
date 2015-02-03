@@ -161,6 +161,7 @@
   <div class="PageNav threadmarksSinglePage">
     <xen:include template="page_nav_threadmarks">
       <xen:map from="$thread.threadmarks" to="$threadmarks"/>
+      <xen:map from="$thread" to="$linkData"/>
     </xen:include>
   </div>
 </xen:if>]]></template>
