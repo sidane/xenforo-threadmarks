@@ -3,6 +3,23 @@
 class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_ControllerPublic_Post
 {
 
+  // so that the threadmarker at the top of the post is visible
+  // when redirecting to a threadmarked post
+  // change the redirect URL hash to the ID of the threadmarker (e.g. #post-10-threadmark)
+  public function actionIndex()
+  {
+    $parent = parent::actionIndex();
+
+    $isThreadmarkRedirect = $this->_input->filterSingle('threadmark', XenForo_Input::UINT);
+
+    if ($isThreadmarkRedirect)
+    {
+      $parent->redirectTarget = $parent->redirectTarget . '-threadmark';
+    }
+
+    return $parent;
+  }
+
   public function actionThreadmark()
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
