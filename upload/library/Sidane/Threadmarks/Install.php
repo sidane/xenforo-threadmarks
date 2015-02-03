@@ -110,11 +110,11 @@ class Sidane_Threadmarks_Install
     $hasColumn = false;
     if (empty($oldDefinition))
     {
-      $hasColumn = !$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column);
+      $hasColumn = $db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column);
     }
     else
     {
-      $hasColumn = !$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ? and Type = ?', array($column,$oldDefinition));
+      $hasColumn = $db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ? and Type = ?', array($column,$oldDefinition));
     }
     
     if($hasColumn)
