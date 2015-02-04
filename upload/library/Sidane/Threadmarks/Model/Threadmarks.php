@@ -169,13 +169,21 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   {
     $db = $this->_getDb();
 
-    // remove orphaned threadmarks
+    // remove orphaned threadmarks (by post)
     $db->query('
         DELETE `threadmarks`
         FROM `threadmarks`
-        LEFT JOIN xf_post AS post on post.thread_id = threadmarks.thread_id and post.post_id = threadmarks.post_id
+        LEFT JOIN xf_post AS post on post.post_id = threadmarks.post_id
         where `threadmarks`.thread_id = ? and post.post_id is null;
     ', $thread_id);
+    
+    // ensure each threadmark associated with the thread really is
+    $db->query('
+        update `threadmarks` marks
+        join xf_post AS post on post.post_id = marks.post_id
+        set marks.thread_id = post.thread_id
+        where (post.thread_id = ? or marks.thread_id = ?) and post.thread_id <> marks.thread_id;
+    ', array($thread_id,$thread_id));
 
     // recompute threadmark totals
     $db->query("
