@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.0" version_id="2" url="" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.0" version_id="3" url="" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -85,7 +85,7 @@
 
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
-		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="100" <xen:if is="!{$post.canEditThreadmarks}">readonly</xen:if> /></dd>
+		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="255" <xen:if is="!{$post.canEditThreadmarks}">readonly</xen:if> /></dd>
 
         <xen:if is="{$post.canDeleteThreadmarks}">
         <dt>&nbsp;</dt>
@@ -116,7 +116,7 @@
 
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
-		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" maxlength="100" /></dd>
+		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" maxlength="255" /></dd>
 	</dl>
 
 	<dl class="ctrlUnit submitUnit">
