@@ -33,7 +33,7 @@ class Sidane_Threadmarks_Install
 
     if ($version < 2)
     {
-      self::addColumn('threadmarks', 'threadmark_count', 'INT UNSIGNED DEFAULT 0 NOT NULL');
+      self::addColumn('xf_thread', 'threadmark_count', 'INT UNSIGNED DEFAULT 0 NOT NULL');
       self::addIndex('threadmarks', 'thread_post_id', array('thread_id','post_id'));
 
       $db->query("insert ignore into xf_permission_entry_content (content_type, content_id, user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
@@ -82,11 +82,10 @@ class Sidane_Threadmarks_Install
 
   public static function uninstall()
   {
+    self::dropColumn('xf_thread', 'has_threadmarks');
+    self::dropColumn('xf_thread', 'threadmark_count');
+
     $db = XenForo_Application::get('db');
-    if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'threadmark_count'))
-    {
-      $db->query("ALTER TABLE xf_thread DROP COLUMN threadmark_count");
-    }
     $db->query("DROP TABLE IF EXISTS threadmarks");
 
     $db->delete('xf_permission_entry', "permission_id = 'sidane_tm_manage'");
@@ -126,7 +125,7 @@ class Sidane_Threadmarks_Install
   public static function dropColumn($table, $column)
   {
     $db = XenForo_Application::get('db');
-    if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
+    if ($db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
     {
       $db->query('ALTER TABLE `'.$table.'` drop COLUMN `'.$column.'` ');
     }
@@ -135,8 +134,10 @@ class Sidane_Threadmarks_Install
   public static function addColumn($table, $column, $definition)
   {
     $db = XenForo_Application::get('db');
+    var_dump('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?');
     if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
     {
+    var_dump('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
       $db->query('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
     }
   }
@@ -154,9 +155,9 @@ class Sidane_Threadmarks_Install
   public static function dropIndex($table, $index)
   {
     $db = XenForo_Application::get('db');
-    if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
+    if ($db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
     {
-      $db->query('ALTER TABLE `'.$table.'` drp[ index `'.$index.'` ');
+      $db->query('ALTER TABLE `'.$table.'` drop index `'.$index.'` ');
     }
   } 
 }
