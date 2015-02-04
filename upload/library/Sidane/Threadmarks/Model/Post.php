@@ -19,8 +19,8 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
 
   public function recalculatePostPositionsInThread($threadId)
   {
-    XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array('threadId' => $threadId), null, true);    
-    return recalculatePostPositionsInThread($threadId)
+    $this->_getThreadmarksModel()->recalculatePostPositionsInThread($threadId);
+    return parent::recalculatePostPositionsInThread($threadId);
   }
 
   protected function _getThreadmarksModel() {

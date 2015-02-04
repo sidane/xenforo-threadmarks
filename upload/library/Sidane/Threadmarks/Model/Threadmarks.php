@@ -196,10 +196,15 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", $thread_id);
   }
 
+  public function recalculatePostPositionsInThread($threadId)
+  {
+    XenForo_Application::defer('Sidane_Threadmarks_Deferred_SingleThreadCache', array('threadId' => $threadId), null, true);    
+  }
+
   public function getThreadIdsWithThreadMarks($limit =0, $offset = 0)
   {
     $db = $this->_getDb();
-    return $db->fetchAll($this->limitQueryResults("
+    return $db->fetchCol($this->limitQueryResults("
       SELECT distinct thread_id
       FROM threadmarks
       ORDER BY threadmarks.thread_id ASC

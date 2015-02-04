@@ -15,14 +15,7 @@ class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
     /** @var XenForo_Model_Post */
     $threadMarkModel = XenForo_Model::create('Sidane_Threadmarks_Model_Threadmarks');
 
-    if (isset($data['threadId'])
-    {
-      $threadIds = array($data['threadId']);
-    }
-    else
-    {
-      $threadIds = $threadMarkModel->getThreadIdsWithThreadMarks($data['page'], self::PER_PAGE);
-    }
+    $threadIds = $threadMarkModel->getThreadIdsWithThreadMarks($data['page'], self::PER_PAGE);
 
     if(empty($threadIds))
       return false;
@@ -43,7 +36,7 @@ class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
 
 
   public function canCancel()
-    {
+  {
     return true;
   }
 }
