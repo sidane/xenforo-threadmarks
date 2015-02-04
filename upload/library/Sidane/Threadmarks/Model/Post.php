@@ -19,7 +19,7 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
 
   public function recalculatePostPositionsInThread($threadId)
   {
-    $this->_getThreadmarksModel()->recalculatePostPositionsInThread($threadId);
+    $this->_getThreadmarksModel()->recalculatePositionsInThread($threadId);
     return parent::recalculatePostPositionsInThread($threadId);
   }
 

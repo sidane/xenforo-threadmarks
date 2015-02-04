@@ -196,7 +196,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", $thread_id);
   }
 
-  public function recalculatePostPositionsInThread($threadId)
+  public function recalculatePositionsInThread($threadId)
   {
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_SingleThreadCache', array('threadId' => $threadId), null, true);    
   }
