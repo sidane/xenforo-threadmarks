@@ -242,9 +242,9 @@
 }
 
 <xen:if is="{xen:property enableResponsive}">
-@media (max-width:{xen:property maxResponsiveMediumWidth})
+@media (max-width:{xen:property maxResponsiveWideWidth})
 {
-  .PageNav a.threadmarksTrigger {
+  .Responsive .PageNav a.threadmarksTrigger {
     clear: left;
     margin-top: 7px;
   }
