@@ -154,13 +154,13 @@
       </div>
     </div>
   <xen:else/>
-    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
+    <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
     <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
   <div class="PageNav threadmarksSinglePage">
     <xen:include template="page_nav_threadmarks">
-      <xen:map from="$thread.threadmarks" to="$threadmarks"/>
+      <xen:map from="$thread.recentThreadmarks" to="$threadmarks"/>
       <xen:map from="$thread" to="$linkData"/>
     </xen:include>
   </div>
@@ -262,14 +262,14 @@ $0]]></replace>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Display threadmarks menu on multi-page threads" execution_order="100" enabled="1" action="str_replace">
       <find><![CDATA[</nav>]]></find>
       <replace><![CDATA[<xen:include template="page_nav_threadmarks">
-  <xen:map from="$linkData.threadmarks" to="$threadmarks" />
+  <xen:map from="$linkData.recentThreadmarks" to="$threadmarks" />
 </xen:include>
 $0]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<li id="{$messageId}"]]></find>
       <replace><![CDATA[<xen:include template="threadmarks_render_flag">
-  <xen:map from="$thread.threadmarks.all.{$post.post_id}" to="$threadmark" />
+  <xen:map from="$post.threadmark" to="$threadmark" />
 </xen:include>
 $0]]></replace>
     </modification>

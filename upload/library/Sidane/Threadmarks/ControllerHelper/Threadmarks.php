@@ -3,7 +3,7 @@
 class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_ControllerHelper_Abstract
 {
 
-  public function getThreadmarks($thread) {
+  public function getRecentThreadmarks($thread) {
   
     if (!empty($thread['threadmark_count'])) {
       $threadmarksModel = $this->_controller->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
@@ -15,7 +15,7 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
 
       $threadmarksParams = array();
 
-      $threadmarks = $threadmarksModel->getByThreadId($thread['thread_id']);
+      $threadmarks = $threadmarksModel->getRecentByThreadId($thread['thread_id'], $menuLimit + 1);
       $totalThreadmarks = count($threadmarks);
 
       if ($totalThreadmarks == 0) {
@@ -29,15 +29,14 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       $threadmarksParams['logged_in'] = XenForo_Visitor::getUserId() != 0;
 
       if ($totalThreadmarks > $menuLimit) {
-        $recentThreadmarks = array_slice($threadmarks, $totalThreadmarks - $menuLimit, null, true);
+        $recentThreadmarks = array_slice($threadmarks, 0, $menuLimit, true);
         $threadmarksParams['more_threadmarks'] = true;
       } else {
         $recentThreadmarks = $threadmarks;
       }
 
-      $threadmarksParams['all'] = $threadmarks;
-      $threadmarksParams['recent'] = $recentThreadmarks;
-      $threadmarksParams['count'] = $totalThreadmarks;
+      $threadmarksParams['recent'] = array_reverse($recentThreadmarks);
+      $threadmarksParams['count'] = $thread['threadmark_count'];
 
       $threadmarksParams['threadmarks_post_ids'] = array_map(function($threadmark) {
         return $threadmark['post_id'];
