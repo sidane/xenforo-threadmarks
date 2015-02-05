@@ -242,9 +242,9 @@
 }
 
 <xen:if is="{xen:property enableResponsive}">
-@media (max-width:{xen:property maxResponsiveMediumWidth})
+@media (max-width:{xen:property maxResponsiveWideWidth})
 {
-  .PageNav a.threadmarksTrigger {
+  .Responsive .PageNav a.threadmarksTrigger {
     clear: left;
     margin-top: 7px;
   }
@@ -281,11 +281,13 @@ $0]]></replace>
 {xen:if $message.threadmark, hasThreadmark}]]></replace>
     </modification>
     <modification template="page_nav" modification_key="sidaneThreadmarksModification" description="Display threadmarks menu on multi-page threads" execution_order="100" enabled="1" action="str_replace">
-      <find><![CDATA[</nav>]]></find>
-      <replace><![CDATA[<xen:include template="page_nav_threadmarks">
+      <find><![CDATA[<xen:if is="{$unreadLinkHtml}">
+		<a href="{xen:raw $unreadLinkHtml}" class="text distinct unreadLink">{xen:phrase go_to_first_unread}</a>
+	</xen:if>]]></find>
+      <replace><![CDATA[$0
+<xen:include template="page_nav_threadmarks">
   <xen:map from="$linkData.recentThreadmarks" to="$threadmarks" />
-</xen:include>
-$0]]></replace>
+</xen:include>]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<xen:include template="message_user_info">]]></find>
