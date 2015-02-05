@@ -129,9 +129,9 @@
     <template title="new_threadmark_control" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
-    <template title="page_nav_threadmarks" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks}">
+    <template title="page_nav_threadmarks" version_id="3" version_string="1.0"><![CDATA[<xen:if is="{$threadmarks}">
   <xen:if is="{$threadmarks.logged_in} OR {$threadmarks.hide_menu_from_guests} != '1'">
-    <div class="Popup threadmarks">
+    <div class="Popup threadmarks JsOnly">
       <a rel="Menu" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
       <div class="Menu threadmarksMenu">
         <xen:if is="{$threadmarks.more_threadmarks}">
@@ -153,8 +153,12 @@
         </xen:if>
       </div>
     </div>
+    
+    <noscript>
+      <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
+    </noscript>
   <xen:else/>
-    <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
+    <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>    
   </xen:if>
 </xen:if>]]></template>
     <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
