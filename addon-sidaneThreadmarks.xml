@@ -237,7 +237,7 @@
 }
 </xen:if>]]></template>
     <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
-    <span class='threadmarker' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+  <span class='threadmarker' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
 </xen:if>]]></template>
   </templates>
   <public_template_modifications>
