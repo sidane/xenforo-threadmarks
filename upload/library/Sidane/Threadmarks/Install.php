@@ -90,7 +90,6 @@ class Sidane_Threadmarks_Install
 
   public static function uninstall()
   {
-/*  
     $db = XenForo_Application::get('db');
     if ($db->fetchRow("SHOW COLUMNS FROM xf_thread WHERE Field = ?", 'threadmark_count'))
     {
@@ -111,6 +110,5 @@ class Sidane_Threadmarks_Install
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_edit'");
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_menu_limit'");
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_view'");
-*/    
   }
 }
