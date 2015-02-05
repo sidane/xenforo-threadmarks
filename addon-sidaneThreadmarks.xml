@@ -158,7 +158,7 @@
       <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
     </noscript>
   <xen:else/>
-    <a href="{xen:link 'threads/threadmarks', $threadmarks}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>    
+    <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
     <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
