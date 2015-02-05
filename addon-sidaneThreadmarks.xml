@@ -142,7 +142,7 @@
 
         <ul class="secondaryContent blockLinksList">
           <xen:foreach loop="{$threadmarks.recent}" value="{$threadmark}">
-            <li><a href="{xen:link full:posts, $threadmark}">{$threadmark.label}</a></li>
+            <li><a href="{xen:link full:posts, $threadmark, 'threadmark=1'}">{$threadmark.label}</a></li>
           </xen:foreach>
         </ul>
 
@@ -165,7 +165,7 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+    <template title="threadmarks" version_id="2" version_string="1.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
 
@@ -183,7 +183,7 @@
   <ol class="overlayScroll">
     <xen:foreach loop="$threadmarks" value="$threadmark">
       <li class="primaryContent memberListItem">
-        <a href="{xen:link 'posts', $threadmark}">{$threadmark.label}</a>
+        <a href="{xen:link full:posts, $threadmark, 'threadmark=1'}">{$threadmark.label}</a>
 
         <div class="extra">
           <xen:datetime time="{$threadmark.post_date}" />
@@ -237,7 +237,7 @@
 }
 </xen:if>]]></template>
     <template title="threadmarks_render_flag" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
-  <span class='threadmarker' id='post-{$post.post_id}'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+  <span class='threadmarker' id='post-{$post.post_id}-threadmark'><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
 </xen:if>]]></template>
   </templates>
   <public_template_modifications>
