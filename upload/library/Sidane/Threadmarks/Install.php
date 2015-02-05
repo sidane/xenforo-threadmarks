@@ -134,10 +134,8 @@ class Sidane_Threadmarks_Install
   public static function addColumn($table, $column, $definition)
   {
     $db = XenForo_Application::get('db');
-    var_dump('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?');
     if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
     {
-    var_dump('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
       $db->query('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
     }
   }
