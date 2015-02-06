@@ -290,11 +290,11 @@ $0]]></replace>
 </xen:include>]]></replace>
     </modification>
     <modification template="message" modification_key="sidaneThreadmarksModification1" description="Add flag before threadmarked post" execution_order="10" enabled="1" action="str_replace">
-      <find><![CDATA[<xen:include template="message_user_info">]]></find>
-      <replace><![CDATA[<xen:include template="threadmarks_render_flag">
+      <find><![CDATA[data-author="{$message.username}">]]></find>
+      <replace><![CDATA[$0
+<xen:include template="threadmarks_render_flag">
   <xen:map from="$post.threadmark" to="$threadmark" />
-</xen:include>
-$0]]></replace>
+</xen:include>]]></replace>
     </modification>
   </public_template_modifications>
   <bb_code_media_sites/>
