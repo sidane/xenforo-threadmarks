@@ -222,14 +222,12 @@
 
 .threadmarker {
   margin: 0 0 10px 0;
-  font-style: italics;
   border-bottom: 1px solid {xen:property primaryLighterStill};
 }
 
 .threadmarker .label {
   display: inline-block;
   padding: 3px 8px 2px 6px;
-  font-style: italics;
   color: {xen:property contentText};
   background-color: {xen:property primaryLighterStill};
   border-top-left-radius: 4px;
