@@ -34,19 +34,43 @@ For threads with many threadmarks, an overlay can be opened to access all of the
 
 ![Threadmarks overlay](http://f.cl.ly/items/120M2w1Y0h0V0C2L0g1W/threadmarks5.png)
 
-The number of threadmarks to show in the drop down can be configured under `Admin > Options > Threadmarks` (the default is eight threadmarks).
+The number of threadmarks to show in the drop down is controlled through permissions ([see below](#user-content-permissions)).
 
-Post with a threadmark are clearly labelled.
+Posts with a threadmark are clearly labelled.
 
 ![Threadmarker](http://f.cl.ly/items/3l0S3S0C3i351N2Z3k1G/threadmarks4.png)
 
-## Permissions and managing threadmarks
+## Permissions
 
-This add-on adds a new `Manage threadmarks` permissions under the `Forum Moderator Permissions` group.
+This add-on adds the following permissions:
 
-![Threadmark permission](http://f.cl.ly/items/0W1e0e0U07211k0R3x1P/threadmarks3.png)
+* **View Threadmarks**
 
-A user with this permission will see a `Threadmark` link in each post.
+  Threadmarks menu and labels will not be visible unless users have this permission. `Registered` and `Unregistered / Unconfirmed` user groups have it by default.
+
+* **Max Threadmarks In Menu**
+
+  The number of most recent threadmarks to show in the drop down menu. Defaults to 8 for `Registered` and `Unregistered / Unconfirmed` user groups.
+
+* **Add Threadmarks to Own Thread**
+
+  Threadmarks can be added by the thread creator. Allowed by default for `Registered` user group.
+
+* **Edit Threadmarks in Own Thread**
+
+  Existing threadmarks can be edited by the thread creator. Allowed by default for `Registered` user group.
+
+* **Delete Threadmarks in Own Thread**
+
+  Existing threadmarks can be deleted by the thread creator. Allowed by default for `Registered` user group.
+
+* **Manage threadmarks**
+
+  User's with this permission can manage *all* threadmarks. Typically moderators and administrators should be given this permission.
+
+## Managing threadmarks
+
+Users who can add/edit/delete threadmarks will see a `Threadmark` link in each post.
 
 ![Threadmark link](http://f.cl.ly/items/1r030W3k3S1h0q2l1L1F/threadmarks2.png)
 
@@ -60,10 +84,8 @@ Existing threadmarks can also be updated and deleted from this overlay.
 
 ## Future improvements
 
-* Show threadmarks menu on thread list pages
-* Allow users to request a threadmark on a post
-* Template hooks for extending threadmark templates
+* See [enhancement issues](https://github.com/Sidane/xenforo-threadmarks/labels/enhancement) on github.
 
 ## Copyright
 
-Copyright 2014 Niall Mullally. See [MIT-LICENCE](https://github.com/Sidane/xenforo-threadmarks/blob/master/MIT-LICENCE) for details.
+Copyright 2014-2015 Niall Mullally. See [MIT-LICENCE](https://github.com/Sidane/xenforo-threadmarks/blob/master/MIT-LICENCE) for details.
