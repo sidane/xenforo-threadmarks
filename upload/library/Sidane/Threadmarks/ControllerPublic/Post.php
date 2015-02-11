@@ -28,14 +28,18 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
           }
           $threadmarksModel->deleteThreadmark($existingThreadmark);
           $phrase = 'threadmark_deleted';
-          XenForo_Model_Log::logModeratorAction('post', $post, 'delete_threadmark', array(), $thread);
+          XenForo_Model_Log::logModeratorAction(
+            'post', $post, 'delete_threadmark', array('label' => $existingThreadmark['label']), $thread
+          );
         } else {
           if (!$threadmarksModel->canEditThreadmark($post, $thread, $forum)) {
             throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_edit_threadmarks');
           }
           $threadmarksModel->setThreadMark($thread['thread_id'], $post['post_id'], $label);
           $phrase = 'threadmark_updated';
-          XenForo_Model_Log::logModeratorAction('post', $post, 'update_threadmark', array(), $thread);
+          XenForo_Model_Log::logModeratorAction(
+            'post', $post, 'update_threadmark', array('old_label' => $existingThreadmark['label'], 'new_label' => $label), $thread
+          );
         }
       } else {
         if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum)) {
@@ -43,7 +47,9 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
         }
         $threadmarksModel->setThreadMark($thread['thread_id'], $post['post_id'], $label);
         $phrase = 'threadmark_created';
-        XenForo_Model_Log::logModeratorAction('post', $post, 'create_threadmark', array(), $thread);
+        XenForo_Model_Log::logModeratorAction(
+          'post', $post, 'create_threadmark', array('label' => $label), $thread
+        );
       }
 
       $controllerResponse = $this->getPostSpecificRedirect($post, $thread);
