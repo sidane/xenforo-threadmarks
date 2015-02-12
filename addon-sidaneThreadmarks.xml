@@ -40,6 +40,9 @@
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[Edit Threadmark]]></phrase>
+    <phrase title="moderator_log_post_create_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' created]]></phrase>
+    <phrase title="moderator_log_post_delete_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' deleted]]></phrase>
+    <phrase title="moderator_log_post_update_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark changed from '{old_label}' to '{new_label}']]></phrase>
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
