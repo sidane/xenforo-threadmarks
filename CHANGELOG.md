@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.1 (2015-02-12)
+
+- Update moderator log threadmark entries to include label when creating/editing/deleting
+
 ## v1.1 (2015-02-09)
 
 - respect post visibility when listing threadmarks (i.e. threadmarks on hidden posts aren't listed)
