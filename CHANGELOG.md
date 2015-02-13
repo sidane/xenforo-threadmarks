@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.2 (2015-02-13)
+
+- Drop down menu was showing no threadmarks when menu limit permission was set to unlimited. Now shows all threadmarks.
+
 ## v1.1.1 (2015-02-12)
 
 - Update moderator log threadmark entries to include label when creating/editing/deleting
