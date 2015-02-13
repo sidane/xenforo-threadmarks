@@ -4,39 +4,30 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
 {
 
   public function getRecentThreadmarks($thread) {
-  
+
     if (!empty($thread['threadmark_count'])) {
       $threadmarksModel = $this->_controller->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
-  
+
       if (!$threadmarksModel->canViewThreadmark($thread)) {
         return null;
       }
+
       $menuLimit = $threadmarksModel->getMenuLimit($thread);
+      $threadmarks = $threadmarksModel->getRecentByThreadId($thread['thread_id'], $menuLimit);
 
-      $threadmarksParams = array();
-
-      $threadmarks = $threadmarksModel->getRecentByThreadId($thread['thread_id'], $menuLimit + 1);
-      $totalThreadmarks = count($threadmarks);
-
-      if ($totalThreadmarks == 0) {
+      if (empty($threadmarks)) {
         return null;
       }
 
-      $threadmarksParams['hide_menu_from_guests'] = XenForo_Application::get('options')->sidaneThreadmarksHideMenuFromGuests;
+      $threadmarksParams = $this->_buildThreadmarksParams();
+      $totalThreadmarks = $threadmarksParams['count'] = $thread['threadmark_count'];
 
-      // to allow for changing the template modification
-      // based on whether user is logged in or not
-      $threadmarksParams['logged_in'] = XenForo_Visitor::getUserId() != 0;
-
-      if ($totalThreadmarks > $menuLimit) {
-        $recentThreadmarks = array_slice($threadmarks, 0, $menuLimit, true);
+      // $menuLimit 0 = unlimited
+      if ($menuLimit > 0 && $totalThreadmarks > $menuLimit) {
         $threadmarksParams['more_threadmarks'] = true;
-      } else {
-        $recentThreadmarks = $threadmarks;
       }
 
-      $threadmarksParams['recent'] = array_reverse($recentThreadmarks);
-      $threadmarksParams['count'] = $thread['threadmark_count'];
+      $threadmarksParams['recent'] = array_reverse($threadmarks);
 
       $threadmarksParams['threadmarks_post_ids'] = array_map(function($threadmark) {
         return $threadmark['post_id'];
@@ -44,6 +35,13 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
 
       return $threadmarksParams;
     }
+  }
+
+  protected function _buildThreadmarksParams() {
+    return array(
+      'hide_menu_from_guests' => XenForo_Application::get('options')->sidaneThreadmarksHideMenuFromGuests,
+      'logged_in' => XenForo_Visitor::getUserId() != 0
+    );
   }
 
 }
