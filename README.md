@@ -22,6 +22,12 @@ http://www.redcafe.net/threads/la-liga-2014-15.393896/
 
 The usual XenForo way - install `addon-sidaneThreadmarks.xml` through the XenForo Admin.
 
+## Upgrading
+
+As with installing, use the `addon-sidaneThreadmarks.xml` through the XenForo Admin.
+
+**Note:** Existing threadmarks *will not* be deleted from your database during upgrades.
+
 ## Using threadmarks
 
 The threadmarks menu is positioned beside the pagination links at the top and bottom of threads.
