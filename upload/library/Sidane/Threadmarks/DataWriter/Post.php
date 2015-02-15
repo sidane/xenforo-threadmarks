@@ -8,7 +8,7 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
 
     if ($this->isChanged('message_state'))
     {
-      $threadmark = $this->_getThreadMarkModel()->getByThreadIdAndPostId($this->get('thread_id'), $this->get('post_id'));
+      $threadmark = $this->_getThreadMarkModel()->getByPostId($this->get('post_id'));
 
       if (!empty($threadmark))
       {
@@ -28,7 +28,7 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
   {
     parent::_messagePostDelete();
 
-    $threadmark = $this->_getThreadMarkModel()->getByThreadIdAndPostId($this->get('thread_id'), $this->get('post_id'));
+    $threadmark = $this->_getThreadMarkModel()->getByPostId($this->get('post_id'));
     if (!empty($threadmark))
     {
       $decrementCount = ($this->isUpdate() && $this->getExisting('message_state') == 'visible');

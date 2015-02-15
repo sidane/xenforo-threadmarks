@@ -20,6 +20,7 @@ class Sidane_Threadmarks_Install
           post_id INT UNSIGNED NOT NULL,
           label VARCHAR(255) NOT NULL,
           UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`)
+          UNIQUE KEY `post_id` (`post_id`)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci
       ");
       $tables_created = true;
@@ -75,6 +76,11 @@ class Sidane_Threadmarks_Install
     if ($version < 3)
     {
       self::modifyColumn('threadmarks', 'label', 'varchar(100)', 'VARCHAR(255) NOT NULL');
+    }
+
+    if ($version < 5)
+    {
+      self::addIndex('threadmarks', 'post_id', array('thread_id','post_id'));
     }
 
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);

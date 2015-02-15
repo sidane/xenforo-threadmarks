@@ -110,6 +110,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       VALUES
         (?, ?, ?)
       ON DUPLICATE KEY UPDATE
+        thread_id = values(thread_id),
         label = values(label)
     ', array($thread_id, $post_id, $label));
     $rowsAffected = $stmt->rowCount();
@@ -221,13 +222,12 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ",$limit, $offset), 'post_id', $threadId);
   }
 
-  public function getByThreadIdAndPostId($threadId, $postId) {
+  public function getByPostId($postId) {
     return $this->_getDb()->fetchRow("
       SELECT *
       FROM threadmarks
-      WHERE thread_id = ?
-        AND post_id = ?
-    ", array($threadId, $postId));
+      WHERE post_id = ?
+    ", array($postId));
   }
 
   public function getByThreadIdWithPostDate($threadId) {
