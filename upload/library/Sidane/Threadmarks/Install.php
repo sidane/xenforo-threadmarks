@@ -78,7 +78,7 @@ class Sidane_Threadmarks_Install
       self::modifyColumn('threadmarks', 'label', 'varchar(100)', 'VARCHAR(255) NOT NULL');
     }
 
-    if ($version < 6)
+    if ($version < 7)
     {
       self::dropIndex('threadmarks', 'post_id');
       self::addIndex('threadmarks', 'post_id', array('post_id'));
