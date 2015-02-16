@@ -19,7 +19,7 @@ class Sidane_Threadmarks_Install
           thread_id INT UNSIGNED NOT NULL,
           post_id INT UNSIGNED NOT NULL,
           label VARCHAR(255) NOT NULL,
-          UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`)
+          UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`),
           UNIQUE KEY `post_id` (`post_id`)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci
       ");
