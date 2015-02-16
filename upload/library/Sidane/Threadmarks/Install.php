@@ -78,9 +78,10 @@ class Sidane_Threadmarks_Install
       self::modifyColumn('threadmarks', 'label', 'varchar(100)', 'VARCHAR(255) NOT NULL');
     }
 
-    if ($version < 5)
+    if ($version < 7)
     {
-      self::addIndex('threadmarks', 'post_id', array('thread_id','post_id'));
+      self::dropIndex('threadmarks', 'post_id');
+      self::addIndex('threadmarks', 'post_id', array('post_id'));
     }
 
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
