@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.4 (2015-02-16)
+
+- Fix incorrect database index in v1.1.3.
+
 ## v1.1.3 (2015-02-16)
 
 - Ensure threadmarks are immediately visible when moving threadmarked posts to another thread. *Note:* Threadmarks drop down menu still doesn't appear until deferred task runs.
