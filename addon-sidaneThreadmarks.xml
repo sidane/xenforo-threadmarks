@@ -265,9 +265,7 @@ $0]]></replace>
     </modification>
     <modification template="thread_view" modification_key="sidaneThreadmarksCss" description="Add threadmarks CSS to threads with threadmarks" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<xen:container var="$head.canonical">]]></find>
-      <replace><![CDATA[<xen:if is="{$thread.threadmark_count} > 0">
-  <xen:require css="threadmarks.css"/>
-</xen:if>
+      <replace><![CDATA[<xen:require css="threadmarks.css"/>
 $0]]></replace>
     </modification>
     <modification template="thread_view" modification_key="sidaneThreadmarksMenuOnSinglePageThreads" description="Display threadmarks menu on single page threads" execution_order="10" enabled="1" action="str_replace">
