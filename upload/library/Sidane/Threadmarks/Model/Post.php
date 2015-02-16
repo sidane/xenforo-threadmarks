@@ -17,7 +17,7 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
           threadmarks.threadmark_id, threadmarks.label as threadmark_label';
         $joinOptions['joinTables'] .= '
           LEFT JOIN threadmarks  ON
-          (threadmarks.thread_id = post.thread_id && threadmarks.post_id = post.post_id)';        
+            threadmarks.post_id = post.post_id';
       }
     }
 

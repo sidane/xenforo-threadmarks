@@ -11,7 +11,7 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
     list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
 
     $threadmarksModel = $this->_getThreadmarksModel();
-    $existingThreadmark = $threadmarksModel->getByThreadIdAndPostId($thread['thread_id'], $post['post_id']);
+    $existingThreadmark = $threadmarksModel->getByPostId( $post['post_id']);
 
     if ($this->_request->isPost())
     {
