@@ -14,10 +14,12 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
       if ($fetchOptions['join'] & Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS)
       {
         $joinOptions['selectFields'] .= ',
-          threadmarks.threadmark_id, threadmarks.label as threadmark_label';
+          threadmarks.threadmark_id, threadmarks.label as threadmark_label
+        ';
         $joinOptions['joinTables'] .= '
           LEFT JOIN threadmarks  ON
-            threadmarks.post_id = post.post_id';
+            threadmarks.post_id = post.post_id
+        ';
       }
     }
 
