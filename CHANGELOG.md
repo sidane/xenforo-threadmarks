@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.5 (2015-02-17)
+
+- Add more whitespace to a SQL query for compatibility with other addons.
+
 ## v1.1.4 (2015-02-16)
 
 - Fix incorrect database index in v1.1.3.
