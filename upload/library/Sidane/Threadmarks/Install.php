@@ -18,8 +18,17 @@ class Sidane_Threadmarks_Install
           threadmark_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
           thread_id INT UNSIGNED NOT NULL,
           post_id INT UNSIGNED NOT NULL,
+          user_id int not null default 0,
+          post_date int not null default 0,
+          position int not null default 0,
+          message_state enum('visible','moderated','deleted') NOT NULL DEFAULT 'visible',
+          edit_count int not null default 0',
+          last_edit_date int not null default 0,
+          last_edit_user_id int not null default 0,
           label VARCHAR(255) NOT NULL,
           UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`),
+          UNIQUE KEY `thread_position` (`thread_id`,`position`),
+          UNIQUE KEY `user_id` (`user_id`),
           UNIQUE KEY `post_id` (`post_id`)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci
       ");
@@ -84,6 +93,46 @@ class Sidane_Threadmarks_Install
       self::addIndex('threadmarks', 'post_id', array('post_id'));
     }
 
+    if ($version <= 9)
+    {
+      $db->query("
+        INSERT IGNORE INTO xf_content_type
+            (content_type, addon_id, fields)
+        VALUES
+            ('threadmark', 'sidaneThreadmarks', '')
+      ");
+
+      $db->query("
+        INSERT IGNORE INTO xf_content_type_field
+            (content_type, field_name, field_value)
+        VALUES
+            ('threadmark', 'edit_history_handler_class', 'Sidane_Threadmarks_EditHistoryHandler_Threadmark')
+      ");
+
+      self::addColumn('threadmarks','position', 'int not null default 0');
+      self::addIndex('threadmarks', 'thread_position', array('thread_id', 'position'));
+
+      self::addColumn('threadmarks','user_id', 'int not null default 0');
+      $db->query("update threadmarks mark
+        join xf_post post on mark.post_id = post.post_id
+        set mark.user_id = post.user_id
+        where mark.user_id = 0
+        ");
+      self::addIndex('threadmarks', 'user_id', array('user_id'));
+      self::addColumn('threadmarks','post_date', 'int not null default 0');
+      $db->query("update threadmarks mark
+        join xf_post post on mark.post_id = post.post_id
+        set mark.post_date = post.post_date
+        where mark.post_date = 0
+        ");
+      self::addColumn('threadmarks','message_state', "enum('visible','moderated','deleted') NOT NULL DEFAULT 'visible'");
+      self::addColumn('threadmarks','edit_count', 'int not null default 0');
+      self::addColumn('threadmarks','last_edit_date', 'int not null default 0');
+      self::addColumn('threadmarks','last_edit_user_id', 'int not null default 0');
+
+      XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
+    }
+
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
   }
 
@@ -108,6 +157,17 @@ class Sidane_Threadmarks_Install
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_edit'");
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_menu_limit'");
     $db->delete('xf_permission_entry_content', "permission_id = 'sidane_tm_view'");
+
+    $db->query("
+      DELETE FROM xf_content_type
+      WHERE xf_content_type.addon_id = 'sidaneThreadmarks'
+    ");
+
+    $db->query("
+      DELETE FROM xf_content_type_field
+      WHERE xf_content_type_field.field_value = 'Sidane_Threadmarks_EditHistoryHandler_Threadmark'
+    ");
+    XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
   }
 
   public static function modifyColumn($table, $column, $oldDefinition, $definition)
@@ -122,7 +182,7 @@ class Sidane_Threadmarks_Install
     {
       $hasColumn = $db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ? and Type = ?', array($column,$oldDefinition));
     }
-    
+
     if($hasColumn)
     {
       $db->query('ALTER TABLE `'.$table.'` MODIFY COLUMN `'.$column.'` '.$definition);
@@ -164,5 +224,5 @@ class Sidane_Threadmarks_Install
     {
       $db->query('ALTER TABLE `'.$table.'` drop index `'.$index.'` ');
     }
-  } 
+  }
 }

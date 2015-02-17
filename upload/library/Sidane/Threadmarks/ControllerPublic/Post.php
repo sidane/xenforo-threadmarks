@@ -82,6 +82,13 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
     }
   }
 
+  public function actionThreadmarkHistory()
+  {
+    $this->_request->setParam('content_type', 'threadmark');
+    $this->_request->setParam('content_id', $this->_input->filterSingle('post_id', XenForo_Input::UINT));
+    return $this->responseReroute('XenForo_ControllerPublic_EditHistory', 'index');
+  }
+
   protected function _getThreadmarksModel() {
     return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
   }

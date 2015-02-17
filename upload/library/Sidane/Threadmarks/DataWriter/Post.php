@@ -9,17 +9,12 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
     if ($this->isChanged('message_state'))
     {
       $threadmark = $this->_getThreadMarkModel()->getByPostId($this->get('post_id'));
-
       if (!empty($threadmark))
       {
-        if ($this->get('message_state') == 'visible')
-        {
-          $this->_getThreadMarkModel()->modifyThreadMarkCount($this->get('thread_id'), 1);
-        }
-        else if ($this->isUpdate() && $this->getExisting('message_state') == 'visible')
-        {
-          $this->_getThreadMarkModel()->modifyThreadMarkCount($this->get('thread_id'), -1);
-        }
+        $dw = XenForo_DataWriter::create("Sidane_Threadmarks_DataWriter_Threadmark");
+        $dw->setExistingData($threadmark['threadmark_id']);
+        $dw->set('message_state', $this->get('message_state'));
+        $dw->save();
       }
     }
   }
@@ -31,8 +26,9 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
     $threadmark = $this->_getThreadMarkModel()->getByPostId($this->get('post_id'));
     if (!empty($threadmark))
     {
-      $decrementCount = ($this->isUpdate() && $this->getExisting('message_state') == 'visible');
-      $this->_getThreadMarkModel()->deleteThreadMark($threadmark, $decrementCount);
+      $dw = XenForo_DataWriter::create("Sidane_Threadmarks_DataWriter_Threadmark");
+      $dw->setExistingData($threadmark['threadmark_id']);
+      $dw->delete();
     }
   }
 
