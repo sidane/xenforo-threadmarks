@@ -55,6 +55,8 @@
     <phrase title="permission_forum_sidane_tm_menu_limit" version_id="2" version_string="1.0"><![CDATA[Max Threadmarks In Menu]]></phrase>
     <phrase title="permission_forum_sidane_tm_view" version_id="2" version_string="1.0"><![CDATA[View Threadmarks]]></phrase>
     <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
+    <phrase title="select_this_threadmark" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark]]></phrase>
+    <phrase title="select_this_threadmark_by_x" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark by {name}]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
@@ -165,6 +167,28 @@
     <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
+    <template title="search_result_threadmark" version_id="9" version_string="1.1.6"><![CDATA[<li id="threadmark-{$threadmark.post_id}" class="searchResult post primaryContent{xen:if $post.isIgnored, ' ignored'}" data-author="{$threadmark.username}">
+
+	<div class="listBlock posterAvatar"><xen:avatar user="$post" size="s" img="true" /></div>
+	
+	<div class="listBlock main">
+		<div class="titleText">
+			<span class="contentType">{xen:phrase threadmark}</span>
+			<h3 class="title{xen:if {$thread.isNew}, ' new'}"><a href="{xen:link posts, $post}">{xen:helper threadPrefix, $thread}{xen:helper highlight, $thread.title, $search.search_query, 'highlight'}</a></h3>
+		</div>
+
+		<blockquote class="snippet">
+			<a href="{xen:link posts, $post}">{xen:helper snippet, $threadmark.label, 150, {xen:array 'term={$search.search_query}', 'emClass=highlight', 'stripQuote=1'}}</a>
+		</blockquote>
+
+		<div class="meta">
+			<xen:if is="{$enableInlineMod} AND {$post.canInlineMod}"><input type="checkbox" name="posts[]" value="{$threadmark.post_id}" class="InlineModCheck" data-target="#post-{$threadmark.post_id}" title="{xen:phrase select_this_threadmark_by_x, 'name={$threadmark.username}'}" /></xen:if>
+			{xen:phrase post_by}: <xen:username user="$threadmark" />,
+			<xen:datetime time="{$threadmark.post_date}" />
+			{xen:phrase in_forum}: <a href="{xen:link forums, $forum}">{$forum.title}</a>
+		</div>
+	</div>
+</li>]]></template>
     <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
   <div class="PageNav threadmarksSinglePage">
     <xen:include template="page_nav_threadmarks">

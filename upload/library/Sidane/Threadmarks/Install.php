@@ -107,6 +107,7 @@ class Sidane_Threadmarks_Install
             (content_type, field_name, field_value)
         VALUES
             ('threadmark', 'edit_history_handler_class', 'Sidane_Threadmarks_EditHistoryHandler_Threadmark')
+           ,('threadmark', 'search_handler_class', 'Sidane_Threadmarks_Search_DataHandler_Threadmark')
       ");
 
       self::addColumn('threadmarks','position', 'int not null default 0');

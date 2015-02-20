@@ -71,6 +71,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->_updateThreadMarkCount();
     }
 
+    $this->_indexForSearch();
+
     parent::_postSave();
   }
 
@@ -83,6 +85,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     );
 
     $this->_updateThreadMarkCount(true);
+    $this->_deleteFromSearchIndex();
   }
 
   protected function getContentType()
@@ -93,6 +96,48 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
   protected function getContentId()
   {
     return $this->get('post_id');
+  }
+
+
+  protected function _indexForSearch()
+  {
+    if ($this->get('message_state') == 'visible')
+    {
+      if ($this->getExisting('message_state') != 'visible' || $this->isChanged('message'))
+      {
+        $this->_insertOrUpdateSearchIndex();
+      }
+    }
+    else if ($this->isUpdate() && $this->get('message_state') != 'visible' && $this->getExisting('message_state') == 'visible')
+    {
+      $this->_deleteFromSearchIndex();
+    }
+  }
+
+  protected function _insertOrUpdateSearchIndex()
+  {
+    $dataHandler = $this->_getSearchDataHandler();
+    if (!$dataHandler)
+    {
+      return;
+    }
+
+    $thread = $this->_getThreadModel()->getThreadById($this->get('thread_id'));
+
+    $indexer = new XenForo_Search_Indexer();
+    $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $thread);
+  }
+
+  protected function _deleteFromSearchIndex()
+  {
+    $dataHandler = $this->_getSearchDataHandler();
+    if (!$dataHandler)
+    {
+      return;
+    }
+
+    $indexer = new XenForo_Search_Indexer();
+    $dataHandler->deleteFromIndex($indexer, $this->getMergedData());
   }
 
   protected function _updateThreadMarkCount($isDelete = false)
@@ -127,6 +172,16 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
         'old_text' => $this->getExisting('label')
     ));
     $historyDw->save();
+  }
+
+  protected function _getSearchDataHandler()
+  {
+    return XenForo_Search_DataHandler_Abstract::create('Sidane_Threadmarks_Search_DataHandler_Threadmark');
+  }
+
+  protected function _getThreadModel()
+  {
+    return $this->getModelFromCache('XenForo_Model_Thread');
   }
 
   protected function _getThreadmarksModel()

@@ -227,6 +227,28 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", array($postId));
   }
 
+
+  public function getThreadMarkIdsInRange($start, $limit)
+  {
+    $db = $this->_getDb();
+
+    return $db->fetchCol($db->limit('
+      SELECT threadmark_id
+      FROM threadmarks
+      WHERE threadmark_id > ?
+      ORDER BY threadmark_id
+    ', $limit), $start);
+  }
+
+  public function getThreadMarkByIds($Ids)
+  {
+    return $this->fetchAllKeyed("
+      SELECT *
+      FROM threadmarks
+      WHERE threadmark_id IN (" . $this->_getDb()->quote($Ids) . ")
+    ",'threadmark_id');
+  }
+
   public function getByThreadIdWithPostDate($threadId) {
     return $this->fetchAllKeyed("
       SELECT threadmarks.*, post.post_date
