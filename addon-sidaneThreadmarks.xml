@@ -61,6 +61,7 @@
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
+    <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
     <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
@@ -201,7 +202,7 @@
 
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
-    <template title="threadmarks.css" version_id="3" version_string="1.0"><![CDATA[.PageNav.threadmarksSinglePage {
+    <template title="threadmarks.css" version_id="9" version_string="1.1.6"><![CDATA[.PageNav.threadmarksSinglePage {
   float: left;
   min-width: 0;
 }
@@ -237,6 +238,9 @@
   border-top-right-radius: 4px;
 }
 
+.threadmarker .history {
+}
+
 .threadmarker .label strong {
   color: {xen:property secondaryMedium};
   font-weight: bold;
@@ -251,9 +255,14 @@
   }
 }
 </xen:if>]]></template>
-    <template title="threadmarks_render_flag" version_id="3" version_string="1.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+    <template title="threadmarks_render_flag" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
   <div class="threadmarker">
     <span class="label"><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+    <xen:if is="{$threadmark.edit_count} && {$post.canEditThreadmarks}">
+	  <span class="title_history ToggleTriggerAnchor">
+		  <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false"><span></span>{xen:phrase threadmark_history}</a>
+      </span>
+    </xen:if>
   </div>
 </xen:if>]]></template>
   </templates>

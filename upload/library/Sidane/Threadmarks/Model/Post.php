@@ -14,7 +14,8 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
       if ($fetchOptions['join'] & Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS)
       {
         $joinOptions['selectFields'] .= ',
-          threadmarks.threadmark_id, threadmarks.label as threadmark_label, threadmarks.edit_count as threadmark_edit_count
+          threadmarks.threadmark_id, threadmarks.label as threadmark_label, threadmarks.edit_count as threadmark_edit_count,
+          threadmarks.user_id as threadmark_user_id
         ';
         $joinOptions['joinTables'] .= '
           LEFT JOIN threadmarks  ON
@@ -43,8 +44,10 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
         'threadmark_id' => $post['threadmark_id'],
         'label' => $post['threadmark_label'],
         'edit_count' => $post['threadmark_edit_count'],
+        'user_id' => $post['threadmark_user_id'],
       );
       unset($post['threadmark_id']);
+      unset($post['threadmark_user_id']);
       unset($post['threadmark_label']);
       unset($post['threadmark_edit_count']);
     }
