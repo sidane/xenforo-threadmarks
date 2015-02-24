@@ -54,18 +54,9 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
     $post['canViewThreadmarks'] = $threadmarkmodel->canViewThreadmark($thread, $null, $nodePermissions, $viewingUser);
 
     if (!empty($post['threadmark_id']))
-    {    
-      $post['threadmark'] = array
-      (
-        'threadmark_id' => $post['threadmark_id'],
-        'label' => $post['threadmark_label'],
-        'edit_count' => $post['threadmark_edit_count'],
-        'user_id' => $post['threadmark_user_id'],
-      );
-      unset($post['threadmark_id']);
-      unset($post['threadmark_user_id']);
-      unset($post['threadmark_label']);
-      unset($post['threadmark_edit_count']);
+    {
+      $post['threadmark'] = array('threadmark_id' => $post['threadmark_id']);
+      $threadmarkmodel->remapThreadmark($post, $post['threadmark']);
     }
 
     return $post;

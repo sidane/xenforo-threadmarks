@@ -15,17 +15,8 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
       if ($post)
       {
         $post['permissions'] = XenForo_Permission::unserializePermissions($post['node_permission_cache']);
-        $prefix = 'threadmark';
-        $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id');
-        foreach($remap as $remapItem)
-        {
-          $key = $prefix .'_'. $remapItem;
-          if (isset($post[$key]))
-          {
-            $post[$remapItem] = $post[$key];
-            unset($post[$key]);
-          }
-        }
+        $threadmarkModel = XenForo_Model::create('Sidane_Threadmarks_Model_Threadmarks');
+        $threadmarkModel->remapThreadmark($post,$post);
       }      
       return $post;
     }

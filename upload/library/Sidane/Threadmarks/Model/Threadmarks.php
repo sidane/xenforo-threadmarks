@@ -236,4 +236,19 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       ORDER BY threadmarks.position ASC
     ", 'post_id', $threadId);
   }
+  
+  public function remapThreadmark(array &$source, array &$dest)
+  {
+    $prefix = 'threadmark';
+    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id');
+    foreach($remap as $remapItem)
+    {
+      $key = $prefix .'_'. $remapItem;
+      if (isset($source[$key]))
+      {
+        $dest[$remapItem] = $source[$key];
+        unset($source[$key]);
+      }
+    }
+  }
 }
