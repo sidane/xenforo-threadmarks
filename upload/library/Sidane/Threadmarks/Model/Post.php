@@ -4,6 +4,7 @@
 class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
 {
   const FETCH_THREADMARKS = 0x80000; // hope this doesn't conflict
+  const FETCH_THREADMARKS_FULL = 0x180000; // this includes FETCH_THREADMARKS
 
   public function preparePostJoinOptions(array $fetchOptions)
   {
@@ -21,6 +22,21 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
           LEFT JOIN threadmarks  ON
             threadmarks.post_id = post.post_id
         ';
+
+        if (($fetchOptions['join'] & Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL) == Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL)
+        {
+          $joinOptions['selectFields'] .= ',
+            threadmarks.last_edit_date as threadmark_last_edit_date,
+            threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
+            threadmarks.post_date as threadmark_post_date,
+            tm_user.username as threadmark_username
+          ';
+          
+          $joinOptions['joinTables'] .= '
+            LEFT JOIN xf_user tm_user  ON
+              tm_user.user_id = threadmarks.user_id
+          ';
+        }
       }
     }
 

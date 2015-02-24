@@ -9,18 +9,23 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
       /* @var $postModel XenForo_Model_Post */
       $postModel = XenForo_Model::create('XenForo_Model_Post');
       $post = $postModel->getPostById($contentId, array(
-        'join' => XenForo_Model_Post::FETCH_FORUM | XenForo_Model_Post::FETCH_THREAD | XenForo_Model_Post::FETCH_USER |  Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS,
+        'join' => XenForo_Model_Post::FETCH_FORUM | XenForo_Model_Post::FETCH_THREAD | XenForo_Model_Post::FETCH_USER |  Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL,
         'permissionCombinationId' => $viewingUser['permission_combination_id']
       ));
       if ($post)
       {
         $post['permissions'] = XenForo_Permission::unserializePermissions($post['node_permission_cache']);
-        $post['label'] = $post['threadmark_label'];
-        $post['edit_count'] = $post['threadmark_edit_count'];
-        $post['user_id'] = $post['threadmark_user_id'];
-        unset($post['threadmark_label']);
-        unset($post['threadmark_edit_count']);
-        unset($post['threadmark_user_id']);
+        $prefix = 'threadmark';
+        $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id');
+        foreach($remap as $remapItem)
+        {
+          $key = $prefix .'_'. $remapItem;
+          if (isset($post[$key]))
+          {
+            $post[$remapItem] = $post[$key];
+            unset($post[$key]);
+          }
+        }
       }      
       return $post;
     }
@@ -92,10 +97,10 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
           // if previous is a mod edit, don't show as it may have been hidden
           $dw->set('last_edit_date', 0);
         }
-        else if ($previous && $previous['thread_title_edit_user_id'] == $content['user_id'])
+        else if ($previous && $previous['edit_user_id'] == $content['user_id'])
         {
-          $dw->set('edit_date', $previous['edit_date']);
-          $dw->set('edit_user_id', $previous['edit_user_id']);
+          $dw->set('last_edit_date', $previous['edit_date']);
+          $dw->set('last_edit_user_id', $previous['edit_user_id']);
         }
       }
 
