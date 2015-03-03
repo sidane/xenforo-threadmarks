@@ -68,6 +68,8 @@
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
+    <phrase title="x_created_threadmark_in_thread_z" version_id="9" version_string="1.1.6"><![CDATA[{name} created the threadmark {threadmark} in thread {title}]]></phrase>
+    <phrase title="x_created_threadmark_on_ys_post_in_thread_z" version_id="9" version_string="1.1.6"><![CDATA[{name} created the threadmark {threadmark} on {poster}'s post in thread {title}]]></phrase>
     <phrase title="you_do_not_have_permission_to_add_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to add threadmarks.]]></phrase>
     <phrase title="you_do_not_have_permission_to_delete_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to delete threadmarks.]]></phrase>
     <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
@@ -106,6 +108,33 @@
 
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 </form>]]></template>
+    <template title="news_feed_item_threadmark_insert" version_id="9" version_string="1.1.6"><![CDATA[<h3 class="description">
+
+	<xen:if is="{$content.user_id} == {$content.threadmark.user_id}">
+	
+		<xen:comment><!-- $user created a threadmark --></xen:comment>
+		{xen:phrase x_created_threadmark_in_thread_z,
+		    'threadmark=<a href="{xen:link posts, $content}">{$content.threadmark.label}</a>',
+			'name={xen:if $content.threadmark.user_id, {xen:helper username, $content.threadmark, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
+		    'poster={xen:helper username, $content, 'primaryText'}',
+			'title=<a href="{xen:link threads, $content}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link threads/preview, $content}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
+		
+	<xen:else />
+	
+		<xen:comment><!-- $user created a threadmark on $contentUser's post --></xen:comment>
+		{xen:phrase x_created_threadmark_on_ys_post_in_thread_z,
+            'threadmark=<a href="{xen:link posts, $content}">{$content.threadmark.label}</a>',
+		    'name={xen:if $content.threadmark.user_id, {xen:helper username, $content.threadmark, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
+			'poster={xen:helper username, $content, 'primaryText'}',
+			'title=<a href="{xen:link threads, $content}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link threads/preview, $content}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
+		
+	</xen:if>
+
+</h3>
+
+<p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
+
+<xen:include template="news_feed_attached_images" />]]></template>
     <template title="new_threadmark" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
