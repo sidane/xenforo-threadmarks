@@ -22,7 +22,7 @@ class Sidane_Threadmarks_Install
           post_date int not null default 0,
           position int not null default 0,
           message_state enum('visible','moderated','deleted') NOT NULL DEFAULT 'visible',
-          edit_count int not null default 0',
+          edit_count int not null default 0,
           last_edit_date int not null default 0,
           last_edit_user_id int not null default 0,
           label VARCHAR(255) NOT NULL,
