@@ -27,8 +27,8 @@ class Sidane_Threadmarks_Install
           last_edit_user_id int not null default 0,
           label VARCHAR(255) NOT NULL,
           UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`),
-          UNIQUE KEY `thread_position` (`thread_id`,`position`),
-          UNIQUE KEY `user_id` (`user_id`),
+          KEY `thread_position` (`thread_id`,`position`),
+          KEY `user_id` (`user_id`),
           UNIQUE KEY `post_id` (`post_id`)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci
       ");
