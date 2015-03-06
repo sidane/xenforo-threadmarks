@@ -65,6 +65,8 @@
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
     <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
     <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
+    <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[>>]]></phrase>
+    <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[<<]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
@@ -299,6 +301,33 @@
   font-weight: bold;
 }
 
+
+.threadmarker_nav_top {
+  display: inline-block;
+}
+
+.threadmarker_nav_top .previous {
+  padding-left: 4px;
+}
+
+.threadmarker_nav_top .next {
+  padding-left: 4px;
+}
+
+.threadmarker_nav_bottom {
+  overflow:hidden;
+  padding: 15px 0px 10px 0px;
+}
+
+.threadmarker_nav_bottom .previous {
+  float:left;
+}
+
+.threadmarker_nav_bottom .next {
+  float:right;
+}
+
+
 <xen:if is="{xen:property enableResponsive}">
 @media (max-width:{xen:property maxResponsiveWideWidth})
 {
@@ -308,6 +337,20 @@
   }
 }
 </xen:if>]]></template>
+    <template title="threadmarks_nav" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
+  <span class="previous"><a href="{xen:link posts/PreviousThreadmark, $post}">{xen:phrase threadmark_previous}</a></span>
+</xen:if>
+<xen:if is="{$threadmark.position} != {$thread.lastThreadmarkId}">
+  <span class="next"><a href="{xen:link posts/NextThreadmark, $post}">{xen:phrase threadmark_next}</a></span>
+</xen:if>]]></template>
+    <template title="threadmarks_nav_bottom" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+  <div class="threadmarker_nav_bottom">
+    <xen:include template="threadmarks_nav" />
+  </div>
+</xen:if>]]></template>
+    <template title="threadmarks_nav_top" version_id="9" version_string="1.1.6"><![CDATA[<div class="threadmarker_nav_top">
+  <xen:include template="threadmarks_nav" />
+</div>]]></template>
     <template title="threadmarks_render_flag" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
   <div class="threadmarker">
     <span class="label"><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
@@ -316,6 +359,7 @@
 		  <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false"><span></span>{xen:phrase threadmark_history}</a>
       </span>
     </xen:if>
+	<xen:include template="threadmarks_nav_top"/>
   </div>
 </xen:if>]]></template>
   </templates>
@@ -356,6 +400,13 @@ $0]]></replace>
 <xen:include template="threadmarks_render_flag">
   <xen:map from="$post.threadmark" to="$threadmark" />
 </xen:include>]]></replace>
+    </modification>
+    <modification template="message" modification_key="sidaneThreadmarksModification2" description="Add threadmark nav to bottem of the post" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:if is="{$message.last_edit_date}">]]></find>
+      <replace><![CDATA[<xen:include template="threadmarks_nav_bottom">
+  <xen:map from="$post.threadmark" to="$threadmark" />
+</xen:include>
+$0]]></replace>
     </modification>
   </public_template_modifications>
   <bb_code_media_sites/>

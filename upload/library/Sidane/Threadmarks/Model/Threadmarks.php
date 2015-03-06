@@ -191,6 +191,8 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
                                 FROM threadmarks
                                 JOIN xf_post AS post ON post.post_id = threadmarks.post_id
                                 where xf_thread.thread_id = threadmarks.thread_id and post.message_state = 'visible')
+           ,firstThreadmarkId = (SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
+           ,lastThreadmarkId = (SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
         WHERE thread_id = ?
     ", $thread_id);
   }
@@ -262,7 +264,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function remapThreadmark(array &$source, array &$dest)
   {
     $prefix = 'threadmark';
-    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id');
+    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id', 'position');
     foreach($remap as $remapItem)
     {
       $key = $prefix .'_'. $remapItem;
@@ -272,5 +274,29 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         unset($source[$key]);
       }
     }
+  }
+
+  public function getNextThreadmark($threadmark)
+  {
+    return $this->_getDb()->fetchRow("
+      select threadmarks.*
+      from threadmarks
+      where thread_id = ? and position > ? and 
+            threadmarks.message_state = 'visible'
+      order by position
+      limit 1
+    ", array($threadmark['thread_id'], $threadmark['position']));
+  }
+
+  public function getPreviousThreadmark($threadmark)
+  {
+    return $this->_getDb()->fetchRow("
+      select threadmarks.*
+      from threadmarks
+      where threadmarks.thread_id = ? and position < ? and 
+            threadmarks.message_state = 'visible'
+      order by position desc
+      limit 1
+    ", array($threadmark['thread_id'], $threadmark['position']));
   }
 }
