@@ -64,6 +64,7 @@
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
     <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
+    <phrase title="threadmark_index" version_id="9" version_string="1.1.6"><![CDATA[Index]]></phrase>
     <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
     <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[>>]]></phrase>
     <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[<<]]></phrase>
@@ -306,27 +307,49 @@
   display: inline-block;
 }
 
-.threadmarker_nav_top .previous {
-  padding-left: 4px;
-}
-
-.threadmarker_nav_top .next {
-  padding-left: 4px;
-}
-
 .threadmarker_nav_bottom {
   overflow:hidden;
   padding: 15px 0px 10px 0px;
 }
 
-.threadmarker_nav_bottom .previous {
-  float:left;
-}
-
-.threadmarker_nav_bottom .next {
+.threadmarker_nav_bottom .next
+{
   float:right;
 }
 
+
+.threadmarker_nav_bottom .previous a,
+.threadmarker_nav_bottom .index a,
+.threadmarker_nav_bottom .next a,
+.threadmarker_nav_top .previous a,
+.threadmarker_nav_top .index a,
+.threadmarker_nav_top .next a
+{
+  text-decoration: none;
+  padding: 3px 8px 3px 6px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: {xen:property primaryLighterStill};
+}
+
+.threadmarker_nav_bottom .previous a,
+.threadmarker_nav_bottom .index a,
+.threadmarker_nav_bottom .next a
+{
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.threadmarker_nav_bottom .previous a:hover,
+.threadmarker_nav_bottom .index a:hover,
+.threadmarker_nav_bottom .next a:hover,
+.threadmarker_nav_top .previous a:hover,
+.threadmarker_nav_top .index a:hover,
+.threadmarker_nav_top .next a:hover
+{
+  color: black;
+  background-color: white;
+}
 
 <xen:if is="{xen:property enableResponsive}">
 @media (max-width:{xen:property maxResponsiveWideWidth})
@@ -340,6 +363,9 @@
     <template title="threadmarks_nav" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
   <span class="previous"><a href="{xen:link posts/PreviousThreadmark, $post}">{xen:phrase threadmark_previous}</a></span>
 </xen:if>
+<!--
+<span class="index"><a href="{xen:link 'threads/threadmarks', $thread}" rel="nofollow">{xen:phrase threadmark_index}</a></span>
+-->
 <xen:if is="{$threadmark.position} != {$thread.lastThreadmarkId}">
   <span class="next"><a href="{xen:link posts/NextThreadmark, $post}">{xen:phrase threadmark_next}</a></span>
 </xen:if>]]></template>
