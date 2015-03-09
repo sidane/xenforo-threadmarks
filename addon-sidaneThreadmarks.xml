@@ -348,8 +348,10 @@
 .threadmarker_nav_top .index a:hover,
 .threadmarker_nav_top .next a:hover
 {
-  color: black;
-  background-color: white;
+  color: {xen:property secondaryDark };
+  text-decoration: none;
+  background-color: {xen:property secondaryLighter };
+  border-color: {xen:property secondaryLight };
 }
 
 <xen:if is="{xen:property enableResponsive}">
