@@ -174,8 +174,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->_db->query('
         UPDATE xf_thread
         SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0)
-           ,firstThreadmarkId = (SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
-           ,lastThreadmarkId = (SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
         WHERE thread_id = ?
       ', $this->get('thread_id'));
     }
@@ -184,8 +184,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->_db->query('
         UPDATE xf_thread
         SET threadmark_count = threadmark_count + 1
-           ,firstThreadmarkId = (SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
-           ,lastThreadmarkId = (SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
         WHERE thread_id = ?
       ', $this->get('thread_id'));
     }

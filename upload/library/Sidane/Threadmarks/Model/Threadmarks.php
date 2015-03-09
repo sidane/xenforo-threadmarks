@@ -191,8 +191,8 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
                                 FROM threadmarks
                                 JOIN xf_post AS post ON post.post_id = threadmarks.post_id
                                 where xf_thread.thread_id = threadmarks.thread_id and post.message_state = 'visible')
-           ,firstThreadmarkId = (SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
-           ,lastThreadmarkId = (SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id )
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0)
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
         WHERE thread_id = ?
     ", $thread_id);
   }
