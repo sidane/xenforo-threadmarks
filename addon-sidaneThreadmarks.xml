@@ -283,18 +283,19 @@
 .threadmarker {
   margin: 0 0 10px 0;
   border-bottom: 1px solid {xen:property primaryLighterStill};
+  display:flex;	
 }
 
 .threadmarker .label {
   display: inline-block;
+  wordwrap: broken-word;
+  word-break: break-word;
   padding: 3px 8px 2px 6px;
   color: {xen:property contentText};
   background-color: {xen:property primaryLighterStill};
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-}
-
-.threadmarker .history {
+  max-width: 75%;
 }
 
 .threadmarker .label strong {
@@ -302,32 +303,46 @@
   font-weight: bold;
 }
 
+.threadmarker .history
+{
+  align-self: flex-end;
+}
 
 .threadmarker_nav_top {
-  display: inline-block;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-self: flex-end;
+  margin-left:auto;
 }
 
 .threadmarker_nav_bottom {
   overflow:hidden;
-  padding: 15px 0px 10px 0px;
+  float:none;
+  text-align:center;
+  padding: 15px 0px 5px 0px;
 }
 
+.threadmarker_nav_bottom .previous
+{
+  float:left;
+}
 .threadmarker_nav_bottom .next
 {
   float:right;
 }
-
 
 .threadmarker_nav_bottom .previous a,
 .threadmarker_nav_bottom .index a,
 .threadmarker_nav_bottom .next a,
 .threadmarker_nav_top .previous a,
 .threadmarker_nav_top .index a,
-.threadmarker_nav_top .next a
+.threadmarker_nav_top .next a,
+.threadmarker .history a
 {
   text-decoration: none;
   display: inline-block;
   padding: 3px 8px 2px 6px;
+  margin: 0 0 0 4px;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   background-color: {xen:property primaryLighterStill};
@@ -339,6 +354,7 @@
 {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+  margin: 0 0 0 0;
 }
 
 .threadmarker_nav_bottom .previous a:hover,
@@ -346,12 +362,22 @@
 .threadmarker_nav_bottom .next a:hover,
 .threadmarker_nav_top .previous a:hover,
 .threadmarker_nav_top .index a:hover,
-.threadmarker_nav_top .next a:hover
+.threadmarker_nav_top .next a:hover,
+.threadmarker .history a:hover
 {
-  color: {xen:property secondaryDark };
+  color: {xen:property secondaryDark};
   text-decoration: none;
-  background-color: {xen:property secondaryLighter };
-  border-color: {xen:property secondaryLight };
+  margin: 0 0 0 4px;
+  background-color: {xen:property secondaryLighter};
+  border-color: {xen:property secondaryLight};
+}
+.threadmarker_nav_bottom .previous a:hover,
+.threadmarker_nav_bottom .index a:hover,
+.threadmarker_nav_bottom .next a:hover
+{
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin: 0 0 0 0;
 }
 
 <xen:if is="{xen:property enableResponsive}">
@@ -361,14 +387,36 @@
     clear: left;
     margin-top: 7px;
   }
+  .threadmarker .label {
+    max-width: 67%;
+  }
+}
+@media (max-width:{xen:property maxResponsiveMediumWidth})
+{
+  .threadmarker_nav_top .index
+  {
+    display: none;
+  }
+  .threadmarker .label {
+    max-width: 63%;
+  }
+}
+@media (max-width:{xen:property maxResponsiveNarrowWidth})
+{
+  .threadmarker_nav_top .index
+  {
+    display: none;
+  }
+  .threadmarker .label 
+  {
+    max-width:60%;
+  }
 }
 </xen:if>]]></template>
     <template title="threadmarks_nav" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
   <span class="previous"><a href="{xen:link posts/PreviousThreadmark, $post}">{xen:phrase threadmark_previous}</a></span>
 </xen:if>
-<!--
-<span class="index"><a href="{xen:link 'threads/threadmarks', $thread}" rel="nofollow">{xen:phrase threadmark_index}</a></span>
--->
+<span class="index"><a href="{xen:link 'threads/threadmarks', $thread}" rel="nofollow" class="OverlayTrigger">{xen:phrase threadmark_index}</a></span>
 <xen:if is="{$threadmark.position} != {$thread.lastThreadmarkId}">
   <span class="next"><a href="{xen:link posts/NextThreadmark, $post}">{xen:phrase threadmark_next}</a></span>
 </xen:if>]]></template>
@@ -381,14 +429,14 @@
   <xen:include template="threadmarks_nav" />
 </div>]]></template>
     <template title="threadmarks_render_flag" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
-  <div class="threadmarker">
+  <div class="threadmarker ToggleTriggerAnchor">
     <span class="label"><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
     <xen:if is="{$threadmark.edit_count} && {$post.canEditThreadmarks}">
-	  <span class="title_history ToggleTriggerAnchor">
-		  <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false"><span></span>{xen:phrase threadmark_history}</a>
+      <span class="history">
+        <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false">{xen:phrase threadmark_history}</a>
       </span>
     </xen:if>
-	<xen:include template="threadmarks_nav_top"/>
+    <xen:include template="threadmarks_nav_top"/>
   </div>
 </xen:if>]]></template>
   </templates>
