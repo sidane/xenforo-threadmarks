@@ -318,17 +318,8 @@
 .threadmarker_nav_bottom {
   overflow:hidden;
   float:none;
-  text-align:center;
+  text-align:right;
   padding: 15px 0px 5px 0px;
-}
-
-.threadmarker_nav_bottom .previous
-{
-  float:left;
-}
-.threadmarker_nav_bottom .next
-{
-  float:right;
 }
 
 .threadmarker_nav_bottom .previous a,
@@ -393,23 +384,52 @@
 }
 @media (max-width:{xen:property maxResponsiveMediumWidth})
 {
-  .threadmarker_nav_top .index
-  {
-    display: none;
-  }
   .threadmarker .label {
     max-width: 63%;
   }
 }
 @media (max-width:{xen:property maxResponsiveNarrowWidth})
 {
-  .threadmarker_nav_top .index
-  {
-    display: none;
+  .threadmarker {
+    flex-wrap: wrap;
   }
   .threadmarker .label 
   {
-    max-width:60%;
+    display: block;
+    max-width: 100% ;
+    width:100%;
+  }
+  .threadmarker_nav_top {
+  
+  }
+  .threadmarker .history{
+  
+  }
+  .threadmarker .history a
+  {
+    margin:0 0 0 0 ;
+  }
+  .threadmarker .history a:hover
+  {
+    margin:0 0 0 0 ;
+  }
+  .threadmarker_nav_top .previous a,
+  .threadmarker_nav_top .index a,
+  .threadmarker_nav_top .next a,
+  .threadmarker .history a
+  {
+    
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  .threadmarker_nav_top .previous a:hover,
+  .threadmarker_nav_top .index a:hover,
+  .threadmarker_nav_top .next a:hover,
+  .threadmarker .history a
+  {
+    
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
   }
 }
 </xen:if>]]></template>
