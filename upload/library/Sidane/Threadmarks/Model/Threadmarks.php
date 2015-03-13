@@ -264,7 +264,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function remapThreadmark(array &$source, array &$dest)
   {
     $prefix = 'threadmark';
-    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id', 'position');
+    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id', 'position','post_date');
     foreach($remap as $remapItem)
     {
       $key = $prefix .'_'. $remapItem;
