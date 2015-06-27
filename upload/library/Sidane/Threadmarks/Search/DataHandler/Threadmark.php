@@ -172,6 +172,11 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
         // matched first post and thread, skip the post
         unset($posts[$postId]);
       }
+      if (empty($post['threadmark_id']))
+      {
+        // no threadmark is actually on this post
+        unset($posts[$postId]);
+      }
     }
 
     return $posts;
