@@ -2,6 +2,35 @@
 
 class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_ControllerPublic_Post
 {
+  public function actionThreadmarkPreview()
+  {
+    $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    
+    try
+    {
+      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
+    }
+    catch(Exception $e) {
+      return $this->responseView('XenForo_ViewPublic_Thread_Preview', '', array('post' => false));
+    }
+    
+    $threadmarksModel = $this->_getThreadmarksModel();
+    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
+    
+    if (empty($threadmark)) {
+      return $this->responseView('XenForo_ViewPublic_Thread_Preview', '', array('post' => false));
+    }
+    
+    $viewParams = array(
+      'threadmark' => $threadmark,
+      'post' => $post,
+      'thread' => $thread,
+      'forum' => $forum
+    );
+
+    return $this->responseView('XenForo_ViewPublic_Thread_Preview', 'threadmark_preview', $viewParams);
+  }
 
   public function actionThreadmark()
   {

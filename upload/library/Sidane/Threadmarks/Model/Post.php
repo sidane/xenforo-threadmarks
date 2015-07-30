@@ -40,6 +40,79 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
     return $joinOptions;
   }
 
+  public function getPermissionBasedPostFetchOptions(array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
+  {
+    $fetchOptions = parent::getPermissionBasedPostFetchOptions($thread, $forum, $nodePermissions, $viewingUser);
+
+    if (!empty($thread['firstThreadmarkId']) || !empty($thread['lastThreadmarkId']))
+    {
+      $fetchOptions['threadmarks'] = array
+      (
+        'firstThreadmarkId' => $thread['firstThreadmarkId'],
+        'lastThreadmarkId' => $thread['lastThreadmarkId'],
+      );
+    }
+
+    return $fetchOptions;
+  }
+
+  public function getPostsInThread($threadId, array $fetchOptions = array())
+  {
+    $posts = parent::getPostsInThread($threadId, $fetchOptions);
+
+    if (empty($fetchOptions['threadmarks']))
+    {
+      return $posts;
+    }
+
+    // wire up the previous & next threadmark links. Except for the very first & very last threadmark links
+    $previous_link = null;
+    $threadmarks = array();
+    foreach ($posts AS &$post)
+    {
+      if (empty($post['threadmark_id']))
+      {
+        continue;
+      }
+
+      $post['threadmark_previous'] = $previous_link;
+      $threadmarks[] = $previous_link = array
+      (
+        'post_id' => $post['post_id'],
+        'position' => $post['position'] ? $post['position'] : 1,
+        'threadmark_id' => $post['threadmark_id'],
+        'threadmark_position' => $post['threadmark_position'],
+      );
+    }
+
+    $last_index = count($threadmarks) - 1;
+    if ($last_index == -1)
+    {
+      return $posts;
+    }
+    for ($i = $last_index; $i >= 0; $i--)
+    {
+      $nextId = $i + 1;
+      $posts[$threadmarks[$i]['post_id']]['threadmark_next'] = isset($threadmarks[$nextId]) ? $threadmarks[$nextId] : null;
+    }
+
+    // Query for the first very or very last threadmark links.
+    $threadmarkmodel = $this->_getThreadmarksModel();
+    $lastThreadmark = $threadmarks[$last_index];
+    if ($lastThreadmark['threadmark_id'] != $fetchOptions['threadmarks']['lastThreadmarkId'])
+    {
+      $posts[$lastThreadmark['post_id']]['threadmark_next'] = $threadmarkmodel->getNextThreadmark(array('thread_id' => $threadId, 'position' => $lastThreadmark['threadmark_position']));
+    }
+
+    $firstThreadmark = $threadmarks[0];
+    if ($firstThreadmark['threadmark_id'] != $fetchOptions['threadmarks']['firstThreadmarkId'])
+    {
+      $posts[$firstThreadmark['post_id']]['threadmark_previous'] = $threadmarkmodel->getPreviousThreadmark(array('thread_id' => $threadId, 'position' => $firstThreadmark['threadmark_position']));
+    }
+
+    return $posts;
+  }
+
   public function preparePost(array $post, array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
   {
     $post = parent::preparePost($post, $thread, $forum, $nodePermissions, $viewingUser);
