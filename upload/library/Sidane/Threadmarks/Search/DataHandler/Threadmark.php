@@ -39,7 +39,7 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
     $indexer->insertIntoIndex(
       'threadmark', $data['post_id'],
       $title, $data['label'],
-      $data['post_date'], $data['user_id'], $data['thread_id'], $metadata
+      $data['threadmark_date'], $data['user_id'], $data['thread_id'], $metadata
     );
   }
 
@@ -226,7 +226,12 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
    */
   public function getResultDate(array $result)
   {
-    return $result['post_date'];
+    // getResultDate can be called on data which hasn't been prepared for display
+    if (isset($result['threadmark_threadmark_date']))
+    {
+      return $result['threadmark_threadmark_date'];
+    }
+    return $result['threadmark']['threadmark_date'];
   }
 
   /**

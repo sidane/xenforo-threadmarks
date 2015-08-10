@@ -9,7 +9,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       'threadmarks' => array(
         'threadmark_id'          => array('type' => self::TYPE_UINT, 'autoIncrement' => true),
         'user_id'                => array('type' => self::TYPE_UINT, 'required' => true),
-        'post_date'              => array('type' => self::TYPE_UINT, 'required' => true, 'default' => XenForo_Application::$time),
+        'threadmark_date'        => array('type' => self::TYPE_UINT, 'required' => true, 'default' => XenForo_Application::$time),
         'thread_id'              => array('type' => self::TYPE_UINT, 'required' => true),
         'post_id'                => array('type' => self::TYPE_UINT, 'required' => true),
         'label'                  => array('type' => self::TYPE_STRING, 'required' => true, 'maxLength' => 255,

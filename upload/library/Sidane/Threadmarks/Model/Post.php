@@ -26,7 +26,7 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
         $joinOptions['selectFields'] .= ',
           threadmarks.last_edit_date as threadmark_last_edit_date,
           threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
-          threadmarks.post_date as threadmark_post_date,
+          threadmarks.threadmark_date as threadmark_threadmark_date,
           tm_user.username as threadmark_username
         ';
           
@@ -127,6 +127,7 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
     {
       $post['threadmark'] = array('threadmark_id' => $post['threadmark_id']);
       $threadmarkmodel->remapThreadmark($post, $post['threadmark']);
+      $post['threadmark'] = $threadmarkmodel->prepareThreadmark($post['threadmark'], $thread, $forum, $nodePermissions, $viewingUser);
     }
 
     return $post;

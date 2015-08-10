@@ -19,15 +19,15 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
   {
     $parent = parent::actionIndex();
 
-    if (get_class($parent) == 'XenForo_ControllerResponse_Redirect') {
-      return $parent;
-    }
-
-    $threadmarksHelper = $this->_threadmarksHelper();
-    $recentThreadmarks = $threadmarksHelper->getRecentThreadmarks($parent->params['thread']);
-    if (!empty($recentThreadmarks)) {
-      $parent->params['singlePageThread'] = $parent->params['totalPosts'] <= $parent->params['postsPerPage'];
-      $parent->params['thread']['recentThreadmarks'] = $recentThreadmarks;
+    if ($parent instanceof XenForo_ControllerResponse_View && 
+        !empty($parent->params['thread']) && !empty($parent->params['forum']))
+    {
+        $threadmarksHelper = $this->_threadmarksHelper();
+        $recentThreadmarks = $threadmarksHelper->getRecentThreadmarks($parent->params['thread'], $parent->params['forum']);
+        if (!empty($recentThreadmarks)) {
+          $parent->params['singlePageThread'] = $parent->params['totalPosts'] <= $parent->params['postsPerPage'];
+          $parent->params['thread']['recentThreadmarks'] = $recentThreadmarks;
+        }
     }
 
     return $parent;
@@ -37,11 +37,20 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
   {
     $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
 
+    $visitor = XenForo_Visitor::getInstance();
+    $threadFetchOptions = array(
+      'readUserId' => $visitor['user_id'],
+    );
+    $forumFetchOptions = array(
+      'readUserId' => $visitor['user_id'],
+    );
     $ftpHelper = $this->getHelper('ForumThreadPost');
-    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
+    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId, $threadFetchOptions, $forumFetchOptions);
     $threadmarksModel = $this->_getThreadmarksModel();
     if (!empty($thread['threadmark_count']) && $threadmarksModel->canViewThreadmark($thread)) {
-      $threadmarks = $threadmarksModel->getByThreadIdWithPostDate($thread['thread_id']);
+      $threadmarks = $threadmarksModel->getByThreadIdWithMinimalPostData($thread['thread_id']);
+
+      $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
 
       $viewParams = array(
         'forum' => $forum,

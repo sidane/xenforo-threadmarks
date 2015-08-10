@@ -138,6 +138,11 @@ class Sidane_Threadmarks_Install
       XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
 
+    if ($version < 11)
+    {
+      self::renameColumn('threadmarks', 'post_date', 'threadmark_date', 'int not null default 0');
+    }
+
     XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
   }
 
@@ -211,6 +216,16 @@ class Sidane_Threadmarks_Install
     if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
     {
       $db->query('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
+    }
+  }
+
+  public static function renameColumn($table, $old_name, $new_name, $definition)
+  {
+    $db = XenForo_Application::get('db');
+    if ($db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $old_name) &&
+    !$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $new_name))
+    {
+      $db->query('ALTER TABLE `'.$table.'` CHANGE COLUMN `'.$old_name.'` `'.$new_name.'` '. $definition);
     }
   }
 

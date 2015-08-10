@@ -3,7 +3,7 @@
 class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_ControllerHelper_Abstract
 {
 
-  public function getRecentThreadmarks($thread) {
+  public function getRecentThreadmarks(array $thread, array $forum) {
 
     if (!empty($thread['threadmark_count'])) {
       $threadmarksModel = $this->_controller->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
@@ -19,6 +19,7 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
         return null;
       }
 
+      $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
       $threadmarksParams = $this->_buildThreadmarksParams();
       $totalThreadmarks = $threadmarksParams['count'] = $thread['threadmark_count'];
 
