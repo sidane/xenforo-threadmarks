@@ -171,23 +171,23 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       && ($this->get('message_state') != 'visible' || $isDelete)
     )
     {
-      $this->_db->query('
+      $this->_db->query("
         UPDATE xf_thread
         SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0)
-           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
-           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
         WHERE thread_id = ?
-      ', $this->get('thread_id'));
+      ", $this->get('thread_id'));
     }
     else if ($this->get('message_state') == 'visible' && $this->getExisting('message_state') != 'visible')
     {
-      $this->_db->query('
+      $this->_db->query("
         UPDATE xf_thread
         SET threadmark_count = threadmark_count + 1
-           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
-           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id), 0 )
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
         WHERE thread_id = ?
-      ', $this->get('thread_id'));
+      ", $this->get('thread_id'));
     }
   }
 
