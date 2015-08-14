@@ -165,11 +165,12 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     else
     {
       $position  = $db->fetchOne("
-        SELECT position
-        FROM xf_post
-        where post_id = ?
-        limit 1
-      ", array($post['post_id']));
+        select position + 1
+        from threadmarks
+        where thread_id = ? 
+        order by position desc  
+        limit 1;
+      ", array($thread_id));
 
       $dw->set('user_id', XenForo_Visitor::getUserId());
       $dw->set('post_id', $post['post_id']);
@@ -224,7 +225,6 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         join xf_post AS post on post.post_id = marks.post_id
         set marks.thread_id = post.thread_id
            ,marks.message_state = post.message_state
-           ,marks.position = post.position
         where (post.thread_id = ? or marks.thread_id = ?);
     ', array($thread_id,$thread_id));
 
