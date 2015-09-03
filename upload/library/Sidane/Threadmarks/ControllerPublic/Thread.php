@@ -19,7 +19,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
   {
     $parent = parent::actionIndex();
 
-    if ($parent instanceof XenForo_ControllerResponse_View && 
+    if ($parent instanceof XenForo_ControllerResponse_View &&
         !empty($parent->params['thread']) && !empty($parent->params['forum']))
     {
         $threadmarksHelper = $this->_threadmarksHelper();
@@ -31,6 +31,40 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     }
 
     return $parent;
+  }
+
+  public function actionThreadmarksDisplayOrder()
+  {
+    $this->_assertPostOnly();
+
+    $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
+    $order = $this->_input->filterSingle('order', XenForo_Input::ARRAY_SIMPLE);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
+
+    $threadmarksModel = $this->_getThreadmarksModel();
+    if (empty($thread['threadmark_count']) || !$threadmarksModel->canViewThreadmark($thread)) {
+      return $this->getNotFoundResponse();
+    }
+
+    $threadmarks = $threadmarksModel->getByThreadIdWithMinimalPostData($thread['thread_id']);
+    $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
+
+    foreach($threadmarks as &$threadmark)
+    {
+        if (empty($threadmark['canEdit']))
+        {
+            return $this->getNoPermissionResponseException();
+        }
+    }
+
+    $threadmarksModel->massUpdateDisplayOrder($thread['thread_id'], $order);
+
+    return $this->responseRedirect(
+      XenForo_ControllerResponse_Redirect::SUCCESS,
+      XenForo_Link::buildAdminLink('thread/threadmarks')
+    );
   }
 
   public function actionThreadmarks()

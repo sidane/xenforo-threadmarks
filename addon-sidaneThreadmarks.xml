@@ -244,7 +244,15 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="12" version_string="1.1.8a"><![CDATA[<xen:require css="threadmarks.css"/>
+    <template title="threadmarks" version_id="12" version_string="1.1.8c"><![CDATA[<xen:require css="threadmarks.css"/>
+<xen:if is="{$debugMode}">
+<xen:require js="js/sortable/jquery.sortable.js" />
+<xen:require js="js/sidane/threadmarks/threadmarkList.js" />
+<xen:else />
+<xen:require js="js/sortable/jquery.sortable.min.js" />
+<xen:require js="js/sidane/threadmarks/threadmarkList.min.js" />
+</xen:if>
+
 <xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
@@ -260,9 +268,9 @@
 </xen:navigation>
 
 <div class="section">
-  <ol class="overlayScroll">
+  <ol class="overlayScroll ThreadmarkSortable" data-sort-url="{xen:link threads/threadmarks-display-order, $thread}">
     <xen:foreach loop="$threadmarks" value="$threadmark">
-      <li class="primaryContent memberListItem threadmark_item">
+      <li class="primaryContent memberListItem threadmarkItem {xen:if {$threadmark.canEdit}, 'sortableItem',''}" data-item-id="{$threadmark.threadmark_id}">
         <xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
         <a href="{xen:link threads/post-permalink, $thread, 'post={$threadmark.post}'}"
            class="{xen:if $thread.hasPreview, PreviewTooltip}"
@@ -278,7 +286,7 @@
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
   <xen:include template="preview_tooltip" />
 </div>]]></template>
-    <template title="threadmarks.css" version_id="11" version_string="1.1.8"><![CDATA[.PageNav.threadmarksSinglePage {
+    <template title="threadmarks.css" version_id="12" version_string="1.1.8c"><![CDATA[.PageNav.threadmarksSinglePage {
   float: left;
   min-width: 0;
 }
@@ -479,17 +487,21 @@
 }
 </xen:if>
 
-.threadmark_item .newIndicator
+.threadmarkItem .newIndicator
 {
     {xen:property messageNewIndicator}
     border-top-right-radius: 3px; 
     margin: 0px 0px 5px 5px;
     box-shadow: 1px 1px 1px rgba(0,0,0, 0.25);
 }
-.threadmark_item .newIndicator span
+.threadmarkItem .newIndicator span
 {
     {xen:property messageNewIndicatorInner}
     border-top-right-radius: 0px; 
+}
+
+.sortableItem
+{
 }]]></template>
     <template title="threadmarks_nav" version_id="10" version_string="1.1.7c"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
 <xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
