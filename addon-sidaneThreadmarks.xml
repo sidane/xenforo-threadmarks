@@ -502,6 +502,16 @@
 
 .sortableItem
 {
+    border-color: {xen:property primaryMedium};
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 6px;
+    margin: 1px 1px 1px 1px ;
+}
+
+.sortable-placeholder
+{
+	background-color: {xen:property primaryLighter};
 }]]></template>
     <template title="threadmarks_nav" version_id="10" version_string="1.1.7c"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
 <xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
