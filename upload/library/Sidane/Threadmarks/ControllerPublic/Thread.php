@@ -63,7 +63,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
 
     return $this->responseRedirect(
       XenForo_ControllerResponse_Redirect::SUCCESS,
-      XenForo_Link::buildAdminLink('thread/threadmarks')
+      XenForo_Link::buildPublicLink('threads/threadmarks', $thread)
     );
   }
 
