@@ -44,6 +44,8 @@
   </permissions>
   <phrases>
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
+    <phrase title="click_to_lock" version_id="12" version_string="1.1.8c"><![CDATA[Click to unlock]]></phrase>
+    <phrase title="click_to_unlock" version_id="12" version_string="1.1.8c"><![CDATA[Click to unlock]]></phrase>
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[Edit Threadmark]]></phrase>
     <phrase title="moderator_log_post_create_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' created]]></phrase>
@@ -245,22 +247,18 @@
   </div>
 </xen:if>]]></template>
     <template title="threadmarks" version_id="12" version_string="1.1.8c"><![CDATA[<xen:require css="threadmarks.css"/>
-<xen:if is="{$debugMode}">
-<xen:require js="js/sortable/jquery.sortable.js" />
-<xen:require js="js/sidane/threadmarks/threadmarkList.js" />
-<xen:else />
-<xen:require js="js/sortable/jquery.sortable.min.js" />
-<xen:require js="js/sidane/threadmarks/threadmarkList.min.js" />
-</xen:if>
-
 <xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
-<xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
+<xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}
+    <i class="fa fa-unlock Tooltip" style="display:none" title="{xen:phrase click_to_lock}"></i>
+    <i class="fa fa-lock Tooltip" style="display:none" title="{xen:phrase click_to_unlock}"></i>
+</xen:h1>
 
 <xen:container var="$head.noindex">
   <meta name="robots" content="noindex" />
 </xen:container>
 
+<xen:set var="$canEditThreadMarks">0</xen:set>
 <xen:navigation>
   <xen:breadcrumb source="$nodeBreadCrumbs" />
   <xen:breadcrumb href="{xen:link full:forums, $forum}">{$forum.title}</xen:breadcrumb>
@@ -270,7 +268,10 @@
 <div class="section">
   <ol class="overlayScroll ThreadmarkSortable" data-sort-url="{xen:link threads/threadmarks-display-order, $thread}">
     <xen:foreach loop="$threadmarks" value="$threadmark">
-      <li class="primaryContent memberListItem threadmarkItem {xen:if {$threadmark.canEdit}, 'sortableItem',''}" data-item-id="{$threadmark.threadmark_id}">
+      <xen:if is="!{$canEditThreadMarks} and {$threadmark.canEdit}">
+        <xen:set var="$canEditThreadMarks">1</xen:set>
+      </xen:if>
+      <li class="primaryContent memberListItem threadmarkItem {xen:if {$threadmark.canEdit}, 'editableItem',''}" data-item-id="{$threadmark.threadmark_id}">
         <xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
         <a href="{xen:link threads/post-permalink, $thread, 'post={$threadmark.post}'}"
            class="{xen:if $thread.hasPreview, PreviewTooltip}"
@@ -285,7 +286,38 @@
 
   <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
   <xen:include template="preview_tooltip" />
-</div>]]></template>
+</div>
+
+<xen:if is="{$canEditThreadMarks}">
+<xen:if is="{$debugMode}">
+<xen:require js="js/sortable/jquery.sortable.js" />
+<xen:require js="js/sidane/threadmarks/threadmarkList.js" />
+<xen:else />
+<xen:require js="js/sortable/jquery.sortable.min.js" />
+<xen:require js="js/sidane/threadmarks/threadmarkList.min.js" />
+</xen:if>
+<script>
+!function($, window, document, _undefined)
+{
+  $(".fa-lock").show();
+  $(".fa-unlock").click(function(){
+    $(".fa-unlock").hide();
+    var $threadmarkList = $(".ThreadmarkSortable");    
+    $threadmarkList.sortable('destroy');
+    $threadmarkList.find(".sortableItem").removeClass("sortableItem");
+    $(".fa-lock").show();
+  });
+  $(".fa-lock").click(function(){
+    $(".fa-lock").hide();        
+    var $threadmarkList = $(".ThreadmarkSortable");
+    $threadmarkList.find(".editableItem").addClass("sortableItem");
+    XenForo.ThreadmarkSortable($threadmarkList);
+    $(".fa-unlock").show();
+  });
+}
+(jQuery, this, document);
+</script>
+</xen:if>]]></template>
     <template title="threadmarks.css" version_id="12" version_string="1.1.8c"><![CDATA[.PageNav.threadmarksSinglePage {
   float: left;
   min-width: 0;
@@ -500,7 +532,7 @@
     border-top-right-radius: 0px; 
 }
 
-.sortableItem
+ol.ThreadmarkSortable .sortableItem
 {
     border-color: {xen:property primaryMedium};
     border-style: solid;
@@ -509,7 +541,7 @@
     margin: 1px 1px 1px 1px ;
 }
 
-.sortable-placeholder
+ol.ThreadmarkSortable .sortable-placeholder
 {
 	background-color: {xen:property primaryLighter};
 }]]></template>
