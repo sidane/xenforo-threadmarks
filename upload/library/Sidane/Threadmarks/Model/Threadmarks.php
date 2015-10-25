@@ -154,7 +154,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", array($id));
   }
 
-  public function setThreadMark($thread, $post, $label) {
+  public function setThreadMark($thread, $post, $label, $add_last = true) {
     $db = $this->_getDb();
 
     XenForo_Db::beginTransaction($db);
@@ -167,14 +167,32 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     }
     else
     {
-      $position  = $db->fetchOne("
-        select position + 1
-        from threadmarks
-        where thread_id = ?
-        order by position desc
-        limit 1;
-      ", array($thread['thread_id']));
-
+      $position = null;
+      if (!$add_last)
+      {
+        $position = $db->fetchOne("
+          select threadmarks.position + 1
+          from xf_post AS post
+          join threadmarks on threadmarks.post_id = post.post_id
+          where post.thread_id = ? and post.position < ?
+          order by threadmarks.position desc
+          limit 1;
+        ", array($thread['thread_id'], $post['position']));
+      }
+      if ($position === null)
+      {
+        $position = $db->fetchOne("
+          select position + 1
+          from threadmarks
+          where thread_id = ?
+          order by position desc
+          limit 1;
+        ", array($thread['thread_id']));
+      }
+      if ($position === null)
+      {
+        $position = 0;
+      }
       $dw->set('user_id', XenForo_Visitor::getUserId());
       $dw->set('post_id', $post['post_id']);
       $dw->set('position', $position);
@@ -236,8 +254,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         UPDATE xf_thread
         SET threadmark_count = (SELECT count(threadmarks.threadmark_id)
                                 FROM threadmarks
-                                JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-                                where xf_thread.thread_id = threadmarks.thread_id and post.message_state = 'visible')
+                                where xf_thread.thread_id = threadmarks.thread_id and threadmarks.message_state = 'visible')
         WHERE thread_id = ?
     ", $thread_id);
 
@@ -306,7 +323,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       SELECT post.post_id, post.position, threadmark_id, threadmarks.position as threadmark_position
       FROM threadmarks
       JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-      WHERE threadmarks.thread_id = ? and threadmarks.position IN (" . $this->_getDb()->quote($positions) . ")
+      WHERE threadmarks.thread_id = ? and threadmarks.position IN (" . $this->_getDb()->quote($positions) . ") and threadmarks.message_state = 'visible'
       ORDER BY threadmarks.position ASC
     ",'threadmark_position', $threadId);
   }
@@ -324,7 +341,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function remapThreadmark(array &$source, array &$dest)
   {
     $prefix = 'threadmark';
-    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id', 'position', 'threadmark_date');
+    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id', 'position', 'threadmark_date', 'message_state');
     foreach($remap as $remapItem)
     {
       $key = $prefix .'_'. $remapItem;

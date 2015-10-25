@@ -159,7 +159,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       ($this->isUpdate() ? 'update' : 'insert')
     );
   }
-  
+
   protected function _deleteFromNewsFeed()
   {
     $this->_getNewsFeedModel()->delete($this->getContentType(), $this->getContentId() );
@@ -172,6 +172,12 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     )
     {
       $this->_db->query("
+        UPDATE threadmarks
+        SET position = position - 1
+        WHERE thread_id = ? and position >= ? and post_id <> ? and threadmarks.message_state = 'visible'
+      ", array($this->get('thread_id'), $this->get('position'), $this->get('post_id')));
+
+      $this->_db->query("
         UPDATE xf_thread
         SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0)
            ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
@@ -181,6 +187,12 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     }
     else if ($this->get('message_state') == 'visible' && $this->getExisting('message_state') != 'visible')
     {
+      $this->_db->query("
+        UPDATE threadmarks
+        SET position = position + 1
+        WHERE thread_id = ? and position >= ? and post_id <> ? and threadmarks.message_state = 'visible'
+      ", array($this->get('thread_id'), $this->get('position'), $this->get('post_id')));
+
       $this->_db->query("
         UPDATE xf_thread
         SET threadmark_count = threadmark_count + 1

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.8c" version_id="12" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.9" version_id="12" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -44,8 +44,9 @@
   </permissions>
   <phrases>
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
-    <phrase title="click_to_lock" version_id="12" version_string="1.1.8c"><![CDATA[Click to unlock]]></phrase>
-    <phrase title="click_to_unlock" version_id="12" version_string="1.1.8c"><![CDATA[Click to unlock]]></phrase>
+    <phrase title="add_threadmark_to_end" version_id="12" version_string="1.1.9"><![CDATA[Add to end]]></phrase>
+    <phrase title="click_to_lock" version_id="12" version_string="1.1.9"><![CDATA[Click to unlock]]></phrase>
+    <phrase title="click_to_unlock" version_id="12" version_string="1.1.9"><![CDATA[Click to unlock]]></phrase>
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[Edit Threadmark]]></phrase>
     <phrase title="moderator_log_post_create_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' created]]></phrase>
@@ -149,7 +150,7 @@
 <p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
 
 <xen:include template="news_feed_attached_images" />]]></template>
-    <template title="new_threadmark" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
+    <template title="new_threadmark" version_id="12" version_string="1.1.9"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -166,6 +167,9 @@
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
 		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" maxlength="255" /></dd>
+
+        	<dt>&nbsp;</dt>
+	        <dd><label><input type="checkbox" name="add_last" value="1" {xen:checked 1}/> {xen:phrase add_threadmark_to_end}</label></dd>
 	</dl>
 
 	<dl class="ctrlUnit submitUnit">
@@ -246,7 +250,7 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="12" version_string="1.1.8c"><![CDATA[<xen:require css="threadmarks.css"/>
+    <template title="threadmarks" version_id="12" version_string="1.1.9"><![CDATA[<xen:require css="threadmarks.css"/>
 <xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}
@@ -318,7 +322,7 @@
 (jQuery, this, document);
 </script>
 </xen:if>]]></template>
-    <template title="threadmarks.css" version_id="12" version_string="1.1.8c"><![CDATA[.PageNav.threadmarksSinglePage {
+    <template title="threadmarks.css" version_id="12" version_string="1.1.9"><![CDATA[.PageNav.threadmarksSinglePage {
   float: left;
   min-width: 0;
 }

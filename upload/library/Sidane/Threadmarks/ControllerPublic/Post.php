@@ -45,7 +45,7 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
     if ($this->_request->isPost())
     {
       $label = $this->_input->filterSingle('label', XenForo_Input::STRING);
-      if (!$label)
+      if ($label === '')
       {
         return $this->responseError(new XenForo_Phrase('please_enter_label_for_threadmark'));
       }
@@ -74,7 +74,8 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
         if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum)) {
           throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_add_threadmarks');
         }
-        $threadmarksModel->setThreadMark($thread, $post, $label);
+        $addLast = $this->_input->filterSingle('add_last', XenForo_Input::BOOLEAN);
+        $threadmarksModel->setThreadMark($thread, $post, $label, $addLast);
         $phrase = 'threadmark_created';
         XenForo_Model_Log::logModeratorAction(
           'post', $post, 'create_threadmark', array('label' => $label), $thread
