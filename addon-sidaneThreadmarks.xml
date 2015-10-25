@@ -125,23 +125,23 @@
     <template title="news_feed_item_threadmark_insert" version_id="10" version_string="1.1.7"><![CDATA[<h3 class="description">
 
 	<xen:if is="{$content.user_id} == {$content.threadmark.user_id}">
-	
+
 		<xen:comment><!-- $user created a threadmark --></xen:comment>
 		{xen:phrase x_created_threadmark_in_thread_z,
 		    'threadmark=<a href="{xen:link full:posts, $content}">{$content.threadmark.label}</a>',
 			'name={xen:if $content.threadmark.user_id, {xen:helper username, $content.threadmark, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
 		    'poster={xen:helper username, $content, 'primaryText'}',
 			'title=<a href="{xen:link threads, $content}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link posts/threadmarkpreview, $content}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
-		
+
 	<xen:else />
-	
+
 		<xen:comment><!-- $user created a threadmark on $contentUser's post --></xen:comment>
 		{xen:phrase x_created_threadmark_on_ys_post_in_thread_z,
             'threadmark=<a href="{xen:link full:posts, $content}">{$content.threadmark.label}</a>',
 		    'name={xen:if $content.threadmark.user_id, {xen:helper username, $content.threadmark, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
 			'poster={xen:helper username, $content, 'primaryText'}',
 			'title=<a href="{xen:link threads, $content}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link posts/threadmarkpreview, $content}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
-		
+
 	</xen:if>
 
 </h3>
@@ -206,7 +206,7 @@
         </xen:if>
       </div>
     </div>
-    
+
     <noscript>
       <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="threadmarksTrigger">{xen:phrase threadmarks}</a>
     </noscript>
@@ -219,7 +219,7 @@
     <template title="search_result_threadmark" version_id="11" version_string="1.1.8"><![CDATA[<li id="threadmark-{$threadmark.post_id}" class="searchResult post primaryContent{xen:if $post.isIgnored, ' ignored'}" data-author="{$threadmark.username}">
 
 	<div class="listBlock posterAvatar"><xen:avatar user="$post" size="s" img="true" /></div>
-	
+
 	<div class="listBlock main">
 		<div class="titleText">
 			<span class="contentType">{xen:phrase threadmark}</span>
@@ -302,13 +302,13 @@
   $(".fa-lock").show();
   $(".fa-unlock").click(function(){
     $(".fa-unlock").hide();
-    var $threadmarkList = $(".ThreadmarkSortable");    
+    var $threadmarkList = $(".ThreadmarkSortable");
     $threadmarkList.sortable('destroy');
     $threadmarkList.find(".sortableItem").removeClass("sortableItem");
     $(".fa-lock").show();
   });
   $(".fa-lock").click(function(){
-    $(".fa-lock").hide();        
+    $(".fa-lock").hide();
     var $threadmarkList = $(".ThreadmarkSortable");
     $threadmarkList.find(".editableItem").addClass("sortableItem");
     XenForo.ThreadmarkSortable($threadmarkList);
@@ -371,11 +371,11 @@
 .threadmarker_nav_top {
   display: flex;
   flex-wrap: nowrap;
-  
+
   flex-basis: auto ;
   flex-grow: 0 ;
   flex-shrink: 0 ;
-  
+
   margin-left: auto ;
   justify-content: flex-end ;
 }
@@ -385,7 +385,7 @@
   flex-basis: auto ;
   flex-grow: 0 ;
   flex-shrink: 0 ;
-  
+
 }
 .threadmarker .history a
 {
@@ -402,14 +402,14 @@
 .threadmarker .history a:hover
 {
   display: inline-flex ;
-  
+
   padding: 3px 8px 2px 6px ;
   margin: 0 0 0 4px ;
 
   text-decoration: none;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-  
+
   color: {xen:property secondaryDark};
   background-color: {xen:property secondaryLighter};
   border-color: {xen:property secondaryLight};
@@ -484,7 +484,7 @@
   .threadmarker {
     flex-wrap: wrap;
   }
-  .threadmarker .label 
+  .threadmarker .label
   {
     display: block;
     max-width: 100% ;
@@ -503,7 +503,7 @@
   .threadmarker_nav_top .next a,
   .threadmarker .history a
   {
-    
+
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
   }
@@ -512,7 +512,7 @@
   .threadmarker_nav_top .next a:hover,
   .threadmarker .history a:hover
   {
-    
+
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
   }
@@ -522,14 +522,14 @@
 .threadmarkItem .newIndicator
 {
     {xen:property messageNewIndicator}
-    border-top-right-radius: 3px; 
+    border-top-right-radius: 3px;
     margin: 0px 0px 5px 5px;
     box-shadow: 1px 1px 1px rgba(0,0,0, 0.25);
 }
 .threadmarkItem .newIndicator span
 {
     {xen:property messageNewIndicatorInner}
-    border-top-right-radius: 0px; 
+    border-top-right-radius: 0px;
 }
 
 ol.ThreadmarkSortable .sortableItem
@@ -580,7 +580,7 @@ ol.ThreadmarkSortable .sortable-placeholder
 </xen:if>]]></template>
     <template title="threadmarks_render_flag" version_id="11" version_string="1.1.8"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
   <div class="threadmarker ToggleTriggerAnchor">
-    <span class="label" title="{xen:phrase threadmark_created_by_x_on_y, 
+    <span class="label" title="{xen:phrase threadmark_created_by_x_on_y,
                                            'name={$threadmark.username}',
                                            'date={xen:datetime $threadmark.threadmark_date}'}">
       <strong>{xen:phrase threadmark}:</strong> {$threadmark.label}
@@ -595,10 +595,10 @@ ol.ThreadmarkSortable .sortable-placeholder
 </xen:if>]]></template>
     <template title="threadmark_preview" version_id="10" version_string="1.1.7"><![CDATA[<div class="previewTooltip">
 	<xen:avatar user="$post" size="s" />
-	
+
 	<div class="text">
 		<blockquote class="previewText">{xen:string nl2br, {$threadmark.label}}<hr/>{xen:string nl2br, {xen:helper wordtrim, $post.messageParsed, $xenOptions.discussionPreviewLength}}</blockquote>
-		
+
 		<div class="posterDate muted">{$post.username}, <xen:datetime time="{$post.post_date}" class="faint" /></div>
 	</div>
 </div>]]></template>

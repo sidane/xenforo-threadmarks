@@ -238,10 +238,16 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
                                 FROM threadmarks
                                 JOIN xf_post AS post ON post.post_id = threadmarks.post_id
                                 where xf_thread.thread_id = threadmarks.thread_id and post.message_state = 'visible')
-           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0)
-           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
         WHERE thread_id = ?
     ", $thread_id);
+
+    XenForo_Db::beginTransaction($db);
+    
+    // update display ordering
+    $order = $this->recomputeDisplayOrder($thread_id);
+    $this->massUpdateDisplayOrder($thread_id, $order);
+
+    XenForo_Db::commit($db);
   }
 
   public function getThreadIdsWithThreadMarks($limit =0, $offset = 0)
@@ -352,6 +358,16 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       order by position desc
       limit 1
     ", array($threadmark['thread_id'], $threadmark['position']));
+  }
+
+  public function recomputeDisplayOrder($threadId)
+  {
+    return $this->_getDb()->fetchCol("
+      SELECT threadmark_id
+      FROM threadmarks
+      WHERE thread_id = ?
+      ORDER BY position
+    ", $threadId);
   }
 
   public function massUpdateDisplayOrder($threadId, $order)
