@@ -267,14 +267,15 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     XenForo_Db::commit($db);
   }
 
-  public function getThreadIdsWithThreadMarks($limit =0, $offset = 0)
+  public function getThreadIdsWithThreadMarks($thread_id, $limit = 0)
   {
     $db = $this->_getDb();
     return $db->fetchCol($this->limitQueryResults("
       SELECT distinct thread_id
       FROM threadmarks
+      where thread_id > ?
       ORDER BY threadmarks.thread_id ASC
-    ",$limit, $offset));
+    ",$limit, 0), $thread_id);
   }
 
   public function getRecentByThreadId($threadId, $limit = 0, $offset = 0) {

@@ -4,18 +4,20 @@
 class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
 {
 
-  const PER_PAGE = 5000;
+  const PER_PAGE = 100;
 
   public function execute(array $deferred, array $data, $targetRunTime, &$status)
   {
     $data = array_merge(array(
-      'page' => 0,
+      'lastThreadId' => 0,
+      'count' => 0,
     ), $data);
+    $s = microtime(true);
 
-    /** @var XenForo_Model_Post */
+    /** @var Sidane_Threadmarks_Model_Threadmarks */
     $threadMarkModel = XenForo_Model::create('Sidane_Threadmarks_Model_Threadmarks');
 
-    $threadIds = $threadMarkModel->getThreadIdsWithThreadMarks($data['page'], self::PER_PAGE);
+    $threadIds = $threadMarkModel->getThreadIdsWithThreadMarks($data['lastThreadId'], self::PER_PAGE);
 
     if(empty($threadIds))
       return false;
@@ -23,13 +25,19 @@ class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
     foreach($threadIds as $threadId)
     {
       $threadMarkModel->rebuildThreadMarkCache($threadId);
+      $lastThreadId = $threadId;
+      $data['count']++;
+      if ($targetRunTime && microtime(true) - $s > $targetRunTime)
+      {
+        break;
+      }
     }
 
     $rbPhrase = new XenForo_Phrase('rebuilding');
     $typePhrase = new XenForo_Phrase('sidane_threadmarks_cache');
-    $status = sprintf('%s... %s (%s)', $rbPhrase, $typePhrase, XenForo_Locale::numberFormat($data['page'] * self::PER_PAGE));
+    $status = sprintf('%s... %s (%s)', $rbPhrase, $typePhrase, XenForo_Locale::numberFormat($data['count']));
 
-    $data['page'] ++;
+    $data['lastThreadId'] = $lastThreadId;
 
     return $data;
   }
