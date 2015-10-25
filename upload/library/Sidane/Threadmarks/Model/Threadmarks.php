@@ -239,15 +239,29 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         where `threadmarks`.thread_id = ? and post.post_id is null;
     ', $thread_id);
 
-    // ensure each threadmark associated with the thread really is,
-    // and resync attributes off the xf_post table
+    // push threadmarks onto the correct thread (aka potentially not this one)
+    $db->query('
+update `threadmarks` marks
+join xf_post AS post on post.post_id = marks.post_id
+set marks.thread_id = post.thread_id
+where marks.thread_id = ?
+    ', $thread_id);
+
+    // pull threadmarks onto the correct thread (aka potentially this one). This can be fairly slow depending on the thread length.
+    $db->query('
+update `threadmarks` marks
+join xf_post AS post on post.post_id = marks.post_id
+set marks.thread_id = post.thread_id
+where post.thread_id = ?
+    ', $thread_id);
+
+    // ensure resync attributes off the xf_post table
     $db->query('
         update `threadmarks` marks
         join xf_post AS post on post.post_id = marks.post_id
-        set marks.thread_id = post.thread_id
-           ,marks.message_state = post.message_state
-        where (post.thread_id = ? or marks.thread_id = ?);
-    ', array($thread_id,$thread_id));
+        set marks.message_state = post.message_state
+        where marks.thread_id = ?
+    ', $thread_id);
 
     // recompute threadmark totals
     $db->query("
@@ -259,7 +273,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", $thread_id);
 
     XenForo_Db::beginTransaction($db);
-    
+
     // update display ordering
     $order = $this->recomputeDisplayOrder($thread_id);
     $this->massUpdateDisplayOrder($thread_id, $order);
