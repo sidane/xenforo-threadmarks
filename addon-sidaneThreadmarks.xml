@@ -182,7 +182,7 @@
     <template title="new_threadmark_control" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
-    <template title="page_nav_threadmarks" version_id="12" version_string="1.1.8a"><![CDATA[<xen:if is="{$threadmarks}">
+    <template title="page_nav_threadmarks" version_id="12" version_string="1.1.9"><![CDATA[<xen:if is="{$threadmarks}">
   <xen:if is="{$threadmarks.logged_in} OR {$threadmarks.hide_menu_from_guests} != '1'">
     <div class="Popup threadmarks JsOnly">
       <a href="{xen:link 'threads/threadmarks', $linkData}" rel="Menu" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
@@ -195,7 +195,7 @@
 
         <ul class="secondaryContent blockLinksList">
           <xen:foreach loop="{$threadmarks.recent}" value="{$threadmark}">
-            <li class="threadmark_item"><xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
+            <li class="threadmarkItem"><xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
                 <a href="{xen:link threads/post-permalink, $linkData, 'post={$threadmark.post}'}"
                    class="{xen:if $linkData.hasPreview, PreviewTooltip}"
                    data-previewUrl="{xen:if $linkData.hasPreview, {xen:link posts/threadmarkpreview, $threadmark}}">{$threadmark.label}</a>
