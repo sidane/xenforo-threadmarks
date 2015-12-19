@@ -71,10 +71,15 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->_updateThreadMarkCount();
     }
 
+    parent::_postSave();
+  }
+  
+  protected function _postSaveAfterTransaction()
+  {
+    parent::_postSaveAfterTransaction();
+
     $this->_indexForSearch();
     $this->_publishAndNotify();
-
-    parent::_postSave();
   }
 
   protected function _postDelete()
