@@ -143,7 +143,10 @@ class Sidane_Threadmarks_Install
       self::renameColumn('threadmarks', 'post_date', 'threadmark_date', 'int not null default 0');
     }
 
-    XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
+    if ($version < 12)
+    {
+      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
+    }
   }
 
   public static function uninstall()
