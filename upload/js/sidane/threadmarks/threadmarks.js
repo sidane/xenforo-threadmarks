@@ -185,8 +185,18 @@
 
     XenForo.ThreadmarkSortable = function($container)
     {
-        var sortUrl = $container.data('sort-url'),
-                      itemSelector = 'li.sortableItem';
+        function removeJunk(data) {
+            for (var key in data) {
+                var item = data[key];
+                if (key == 'li_attr' || key == 'a_attr' || key == 'icon' || key == 'data' || key == 'text') {
+                  delete data[key];
+                } else if (typeof item == "object") {
+                    removeJunk(item);
+                }
+            }
+        }
+
+        var sortUrl = $container.data('sort-url');
 
         if (!sortUrl)
         {
@@ -194,69 +204,70 @@
             return;
         }
 
-        if (typeof $container.sortable !== "function") { 
-            console.log('Sortable list not supported.');
-            return;
-        }
-
-        $container.sortable(
-        {
-            items: itemSelector,
-            forcePlaceholderSize: true
-        }).bind(
-            {
-                'sortupdate': function(e)
-                {
-                    var order = [];
-
-                    $container.find('[data-item-id]').each(function(i)
-                    {
-                        var $this = $(this),
-                            itemId = $this.data('item-id'),
-                            parentId = $this.parent().data('parent-id');
-
-                        if (parentId !== undefined)
-                        {
-                            order[i] = [itemId, parentId];
-                        }
-                        else
-                        {
-                            order[i] = itemId;
-                        }
-                    });
-
-                    // moving across groups can trigger this multiple times
-                    if ($container.data('sort-timer'))
-                    {
-                        clearTimeout($container.data('sort-timer'));
-                    }
-                    $container.data('sort-timer', setTimeout(function()
-                    {
-                        XenForo.ajax(
-                            sortUrl,
-                            { order: order },
-                            function(e)
-                            {
-                                console.info('drag order updated');
-                            }
-                        );
-                    }, 100));
+        $(".fa-lock").show();
+        $(".fa-unlock").click(function(){
+            location.reload(true);
+        });
+        $(".fa-lock").click(function(){
+            $(".fa-lock").hide();
+            $container.find(".PreviewTooltip").removeClass("PreviewTooltip");
+            $container.jstree({
+              "core" : {
+                "check_callback" : true,
+                "themes" : {
+                  "icons" : false
                 },
-                'dragstart' : function(e)
-                {
-                    console.log('drag start, %o', e.target);
-                },
-                'dragend' : function(e) { console.log('drag end'); }
-            }
-        );
+                "animation" : 0
+              },
+              "dnd" : {
+                "copy" : false,
+                "large_drop_target" : true,
+                "large_drag_target" : true,
+                "drag_selection" : true,
+                "inside_pos" : "last"
+              },
+              "plugins":[
+                "dnd",
+                "wholerow"
+              ]
+            }).on("move_node.jstree", function (e, data) {
+              if (data.node.parent) {
+                $container.jstree("open_node", data.node.parent);
+              }
+              var order = $container.data().jstree.get_json(null, {"no_state": true, "no_data": true});
+              if (!order){
+                  console.info('no threadmark data to serialize');
+                  return;
+              }
+              removeJunk(order);
+
+              // moving across groups can trigger this multiple times
+              if ($container.data('sort-timer'))
+              {
+                  clearTimeout($container.data('sort-timer'));
+              }
+              $container.data('sort-timer', setTimeout(function()
+              {
+                  XenForo.ajax(
+                      sortUrl,
+                      { order: order },
+                      function(e)
+                      {
+                          console.info('threadmarks updated');
+                      }
+                  );
+              }, 100));
+            });
+            $(".fa-unlock").show();
+        });
     }
 
     if (!XenForo.isTouchBrowser())
     {
         // Register tooltip elements for desktop browsers
         XenForo.register('.RightPreviewTooltip', 'XenForo.RightPreviewTooltip');
-
     }
+
     XenForo.register('.ThreadmarkSortable', 'XenForo.ThreadmarkSortable');
 }
 (jQuery, this, document);

@@ -22,6 +22,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
         'last_edit_user_id'      => array('type' => self::TYPE_UINT, 'default' => 0),
         'edit_count'             => array('type' => self::TYPE_UINT_FORCED, 'default' => 0),
         'position'               => array('type' => self::TYPE_UINT_FORCED),
+        'parent_threadmark_id'   => array('type' => self::TYPE_UINT_FORCED, 'default' => 0),
+        'depth'                  => array('type' => self::TYPE_UINT_FORCED, 'default' => 0),
       )
     );
   }

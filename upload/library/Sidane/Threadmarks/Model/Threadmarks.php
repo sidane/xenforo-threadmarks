@@ -394,12 +394,62 @@ where post.thread_id = ?
 
   public function recomputeDisplayOrder($threadId)
   {
-    return $this->_getDb()->fetchCol("
-      SELECT threadmark_id
+    $order = $this->fetchAllKeyed("
+      SELECT threadmark_id as id, parent_threadmark_id as parent
       FROM threadmarks
       WHERE thread_id = ?
       ORDER BY position
-    ", $threadId);
+    ", 'id', $threadId);
+
+    // build the tree
+    $children = array();
+    foreach($order as $key => &$threadmark)
+    {
+      $parent = $threadmark['parent'];
+      if ($parent)
+      {
+        if (empty($order[$parent]['children']))
+        {
+          $order[$parent]['children'] = array();
+        }
+        $order[$parent]['children'][] = &$threadmark;
+        $children = $key;
+      }
+    }
+
+    // cleanup non-root level nodes
+    foreach($children as $key)
+    {
+      unset($order[$key]);
+    }
+
+    return $order;
+  }
+
+  protected function preorderTreeTraversal($order, $parentThreadmarkId, $depth, &$position, array &$args)
+  {
+    foreach($order as &$item)
+    {
+      if (empty($item['id']))
+      {
+        continue;
+      }
+      $threadmarkId = $item['id'];
+
+      $oldposition = $position;
+      $position += 1;
+      if (!empty($item['children']))
+      {
+        $this->preorderTreeTraversal($item['children'], $threadmarkId, $depth + 1, $position, $args);
+      }
+
+      $args['pos'][] = $threadmarkId;
+      $args['pos'][] = $oldposition;
+      $args['depth'][] = $threadmarkId;
+      $args['depth'][] = $depth;
+      $args['parent'][] = $threadmarkId;
+      $args['parent'][] = $parentThreadmarkId;
+    }
   }
 
   public function massUpdateDisplayOrder($threadId, $order)
@@ -408,35 +458,30 @@ where post.thread_id = ?
     $db = $this->_getDb();
     $args = array();
 
-    if (!empty($order))
+    $position = 0;
+    $this->preorderTreeTraversal($order, 0, 0, $position, $args);
+
+    if (empty($args))
     {
-      foreach ($order AS $displayOrder => $data)
-      {
-        $threadmarkId = is_array($data) ? intval($data[0]) : intval($data);
-        if (empty($threadmarkId))
-        {
-            continue;
-        }
-        $displayOrder = (int)$displayOrder;
-
-        $args[] = $threadmarkId;
-        $args[] = $displayOrder;
-        $sqlOrder .= "WHEN ? THEN ? \n";
-      }
-
-      if (!empty($args))
-      {
-        $args[] = $threadId;
-
-        $db->query('
-            UPDATE threadmarks SET
-            position = CASE threadmark_id
-                ' . $sqlOrder . '
-            ELSE 0 END
-            WHERE thread_id = ?
-        ', $args);
-      }
+      return;
     }
+
+    $args = array_merge($args['pos'], $args['depth'], $args['parent']);
+
+    if (empty($args))
+    {
+      return;
+    }
+    $args[] = $threadId;
+
+    $sqlBit = str_repeat("WHEN ? THEN ? ", $position);
+    $db->query('
+        UPDATE threadmarks SET
+          position = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
+          depth = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
+          parent_threadmark_id = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END
+        WHERE thread_id = ?
+    ', $args);
 
     $db->query("
         UPDATE xf_thread
@@ -445,5 +490,39 @@ where post.thread_id = ?
            lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
         WHERE thread_id = ?
     ", $threadId);
+  }
+
+  public function preparelistToTree($threadmarks)
+  {
+    $lastThreadmark = null;
+    foreach($threadmarks as &$threadmark)
+    {
+      if ($lastThreadmark && $threadmark['depth'] != $lastThreadmark['depth'])
+      {
+        if ($threadmark['depth'] > $lastThreadmark['depth'])
+        {
+          $lastThreadmark['extraCss'] = 'parent';
+          $lastThreadmark['templateHelperChild'] = '<ul>';
+        }
+        else
+        {
+          $lastThreadmark['templateHelperEnd'] = str_repeat('</ul></li>', $lastThreadmark['depth'] - $threadmark['depth']);
+        }
+      }
+      else
+      {
+        $lastThreadmark['templateHelperEnd'] = '</li>';
+      }
+      $lastThreadmark = &$threadmark;
+    }
+    if ($lastThreadmark && $lastThreadmark['depth'] > 1)
+    {
+      if (!isset($lastThreadmark['templateHelperEnd']))
+      {
+        $lastThreadmark['templateHelperEnd'] = '';
+      }
+      $lastThreadmark['templateHelperEnd'] .= str_repeat('</ul></li>', $lastThreadmark['depth'] - 1);
+    }
+    return $threadmarks;
   }
 }

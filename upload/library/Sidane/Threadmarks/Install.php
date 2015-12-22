@@ -23,6 +23,8 @@ class Sidane_Threadmarks_Install
           user_id int not null default 0,
           post_date int not null default 0,
           position int not null default 0,
+          `parent_threadmark_id` int(10) unsigned NOT NULL DEFAULT '0',
+          `depth` int(10) unsigned NOT NULL DEFAULT '0',
           message_state enum('visible','moderated','deleted') NOT NULL DEFAULT 'visible',
           edit_count int not null default 0,
           last_edit_date int not null default 0,
@@ -147,8 +149,11 @@ class Sidane_Threadmarks_Install
 
     if ($version < 13)
     {
-      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
+      self::addColumn('threadmarks','parent_threadmark_id', 'INT UNSIGNED DEFAULT 0 NOT NULL');
+      self::addColumn('threadmarks','depth', 'INT UNSIGNED DEFAULT 0 NOT NULL');
     }
+
+    XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
 
     self::updateXenEsMapping($requireIndexing, array(
       'threadmark' => array(

@@ -85,6 +85,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       $threadmarks = $threadmarksModel->getByThreadIdWithMinimalPostData($thread['thread_id']);
 
       $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
+      $threadmarks = $threadmarksModel->preparelistToTree($threadmarks);
 
       $viewParams = array(
         'forum' => $forum,
