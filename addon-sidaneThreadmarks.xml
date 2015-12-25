@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.10" version_id="13" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.9" version_id="13" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -78,8 +78,8 @@
     <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
     <phrase title="threadmark_index" version_id="9" version_string="1.1.6"><![CDATA[Index]]></phrase>
     <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
-    <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[>>]]></phrase>
-    <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[<<]]></phrase>
+    <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[&gt;&gt;]]></phrase>
+    <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[&lt;&lt;]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
@@ -182,7 +182,7 @@
     <template title="new_threadmark_control" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
-    <template title="page_nav_threadmarks" version_id="13" version_string="1.1.10"><![CDATA[<xen:if is="{$threadmarks}">
+    <template title="page_nav_threadmarks" version_id="13" version_string="1.1.9"><![CDATA[<xen:if is="{$threadmarks}">
   <xen:if is="{$threadmarks.logged_in} OR {$threadmarks.hide_menu_from_guests} != '1'">
     <div class="Popup threadmarks JsOnly">
       <a href="{xen:link 'threads/threadmarks', $linkData}" rel="Menu" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
@@ -254,7 +254,7 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="13" version_string="1.1.10"><![CDATA[<xen:require css="threadmarks.css"/>
+    <template title="threadmarks" version_id="13" version_string="1.1.9"><![CDATA[<xen:require css="threadmarks.css"/>
 <xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}
