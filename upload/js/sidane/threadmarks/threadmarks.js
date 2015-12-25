@@ -194,6 +194,11 @@
             return;
         }
 
+        if (typeof $container.sortable !== "function") { 
+            console.log('Sortable list not supported.');
+            return;
+        }
+
         $container.sortable(
         {
             items: itemSelector,
