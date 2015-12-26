@@ -87,10 +87,21 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
       $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
       $threadmarks = $threadmarksModel->preparelistToTree($threadmarks);
 
+      $canEditThreadMarks = false;
+      foreach($threadmarks as &$threadmark)
+      {
+        if (!empty($threadmark['canEdit']))
+        {
+          $canEditThreadMarks = true;
+          break;
+        }
+      }
+
       $viewParams = array(
         'forum' => $forum,
         'thread' => $thread,
-        'threadmarks' => $threadmarks
+        'threadmarks' => $threadmarks,
+        'canEditThreadMarks' => $canEditThreadMarks,
       );
 
       return $this->responseView('Sidane_Threadmarks_ViewPublic_Thread_View', 'threadmarks', $viewParams);

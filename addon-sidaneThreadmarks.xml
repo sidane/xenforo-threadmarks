@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.10" version_id="13" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.10b" version_id="14" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -1325,15 +1325,16 @@
 <xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}
+    <xen:if is="{$canEditThreadMarks}">
     <i class="fa fa-unlock Tooltip" style="display:none" title="{xen:phrase click_to_lock}"></i>
     <i class="fa fa-lock Tooltip" style="display:none" title="{xen:phrase click_to_unlock}"></i>
+    </xen:if>
 </xen:h1>
 
 <xen:container var="$head.noindex">
   <meta name="robots" content="noindex" />
 </xen:container>
 
-<xen:set var="$canEditThreadMarks">0</xen:set>
 <xen:navigation>
   <xen:breadcrumb source="$nodeBreadCrumbs" />
   <xen:breadcrumb href="{xen:link full:forums, $forum}">{$forum.title}</xen:breadcrumb>
@@ -1341,13 +1342,9 @@
 </xen:navigation>
 
 <div class="section jstree-open">
-  <div class="overlayScroll ThreadmarkSortable" data-sort-url="{xen:link threads/threadmarks-display-order, $thread}">
+  <div class="overlayScroll threadmarks {xen:if {$canEditThreadMarks}, 'ThreadmarkSortable'}" data-sort-url="{xen:link threads/threadmarks-display-order, $thread}">
   <ul>
     <xen:foreach loop="$threadmarks" value="$threadmark">
-      <xen:if is="!{$canEditThreadMarks} and {$threadmark.canEdit}">
-        <xen:set var="$canEditThreadMarks">1</xen:set>
-      </xen:if>
-      
       <li class="primaryContent memberListItem threadmarkItem {$threadmark.extraCss} depth{$threadmark.depth} {xen:if {$threadmark.depth}, 'child'}" id="{$threadmark.threadmark_id}">
           <xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
           <a href="{xen:link threads/post-permalink, $thread, 'post={$threadmark.post}'}"
@@ -1375,7 +1372,7 @@
 <xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
 </xen:if>
 </xen:if>]]></template>
-    <template title="threadmarks.css" version_id="13" version_string="1.1.10"><![CDATA[.PageNav.threadmarksSinglePage {
+    <template title="threadmarks.css" version_id="14" version_string="1.1.10a"><![CDATA[.PageNav.threadmarksSinglePage {
   float: left;
   min-width: 0;
 }
@@ -1581,20 +1578,20 @@
   background-color: {xen:property contentBackground};
 }
 
-.ThreadmarkSortable .child
+.threadmarks .child
 {
     border-bottom: none;
     padding-bottom:0;
 }
 
-.ThreadmarkSortable ul,
-.ThreadmarkSortable li
+.threadmarks ul,
+.threadmarks li
 {
   width:auto;
   padding-right:0;
 }
 
-.ThreadmarkSortable li
+.threadmarks li
 {
   overflow:visible;
 }
