@@ -506,7 +506,7 @@ where post.thread_id = ?
         }
         else
         {
-          $lastThreadmark['templateHelperEnd'] = str_repeat('</ul></li>', $lastThreadmark['depth'] - $threadmark['depth']);
+          $lastThreadmark['templateHelperEnd'] = '</li>' . str_repeat('</ul></li>', $lastThreadmark['depth'] - $threadmark['depth']);
         }
       }
       else
@@ -515,13 +515,16 @@ where post.thread_id = ?
       }
       $lastThreadmark = &$threadmark;
     }
-    if ($lastThreadmark && $lastThreadmark['depth'] > 1)
+    if ($lastThreadmark)
     {
       if (!isset($lastThreadmark['templateHelperEnd']))
       {
-        $lastThreadmark['templateHelperEnd'] = '';
+        $lastThreadmark['templateHelperEnd'] = '</li>';
       }
-      $lastThreadmark['templateHelperEnd'] .= str_repeat('</ul></li>', $lastThreadmark['depth'] - 1);
+      if ($lastThreadmark['depth'] > 1)
+      {
+        $lastThreadmark['templateHelperEnd'] .= str_repeat('</ul></li>', $lastThreadmark['depth'] - 1);
+      }
     }
     return $threadmarks;
   }
