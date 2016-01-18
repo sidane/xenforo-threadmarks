@@ -29,7 +29,7 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
     $postModel = $this->_getPostModel();
     return $postModel->canViewPostAndContainer($content, $content, $content, $null, $content['permissions'], $viewingUser) &&
            $postModel->canViewPostHistory($content, $content, $content, $null, $content['permissions'], $viewingUser) &&
-           $threadmarkModel->canViewThreadmark($content, $null, $content['permissions'], $viewingUser);
+           $threadmarkModel->canViewThreadmark($content, $content, $null, $content['permissions'], $viewingUser);
   }
 
   protected function _canRevertContent(array $content, array $viewingUser)

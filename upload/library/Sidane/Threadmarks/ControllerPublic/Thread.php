@@ -7,7 +7,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     $postFetchOptions = parent::_getPostFetchOptions($thread, $forum);
     $threadmarkmodel = $this->_getThreadmarksModel();
 
-    if ($threadmarkmodel->canViewThreadmark($thread))
+    if ($threadmarkmodel->canViewThreadmark($thread, $forum))
     {
       $postFetchOptions['join'] |= Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS;
     }
@@ -44,7 +44,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
 
     $threadmarksModel = $this->_getThreadmarksModel();
-    if (empty($thread['threadmark_count']) || !$threadmarksModel->canViewThreadmark($thread)) {
+    if (empty($thread['threadmark_count']) || !$threadmarksModel->canViewThreadmark($thread, $forum)) {
       return $this->getNotFoundResponse();
     }
 
@@ -81,7 +81,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId, $threadFetchOptions, $forumFetchOptions);
     $threadmarksModel = $this->_getThreadmarksModel();
-    if (!empty($thread['threadmark_count']) && $threadmarksModel->canViewThreadmark($thread)) {
+    if (!empty($thread['threadmark_count']) && $threadmarksModel->canViewThreadmark($thread, $forum)) {
       $threadmarks = $threadmarksModel->getByThreadIdWithMinimalPostData($thread['thread_id']);
 
       $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);

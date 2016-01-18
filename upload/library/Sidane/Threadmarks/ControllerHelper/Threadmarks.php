@@ -8,7 +8,7 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
     if (!empty($thread['threadmark_count'])) {
       $threadmarksModel = $this->_controller->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
 
-      if (!$threadmarksModel->canViewThreadmark($thread)) {
+      if (!$threadmarksModel->canViewThreadmark($thread, $forum)) {
         return null;
       }
 

@@ -24,7 +24,7 @@ class Sidane_Threadmarks_NewsFeedHandler_Threadmark extends XenForo_NewsFeedHand
   {
     return $this->_getPostModel()->canViewPostAndContainer(
       $content, $content, $content, $null, $content['permissions'], $viewingUser
-    ) && $this->_getThreadmarkModel()->canViewThreadmark($content, $null, $content['permissions'], $viewingUser);
+    ) && $this->_getThreadmarkModel()->canViewThreadmark($content, $content, $null, $content['permissions'], $viewingUser);
   }
 
 	public function prepareNewsFeedItem(array $item, array $viewingUser)
