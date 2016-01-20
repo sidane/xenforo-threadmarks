@@ -202,7 +202,7 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
   {
     return $this->_getPostModel()->canViewPostAndContainer(
       $result, $result, $result, $null, $result['permissions'], $viewingUser
-    ) && $this->_getThreadmarkModel()->canViewThreadmark($result, $content, $null, $result['permissions'], $viewingUser);
+    ) && $this->_getThreadmarkModel()->canViewThreadmark($result, $result, $null, $result['permissions'], $viewingUser);
   }
 
   /**
