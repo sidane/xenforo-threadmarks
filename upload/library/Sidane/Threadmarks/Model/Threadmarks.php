@@ -325,6 +325,11 @@ where post.thread_id = ?
 
   public function getThreadMarkByIds($Ids)
   {
+    if (empty($Ids))
+    {
+      return array();
+    }
+
     return $this->fetchAllKeyed("
       SELECT *
       FROM threadmarks
@@ -334,6 +339,11 @@ where post.thread_id = ?
 
   public function getThreadMarkByPositions($threadId, $positions)
   {
+    if (empty($positions))
+    {
+      return array();
+    }
+
     return $this->fetchAllKeyed("
       SELECT post.post_id, post.position, threadmark_id, threadmarks.position as threadmark_position
       FROM threadmarks
