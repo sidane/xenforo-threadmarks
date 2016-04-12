@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.11b" version_id="17" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.1.12" version_id="18" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -69,6 +69,30 @@
     <phrase title="select_this_threadmark" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark]]></phrase>
     <phrase title="select_this_threadmark_by_x" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark by {name}]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
+    <phrase title="style_property_group_Threadmarks_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarks]]></phrase>
+    <phrase title="style_property_group_Threadmarks_master_desc" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarks and Threadmark Byproducts]]></phrase>
+    <phrase title="style_property_messageNewIndicatorInnerThreadmarks_description_master" version_id="17" version_string="1.1.11b"><![CDATA[?????]]></phrase>
+    <phrase title="style_property_messageNewIndicatorInnerThreadmarks_master" version_id="17" version_string="1.1.11b"><![CDATA[Message New Indicator Inner Threadmarks]]></phrase>
+    <phrase title="style_property_messageNewIndicatorThreadmarks_description_master" version_id="17" version_string="1.1.11b"><![CDATA[not sure]]></phrase>
+    <phrase title="style_property_messageNewIndicatorThreadmarks_master" version_id="17" version_string="1.1.11b"><![CDATA[Message New Indicator]]></phrase>
+    <phrase title="style_property_ThreadmarkButtonHover_description_master" version_id="17" version_string="1.1.11b"><![CDATA[What happens when you mouse over]]></phrase>
+    <phrase title="style_property_ThreadmarkButtonHover_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark Button Hover]]></phrase>
+    <phrase title="style_property_ThreadmarkButtons_description_master" version_id="17" version_string="1.1.11b"><![CDATA[Everything you can click.]]></phrase>
+    <phrase title="style_property_ThreadmarkButtons_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark Buttons]]></phrase>
+    <phrase title="style_property_Threadmarker_description_master" version_id="17" version_string="1.1.11b"><![CDATA[The space above the Threadmarked post.]]></phrase>
+    <phrase title="style_property_Threadmarker_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarker]]></phrase>
+    <phrase title="style_property_ThreadmarkHistory_description_master" version_id="17" version_string="1.1.11b"><![CDATA[The history button]]></phrase>
+    <phrase title="style_property_ThreadmarkHistory_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark History]]></phrase>
+    <phrase title="style_property_ThreadmarkIndexButtons_description_master" version_id="17" version_string="1.1.11b"><![CDATA[The << Index >> button styling]]></phrase>
+    <phrase title="style_property_ThreadmarkIndexButtons_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark Index Buttons]]></phrase>
+    <phrase title="style_property_ThreadmarkJSTree_description_master" version_id="17" version_string="1.1.11b"><![CDATA[I think it's related to the sortable bits?]]></phrase>
+    <phrase title="style_property_ThreadmarkJSTree_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark JS Tree]]></phrase>
+    <phrase title="style_property_ThreadmarkLabelStrong_description_master" version_id="17" version_string="1.1.11b"><![CDATA[The 'Threadmark' thing before the label]]></phrase>
+    <phrase title="style_property_ThreadmarkLabelStrong_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark Label Strong]]></phrase>
+    <phrase title="style_property_ThreadmarkLabel_description_master" version_id="17" version_string="1.1.11b"><![CDATA[Styling of what you name the threadmark]]></phrase>
+    <phrase title="style_property_ThreadmarkLabel_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark Label]]></phrase>
+    <phrase title="style_property_ThreadmarkSortable_description_master" version_id="17" version_string="1.1.11b"><![CDATA[The things you can move around when you're reorganizing your threadmarks]]></phrase>
+    <phrase title="style_property_ThreadmarkSortable_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmark Sortable]]></phrase>
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
@@ -90,7 +114,23 @@
     <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
   </phrases>
   <route_prefixes/>
-  <style_properties/>
+  <style_properties>
+    <property property_name="Threadmarker" property_type="css" definition="1" group_name="Threadmarks" title="Threadmarker" description="The space above the Threadmarked post." css_components="background,border,layout" scalar_type="" scalar_parameters="" display_order="1" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighterStill","border-bottom-style":"solid","border-bottom-width":"1px","margin-bottom":"10px","margin-left":"0","margin-right":"0","margin-top":"0"}]]></property>
+    <property property_name="ThreadmarkLabel" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Label" description="Styling of what you name the threadmark" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="2" sub_group=""><![CDATA[{"background-color":"@primaryLighterStill","border-top-left-radius":"4px","border-top-right-radius":"4px","color":"@contentText","font-size":"12px","padding-bottom":"2px","padding-left":"6px","padding-right":"8px","padding-top":"3px"}]]></property>
+    <property property_name="ThreadmarkLabelStrong" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Label Strong" description="The 'Threadmark' thing before the label" css_components="text" scalar_type="" scalar_parameters="" display_order="3" sub_group=""><![CDATA[{"color":"@secondaryMedium","font-weight":"bold"}]]></property>
+    <property property_name="ThreadmarkButtons" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Buttons" description="Everything you can click." css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="4" sub_group=""><![CDATA[{"background-color":"@primaryLighterStill","border-top-left-radius":"4px","border-top-right-radius":"4px","color":"@primaryMedium","font-size":"12px","text-decoration":{"none":"none"}}]]></property>
+    <property property_name="ThreadmarkHistory" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark History" description="The history button" css_components="layout,extra" scalar_type="" scalar_parameters="" display_order="5" sub_group=""><![CDATA[{"extra":"display: inline-flex ;","margin-bottom":"0","margin-left":"4px","margin-right":"0","margin-top":"0","padding-bottom":"2px","padding-left":"6px","padding-right":"8px","padding-top":"3px"}]]></property>
+    <property property_name="ThreadmarkIndexButtons" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Index Buttons" description="The &lt;&lt; Index &gt;&gt; button styling" css_components="border,layout,extra" scalar_type="" scalar_parameters="" display_order="6" sub_group=""><![CDATA[{"border-bottom-left-radius":"4px","border-bottom-right-radius":"4px","extra":"display: inline-block;","margin-all":"0","padding-bottom":"2px","padding-left":"6px","padding-right":"8px","padding-top":"3px"}]]></property>
+    <property property_name="ThreadmarkButtonHover" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Button Hover" description="What happens when you mouse over" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="7" sub_group=""><![CDATA[{"background-color":"@secondaryLighter","border-color":"@secondaryLight","color":"@secondaryDark","text-decoration":{"none":"none"}}]]></property>
+    <property property_name="ThreadmarkSortable" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Sortable" description="The things you can move around when you're reorganizing your threadmarks" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="8" sub_group=""><![CDATA[{"background-color":"@contentBackground"}]]></property>
+    <property property_name="ThreadmarkJSTree" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark JS Tree" description="I think it's related to the sortable bits?" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="9" sub_group=""><![CDATA[{"color":"@primaryMedium"}]]></property>
+    <property property_name="messageNewIndicatorThreadmarks" property_type="css" definition="1" group_name="Threadmarks" title="Message New Indicator" description="not sure" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="10" sub_group=""><![CDATA[{"background-color":"@primaryLight","background-image":"@imagePath\/xenforo\/gradients\/form-button-white-25px.png","background-position":"top","background-repeat":"repeat-x","border-color":"@primaryLight","border-radius":"3px","border-style":"solid","border-top-right-radius":"3px","border-width":"1px","color":"@primaryMedium","extra":"display: block;\nfloat: right;\nposition: relative;\nbox-shadow: 1px 1px 3px rgba(0,0,0, 0.25);\nbox-shadow: 1px 1px 1px rgba(0,0,0, 0.25);","font-size":"11px","margin-bottom":"5px","margin-left":"5px","margin-right":"0px","margin-top":"0px","padding-bottom":"1px","padding-left":"5px","padding-right":"5px","padding-top":"1px"}]]></property>
+    <property property_name="messageNewIndicatorInnerThreadmarks" property_type="css" definition="1" group_name="Threadmarks" title="Message New Indicator Inner Threadmarks" description="?????" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="11" sub_group=""><![CDATA[{"background-color":"@primaryLight","border-top-right-radius":"0px","extra":"position: absolute;\ntop: -4px;\nright: -1px;","height":"4px","width":"5px"}]]></property>
+    <group group_name="Threadmarks" display_order="3">
+      <title>Threadmarks</title>
+      <description>Threadmarks and Threadmark Byproducts</description>
+    </group>
+  </style_properties>
   <templates>
     <template title="edit_threadmark" version_id="2" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
 <xen:h1>{xen:phrase edit_threadmark}</xen:h1>
@@ -1372,7 +1412,7 @@
 <xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
 </xen:if>
 </xen:if>]]></template>
-    <template title="threadmarks.css" version_id="14" version_string="1.1.10a"><![CDATA[.PageNav.threadmarksSinglePage {
+    <template title="threadmarks.css" version_id="17" version_string="1.1.11b"><![CDATA[.PageNav.threadmarksSinglePage {
   float: left;
   min-width: 0;
 }
@@ -1395,8 +1435,7 @@
 }
 
 .threadmarker {
-  margin: 0 0 10px 0;
-  border-bottom: 1px solid {xen:property primaryLighterStill};
+	{xen:property Threadmarker}
   display: flex;
   align-items: flex-end ;
 }
@@ -1405,31 +1444,24 @@
   display: inline-block;
   wordwrap: broken-word;
   word-break: break-word;
-  padding: 3px 8px 2px 6px;
-  color: {xen:property contentText};
-  background-color: {xen:property primaryLighterStill};
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
   overflow-x: hidden ;
   align-self: flex-start ;
   flex-basis: auto ;
   flex-grow: 0 ;
   flex-shrink: 1 ;
+  {xen:property ThreadmarkLabel}
 }
 
 .threadmarker .label strong {
-  color: {xen:property secondaryMedium};
-  font-weight: bold;
+  {xen:property ThreadmarkLabelStrong}
 }
 
 .threadmarker_nav_top {
   display: flex;
   flex-wrap: nowrap;
-
   flex-basis: auto ;
   flex-grow: 0 ;
   flex-shrink: 0 ;
-
   margin-left: auto ;
   justify-content: flex-end ;
 }
@@ -1439,34 +1471,22 @@
   flex-basis: auto ;
   flex-grow: 0 ;
   flex-shrink: 0 ;
-
 }
+
+.threadmarker_nav_bottom .previous a,
+.threadmarker_nav_bottom .index a,
+.threadmarker_nav_bottom .next a,
+.threadmarker_nav_top .previous a,
+.threadmarker_nav_top .index a,
+.threadmarker_nav_top .next a,
 .threadmarker .history a
 {
-  display: inline-flex ;
-
-  padding: 3px 8px 2px 6px ;
-  margin: 0 0 0 4px ;
-
-  text-decoration: none;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  background-color: {xen:property primaryLighterStill};
+  {xen:property ThreadmarkButtons}
 }
-.threadmarker .history a:hover
+
+.threadmarker .history a
 {
-  display: inline-flex ;
-
-  padding: 3px 8px 2px 6px ;
-  margin: 0 0 0 4px ;
-
-  text-decoration: none;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-
-  color: {xen:property secondaryDark};
-  background-color: {xen:property secondaryLighter};
-  border-color: {xen:property secondaryLight};
+  {xen:property ThreadmarkHistory}
 }
 
 .threadmarker_nav_bottom {
@@ -1483,22 +1503,16 @@
 .threadmarker_nav_top .index a,
 .threadmarker_nav_top .next a
 {
-  text-decoration: none;
-  display: inline-block;
-  padding: 3px 8px 2px 6px;
-  margin: 0 0 0 4px;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  background-color: {xen:property primaryLighterStill};
+  {xen:property ThreadmarkIndexButtons}
 }
 
-.threadmarker_nav_bottom .previous a,
-.threadmarker_nav_bottom .index a,
-.threadmarker_nav_bottom .next a
+.threadmarker_nav_top .previous a,
+.threadmarker_nav_top .index a,
+.threadmarker_nav_top .next a
 {
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  margin: 0 0 0 0;
+  margin: 0 0 0 4px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .threadmarker_nav_bottom .previous a:hover,
@@ -1506,21 +1520,10 @@
 .threadmarker_nav_bottom .next a:hover,
 .threadmarker_nav_top .previous a:hover,
 .threadmarker_nav_top .index a:hover,
-.threadmarker_nav_top .next a:hover
+.threadmarker_nav_top .next a:hover,
+.threadmarker .history a:hover
 {
-  color: {xen:property secondaryDark};
-  text-decoration: none;
-  margin: 0 0 0 4px;
-  background-color: {xen:property secondaryLighter};
-  border-color: {xen:property secondaryLight};
-}
-.threadmarker_nav_bottom .previous a:hover,
-.threadmarker_nav_bottom .index a:hover,
-.threadmarker_nav_bottom .next a:hover
-{
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  margin: 0 0 0 0;
+  {xen:property ThreadmarkButtonHover}
 }
 
 <xen:if is="{xen:property enableResponsive}">
@@ -1557,7 +1560,6 @@
   .threadmarker_nav_top .next a,
   .threadmarker .history a
   {
-
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
   }
@@ -1566,7 +1568,6 @@
   .threadmarker_nav_top .next a:hover,
   .threadmarker .history a:hover
   {
-
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
   }
@@ -1575,7 +1576,7 @@
 
 .ThreadmarkSortable
 {
-  background-color: {xen:property contentBackground};
+  {xen:property ThreadmarkSortable}
 }
 
 .threadmarks .child
@@ -1598,16 +1599,11 @@
 
 .threadmarkItem .newIndicator
 {
-    {xen:property messageNewIndicator}
-    border-top-right-radius: 3px;
-    margin: 0px 0px 5px 5px;
-    box-shadow: 1px 1px 1px rgba(0,0,0, 0.25);
+    {xen:property messageNewIndicatorThreadmarks}
 }
-
 .threadmarkItem .newIndicator span
 {
-    {xen:property messageNewIndicatorInner}
-    border-top-right-radius: 0px;
+    {xen:property messageNewIndicatorInnerThreadmarks}
 }
 
 .primaryContent .jstree-anchor, 
@@ -1615,13 +1611,9 @@
 .primaryContent .jstree-anchor:visited, 
 .primaryContent .jstree-anchor:hover, 
 .primaryContent .jstree-anchor:active {
-  color: {xen:property primaryMedium};
+  {xen:property ThreadmarkJSTree}
 }
-
-ol.ThreadmarkSortable .sortable-placeholder
-{
-	background-color: {xen:property primaryLighter};
-}]]></template>
+]]></template>
     <template title="threadmarks_nav" version_id="10" version_string="1.1.7c"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
 <xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
   <span class="previous">
