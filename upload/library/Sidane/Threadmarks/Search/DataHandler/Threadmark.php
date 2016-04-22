@@ -30,8 +30,6 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
       {
         return;
       }
-      // title only makes sense if a collection of threadmarks have their own title independent of threads
-      //$title = $thread['title'];
 
       $metadata['node'] = $thread['node_id'];
     }

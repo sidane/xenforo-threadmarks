@@ -23,20 +23,17 @@ class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
             threadmarks.post_id = post.post_id
         ';
 
-        //if (($fetchOptions['join'] & Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL) == Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL)
-        //{
-          $joinOptions['selectFields'] .= ',
-            threadmarks.last_edit_date as threadmark_last_edit_date,
-            threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
-            threadmarks.post_date as threadmark_post_date,
-            tm_user.username as threadmark_username
-          ';
+        $joinOptions['selectFields'] .= ',
+          threadmarks.last_edit_date as threadmark_last_edit_date,
+          threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
+          threadmarks.post_date as threadmark_post_date,
+          tm_user.username as threadmark_username
+        ';
           
-          $joinOptions['joinTables'] .= '
-            LEFT JOIN xf_user tm_user  ON
-              tm_user.user_id = threadmarks.user_id
-          ';
-        //}
+        $joinOptions['joinTables'] .= '
+          LEFT JOIN xf_user tm_user  ON
+            tm_user.user_id = threadmarks.user_id
+        ';
       }
     }
 
