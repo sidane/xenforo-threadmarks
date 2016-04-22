@@ -6,20 +6,20 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function getMenuLimit(array $thread, array $nodePermissions = null, array $viewingUser = null)
   {
     $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
-    
-    $menulimit = XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_menu_limit'); 
+
+    $menulimit = XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_menu_limit');
     if($menulimit > 0)
     {
       return $menulimit;
     }
-    
+
     return 0;
   }
-  
+
   public function canViewThreadmark(array $thread, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
   {
     $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
-  
+
     if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
     {
       return true;
@@ -41,7 +41,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     {
       return false;
     }
-    
+
     if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
     {
       return true;
@@ -63,7 +63,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     {
       return false;
     }
-    
+
     if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
     {
       return true;
@@ -85,7 +85,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     {
       return false;
     }
-    
+
     if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
     {
       return true;
@@ -97,41 +97,51 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     }
 
     return false;
-  } 
+  }
+
+  public function getThreadMarkById($id)
+  {
+    return $this->_getDb()->fetchRow("
+      SELECT *
+      FROM threadmarks
+      WHERE threadmark_id = ?
+    ", array($id));
+  }
 
   public function setThreadMark($thread_id, $post_id, $label) {
     $db = $this->_getDb();
 
     XenForo_Db::beginTransaction($db);
 
-    $stmt =  $db->query('
-      INSERT INTO threadmarks
-        (thread_id, post_id, label)
-      VALUES
-        (?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        thread_id = values(thread_id),
-        label = values(label)
-    ', array($thread_id, $post_id, $label));
-    $rowsAffected = $stmt->rowCount();
-
-    // http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
-    // 1 - new row, 2 - update
-    if ($rowsAffected == 1)
+    $threadmark = $this->getByPostId($post_id);
+    $dw = XenForo_DataWriter::create("Sidane_Threadmarks_DataWriter_Threadmark");
+    if (!empty($threadmark['threadmark_id']))
     {
-        $db->query('
-          UPDATE xf_thread
-          SET threadmark_count = threadmark_count + 1
-          WHERE thread_id = ?
-        ', $thread_id);
+      $dw->setExistingData($threadmark['threadmark_id']);
     }
+    else
+    {
+      $position  = $db->fetchOne("
+        SELECT position
+        FROM xf_post
+        where post_id = ?
+        limit 1
+      ", array($post_id));
+
+      $dw->set('user_id', XenForo_Visitor::getUserId());
+      $dw->set('post_id', $post_id);
+      $dw->set('position', $position);
+    }
+    $dw->set('thread_id', $thread_id);
+    $dw->set('label', $label);
+    $dw->save();
 
     XenForo_Db::commit($db);
 
     return true;
   }
 
-  public function deleteThreadMark($threadmark, $decrementCount = false)
+  public function deleteThreadMark($threadmark)
   {
     $db = $this->_getDb();
     if (empty($threadmark['threadmark_id']))
@@ -142,28 +152,13 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     XenForo_Db::beginTransaction($db);
 
-    $db->query('
-        DELETE FROM threadmarks WHERE threadmark_id = ?
-    ', $threadmark['threadmark_id']);
-
-    if ($decrementCount && !empty($threadmark['thread_id']))
-    {
-        $this->modifyThreadMarkCount($threadmark['thread_id'], -1);
-    }
+    $dw = XenForo_DataWriter::create("Sidane_Threadmarks_DataWriter_Threadmark");
+    $dw->setExistingData($threadmark['threadmark_id']);
+    $dw->delete();
 
     XenForo_Db::commit($db);
 
     return true;
-  }
-
-  public function modifyThreadMarkCount($thread_id, $increment)
-  {
-    $db = $this->_getDb();
-    $db->query('
-        UPDATE xf_thread
-        SET threadmark_count = threadmark_count + ?
-        WHERE thread_id = ? and threadmark_count + ? >= 0
-    ', array($increment, $thread_id, $increment));
   }
 
   public function rebuildThreadMarkCache($thread_id)
@@ -177,13 +172,16 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         LEFT JOIN xf_post AS post on post.post_id = threadmarks.post_id
         where `threadmarks`.thread_id = ? and post.post_id is null;
     ', $thread_id);
-    
-    // ensure each threadmark associated with the thread really is
+
+    // ensure each threadmark associated with the thread really is,
+    // and resync attributes off the xf_post table
     $db->query('
         update `threadmarks` marks
         join xf_post AS post on post.post_id = marks.post_id
         set marks.thread_id = post.thread_id
-        where (post.thread_id = ? or marks.thread_id = ?) and post.thread_id <> marks.thread_id;
+           ,marks.message_state = post.message_state
+           ,marks.position = post.position
+        where (post.thread_id = ? or marks.thread_id = ?);
     ', array($thread_id,$thread_id));
 
     // recompute threadmark totals
@@ -199,7 +197,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
   public function recalculatePositionsInThread($threadId)
   {
-    XenForo_Application::defer('Sidane_Threadmarks_Deferred_SingleThreadCache', array('threadId' => $threadId), null, true);    
+    XenForo_Application::defer('Sidane_Threadmarks_Deferred_SingleThreadCache', array('threadId' => $threadId), null, true);
   }
 
   public function getThreadIdsWithThreadMarks($limit =0, $offset = 0)
@@ -216,9 +214,8 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $this->fetchAllKeyed($this->limitQueryResults("
       SELECT threadmarks.*
       FROM threadmarks
-      JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-      WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
-      ORDER BY post.position DESC
+      WHERE threadmarks.thread_id = ? and threadmarks.message_state = 'visible'
+      ORDER BY threadmarks.position DESC
     ",$limit, $offset), 'post_id', $threadId);
   }
 
@@ -235,8 +232,23 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       SELECT threadmarks.*, post.post_date
       FROM threadmarks
       JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-      WHERE threadmarks.thread_id = ? and post.message_state = 'visible'
-      ORDER BY post.position ASC
+      WHERE threadmarks.thread_id = ? and threadmarks.message_state = 'visible'
+      ORDER BY threadmarks.position ASC
     ", 'post_id', $threadId);
+  }
+  
+  public function remapThreadmark(array &$source, array &$dest)
+  {
+    $prefix = 'threadmark';
+    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id');
+    foreach($remap as $remapItem)
+    {
+      $key = $prefix .'_'. $remapItem;
+      if (isset($source[$key]))
+      {
+        $dest[$remapItem] = $source[$key];
+        unset($source[$key]);
+      }
+    }
   }
 }
