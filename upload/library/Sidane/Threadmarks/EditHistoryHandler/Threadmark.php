@@ -40,7 +40,6 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
 
     public function getTitle(array $content)
     {
-      //return new XenForo_Phrase('post_in_thread_x', array('label' => $content['label']));
       return htmlspecialchars($content['label']); // TODO
     }
 
