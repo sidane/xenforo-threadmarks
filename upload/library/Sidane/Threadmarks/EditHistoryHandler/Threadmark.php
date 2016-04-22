@@ -24,7 +24,10 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
     protected function _canViewHistoryAndContent(array $content, array $viewingUser)
     {
       $threadmarkModel = XenForo_Model::create('Sidane_Threadmarks_Model_Threadmarks');
-      return $threadmarkModel->canViewThreadmark($content, $null, $content['permissions'], $viewingUser);
+      $postModel = XenForo_Model::create('XenForo_Model_Post');
+      return $postModel->canViewPostAndContainer($content, $content, $content, $null, $content['permissions'], $viewingUser) &&
+             $postModel->canViewPostHistory($content, $content, $content, $null, $content['permissions'], $viewingUser) &&
+             $threadmarkModel->canViewThreadmark($content, $null, $content['permissions'], $viewingUser);
     }
 
     protected function _canRevertContent(array $content, array $viewingUser)
