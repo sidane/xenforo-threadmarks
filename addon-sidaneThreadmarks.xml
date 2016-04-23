@@ -52,8 +52,8 @@
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
-    <phrase title="option_sidaneThreadmarksNavLinks" version_id="1" version_string="1.0"><![CDATA[Next/Previous threadmark links]]></phrase>
-    <phrase title="option_sidaneThreadmarksNavLinks_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, automatically generate next/previous threadmark links.]]></phrase>
+    <phrase title="option_sidaneThreadmarksNavLinks" version_id="1" version_string="1.0"><![CDATA[Threadmark Nav links]]></phrase>
+    <phrase title="option_sidaneThreadmarksNavLinks_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, automatically generate index/next/previous threadmark links.]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests" version_id="1" version_string="1.0"><![CDATA[Hide threadmarks drop down menu from guests]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, guests will have to click the threadmarks link to see the list of threadmarks.]]></phrase>
     <phrase title="permission_forum_sidane_tm_add" version_id="2" version_string="1.0"><![CDATA[Add Threadmarks to Own Thread]]></phrase>
@@ -467,12 +467,13 @@
   }
 }
 </xen:if>]]></template>
-    <template title="threadmarks_nav" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks} AND {$threadmark.position} != {$thread.firstThreadmarkId}">
+    <template title="threadmarks_nav" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}"><xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
   <span class="previous"><a href="{xen:link posts/PreviousThreadmark, $post}">{xen:phrase threadmark_previous}</a></span>
 </xen:if>
 <span class="index"><a href="{xen:link 'threads/threadmarks', $thread}" rel="nofollow" class="OverlayTrigger">{xen:phrase threadmark_index}</a></span>
-<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks} AND {$threadmark.position} != {$thread.lastThreadmarkId}">
+<xen:if is="{$threadmark.position} != {$thread.lastThreadmarkId}">
   <span class="next"><a href="{xen:link posts/NextThreadmark, $post}">{xen:phrase threadmark_next}</a></span>
+</xen:if>
 </xen:if>]]></template>
     <template title="threadmarks_nav_bottom" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
   <div class="threadmarker_nav_bottom">
