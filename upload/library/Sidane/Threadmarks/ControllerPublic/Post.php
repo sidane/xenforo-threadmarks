@@ -82,6 +82,42 @@ class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_C
     }
   }
 
+  public function actionNextThreadmark()
+  {
+    $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
+
+    $threadmarksModel = $this->_getThreadmarksModel();
+    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
+    if ($threadmark)
+    {
+      $threadmark = $threadmarksModel->getNextThreadmark($threadmark);
+      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(@$threadmark['post_id']);
+    }
+
+    return $this->getPostSpecificRedirect($post, $thread);
+  }
+
+  public function actionPreviousThreadmark()
+  {
+    $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
+    
+    $threadmarksModel = $this->_getThreadmarksModel();
+    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
+    if ($threadmark)
+    {
+      $threadmark = $threadmarksModel->getPreviousThreadmark($threadmark);
+      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(@$threadmark['post_id']);
+    }
+
+    return $this->getPostSpecificRedirect($post, $thread);
+  }
+
   public function actionThreadmarkHistory()
   {
     $this->_request->setParam('content_type', 'threadmark');

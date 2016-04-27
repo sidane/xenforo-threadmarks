@@ -107,6 +107,8 @@ class Sidane_Threadmarks_Install
             (content_type, field_name, field_value)
         VALUES
             ('threadmark', 'edit_history_handler_class', 'Sidane_Threadmarks_EditHistoryHandler_Threadmark')
+           ,('threadmark', 'search_handler_class', 'Sidane_Threadmarks_Search_DataHandler_Threadmark')
+           ,('threadmark', 'news_feed_handler_class', 'Sidane_Threadmarks_NewsFeedHandler_Threadmark')
       ");
 
       self::addColumn('threadmarks','position', 'int not null default 0');
@@ -130,6 +132,9 @@ class Sidane_Threadmarks_Install
       self::addColumn('threadmarks','last_edit_date', 'int not null default 0');
       self::addColumn('threadmarks','last_edit_user_id', 'int not null default 0');
 
+      self::addColumn('xf_thread', 'firstThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
+      self::addColumn('xf_thread', 'lastThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
+
       XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
 
@@ -140,6 +145,8 @@ class Sidane_Threadmarks_Install
   {
     self::dropColumn('xf_thread', 'has_threadmarks');
     self::dropColumn('xf_thread', 'threadmark_count');
+    self::dropColumn('xf_thread', 'firstThreadmarkId');
+    self::dropColumn('xf_thread', 'lastThreadmarkId');
 
     $db = XenForo_Application::get('db');
     $db->query("DROP TABLE IF EXISTS threadmarks");

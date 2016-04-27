@@ -71,6 +71,9 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->_updateThreadMarkCount();
     }
 
+    $this->_indexForSearch();
+    $this->_publishAndNotify();
+
     parent::_postSave();
   }
 
@@ -83,6 +86,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     );
 
     $this->_updateThreadMarkCount(true);
+    $this->_deleteFromSearchIndex();
+    $this->_deleteFromNewsFeed();
   }
 
   protected function getContentType()
@@ -95,25 +100,94 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     return $this->get('post_id');
   }
 
+  protected function _indexForSearch()
+  {
+    if ($this->get('message_state') == 'visible')
+    {
+      if ($this->getExisting('message_state') != 'visible' || $this->isChanged('message'))
+      {
+        $this->_insertOrUpdateSearchIndex();
+      }
+    }
+    else if ($this->isUpdate() && $this->get('message_state') != 'visible' && $this->getExisting('message_state') == 'visible')
+    {
+      $this->_deleteFromSearchIndex();
+    }
+  }
+
+  protected function _insertOrUpdateSearchIndex()
+  {
+    $dataHandler = $this->_getSearchDataHandler();
+    if (!$dataHandler)
+    {
+      return;
+    }
+
+    $thread = $this->_getThreadModel()->getThreadById($this->get('thread_id'));
+
+    $indexer = new XenForo_Search_Indexer();
+    $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $thread);
+  }
+
+  protected function _deleteFromSearchIndex()
+  {
+    $dataHandler = $this->_getSearchDataHandler();
+    if (!$dataHandler)
+    {
+      return;
+    }
+
+    $indexer = new XenForo_Search_Indexer();
+    $dataHandler->deleteFromIndex($indexer, $this->getMergedData());
+  }
+
+  protected function _publishAndNotify()
+  {
+    if ($this->isInsert())
+    {
+      $this->_publishToNewsFeed();
+    }
+  }
+
+  protected function _publishToNewsFeed()
+  {
+    $this->_getNewsFeedModel()->publish(
+      $this->get('user_id'),
+      $this->get('username'),
+      $this->getContentType(),
+      $this->getContentId(),
+      ($this->isUpdate() ? 'update' : 'insert')
+    );
+  }
+  
+  protected function _deleteFromNewsFeed()
+  {
+    $this->_getNewsFeedModel()->delete($this->getContentType(), $this->getContentId() );
+  }
+
   protected function _updateThreadMarkCount($isDelete = false)
   {
     if ($this->getExisting('message_state') == 'visible'
       && ($this->get('message_state') != 'visible' || $isDelete)
     )
     {
-      $this->_db->query('
+      $this->_db->query("
         UPDATE xf_thread
         SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0)
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
         WHERE thread_id = ?
-      ', $this->get('thread_id'));
+      ", $this->get('thread_id'));
     }
     else if ($this->get('message_state') == 'visible' && $this->getExisting('message_state') != 'visible')
     {
-      $this->_db->query('
+      $this->_db->query("
         UPDATE xf_thread
         SET threadmark_count = threadmark_count + 1
+           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
+           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
         WHERE thread_id = ?
-      ', $this->get('thread_id'));
+      ", $this->get('thread_id'));
     }
   }
 
@@ -129,8 +203,23 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     $historyDw->save();
   }
 
+  protected function _getSearchDataHandler()
+  {
+    return XenForo_Search_DataHandler_Abstract::create('Sidane_Threadmarks_Search_DataHandler_Threadmark');
+  }
+
+  protected function _getThreadModel()
+  {
+    return $this->getModelFromCache('XenForo_Model_Thread');
+  }
+
   protected function _getThreadmarksModel()
   {
     return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
+  }
+
+  protected function _getNewsFeedModel()
+  {
+    return $this->getModelFromCache('XenForo_Model_NewsFeed');
   }
 }

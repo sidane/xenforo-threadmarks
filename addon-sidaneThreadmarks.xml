@@ -23,6 +23,12 @@
       <sub_options></sub_options>
       <relation group_id="sidaneThreadmarks" display_order="1"/>
     </option>
+    <option option_id="sidaneThreadmarksNavLinks" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="sidaneThreadmarks" display_order="10"/>
+    </option>
   </optiongroups>
   <permissions>
     <permission_groups/>
@@ -46,6 +52,8 @@
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
+    <phrase title="option_sidaneThreadmarksNavLinks" version_id="1" version_string="1.0"><![CDATA[Threadmark Nav links]]></phrase>
+    <phrase title="option_sidaneThreadmarksNavLinks_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, automatically generate index/next/previous threadmark links.]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests" version_id="1" version_string="1.0"><![CDATA[Hide threadmarks drop down menu from guests]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, guests will have to click the threadmarks link to see the list of threadmarks.]]></phrase>
     <phrase title="permission_forum_sidane_tm_add" version_id="2" version_string="1.0"><![CDATA[Add Threadmarks to Own Thread]]></phrase>
@@ -55,17 +63,25 @@
     <phrase title="permission_forum_sidane_tm_menu_limit" version_id="2" version_string="1.0"><![CDATA[Max Threadmarks In Menu]]></phrase>
     <phrase title="permission_forum_sidane_tm_view" version_id="2" version_string="1.0"><![CDATA[View Threadmarks]]></phrase>
     <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
+    <phrase title="select_this_threadmark" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark]]></phrase>
+    <phrase title="select_this_threadmark_by_x" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark by {name}]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
+    <phrase title="threadmark_created_by_x_on_y" version_id="9" version_string="1.1.6"><![CDATA[Threadmark created by {name} on {date}]]></phrase>
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
     <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
+    <phrase title="threadmark_index" version_id="9" version_string="1.1.6"><![CDATA[Index]]></phrase>
     <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
+    <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[>>]]></phrase>
+    <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[<<]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
+    <phrase title="x_created_threadmark_in_thread_z" version_id="9" version_string="1.1.6"><![CDATA[{name} created the threadmark {threadmark} in thread {title}]]></phrase>
+    <phrase title="x_created_threadmark_on_ys_post_in_thread_z" version_id="9" version_string="1.1.6"><![CDATA[{name} created the threadmark {threadmark} on {poster}'s post in thread {title}]]></phrase>
     <phrase title="you_do_not_have_permission_to_add_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to add threadmarks.]]></phrase>
     <phrase title="you_do_not_have_permission_to_delete_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to delete threadmarks.]]></phrase>
     <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
@@ -104,6 +120,33 @@
 
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 </form>]]></template>
+    <template title="news_feed_item_threadmark_insert" version_id="9" version_string="1.1.6"><![CDATA[<h3 class="description">
+
+	<xen:if is="{$content.user_id} == {$content.threadmark.user_id}">
+	
+		<xen:comment><!-- $user created a threadmark --></xen:comment>
+		{xen:phrase x_created_threadmark_in_thread_z,
+		    'threadmark=<a href="{xen:link posts, $content}">{$content.threadmark.label}</a>',
+			'name={xen:if $content.threadmark.user_id, {xen:helper username, $content.threadmark, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
+		    'poster={xen:helper username, $content, 'primaryText'}',
+			'title=<a href="{xen:link threads, $content}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link threads/preview, $content}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
+		
+	<xen:else />
+	
+		<xen:comment><!-- $user created a threadmark on $contentUser's post --></xen:comment>
+		{xen:phrase x_created_threadmark_on_ys_post_in_thread_z,
+            'threadmark=<a href="{xen:link posts, $content}">{$content.threadmark.label}</a>',
+		    'name={xen:if $content.threadmark.user_id, {xen:helper username, $content.threadmark, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
+			'poster={xen:helper username, $content, 'primaryText'}',
+			'title=<a href="{xen:link threads, $content}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link threads/preview, $content}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
+		
+	</xen:if>
+
+</h3>
+
+<p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
+
+<xen:include template="news_feed_attached_images" />]]></template>
     <template title="new_threadmark" version_id="1" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
@@ -165,6 +208,28 @@
     <a href="{xen:link 'threads/threadmarks', $linkData}" rel="nofollow" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
   </xen:if>
 </xen:if>]]></template>
+    <template title="search_result_threadmark" version_id="9" version_string="1.1.6"><![CDATA[<li id="threadmark-{$threadmark.post_id}" class="searchResult post primaryContent{xen:if $post.isIgnored, ' ignored'}" data-author="{$threadmark.username}">
+
+	<div class="listBlock posterAvatar"><xen:avatar user="$post" size="s" img="true" /></div>
+	
+	<div class="listBlock main">
+		<div class="titleText">
+			<span class="contentType">{xen:phrase threadmark}</span>
+			<h3 class="title{xen:if {$thread.isNew}, ' new'}"><a href="{xen:link posts, $post}">{xen:helper threadPrefix, $thread}{xen:helper highlight, $thread.title, $search.search_query, 'highlight'}</a></h3>
+		</div>
+
+		<blockquote class="snippet">
+			<a href="{xen:link posts, $post}">{xen:helper snippet, $threadmark.label, 150, {xen:array 'term={$search.search_query}', 'emClass=highlight', 'stripQuote=1'}}</a>
+		</blockquote>
+
+		<div class="meta">
+			<xen:if is="{$enableInlineMod} AND {$post.canInlineMod}"><input type="checkbox" name="posts[]" value="{$threadmark.post_id}" class="InlineModCheck" data-target="#post-{$threadmark.post_id}" title="{xen:phrase select_this_threadmark_by_x, 'name={$threadmark.username}'}" /></xen:if>
+			{xen:phrase post_by}: <xen:username user="$threadmark" />,
+			<xen:datetime time="{$threadmark.post_date}" />
+			{xen:phrase in_forum}: <a href="{xen:link forums, $forum}">{$forum.title}</a>
+		</div>
+	</div>
+</li>]]></template>
     <template title="single_page_thread_threadmarks_menu" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$singlePageThread}">
   <div class="PageNav threadmarksSinglePage">
     <xen:include template="page_nav_threadmarks">
@@ -227,23 +292,130 @@
 .threadmarker {
   margin: 0 0 10px 0;
   border-bottom: 1px solid {xen:property primaryLighterStill};
+  display: flex;
+  align-items: flex-end ;
 }
 
 .threadmarker .label {
   display: inline-block;
+  wordwrap: broken-word;
+  word-break: break-word;
   padding: 3px 8px 2px 6px;
   color: {xen:property contentText};
   background-color: {xen:property primaryLighterStill};
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-}
-
-.threadmarker .history {
+  overflow-x: hidden ;
+  align-self: flex-start ;
+  flex-basis: auto ;
+  flex-grow: 0 ;
+  flex-shrink: 1 ;
 }
 
 .threadmarker .label strong {
   color: {xen:property secondaryMedium};
   font-weight: bold;
+}
+
+.threadmarker_nav_top {
+  display: flex;
+  flex-wrap: nowrap;
+  
+  flex-basis: auto ;
+  flex-grow: 0 ;
+  flex-shrink: 0 ;
+  
+  margin-left: auto ;
+  justify-content: flex-end ;
+}
+
+.threadmarker .history
+{
+  flex-basis: auto ;
+  flex-grow: 0 ;
+  flex-shrink: 0 ;
+  
+}
+.threadmarker .history a
+{
+  display: inline-flex ;
+
+  padding: 3px 8px 2px 6px ;
+  margin: 0 0 0 4px ;
+
+  text-decoration: none;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: {xen:property primaryLighterStill};
+}
+.threadmarker .history a:hover
+{
+  display: inline-flex ;
+  
+  padding: 3px 8px 2px 6px ;
+  margin: 0 0 0 4px ;
+
+  text-decoration: none;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  
+  color: {xen:property secondaryDark};
+  background-color: {xen:property secondaryLighter};
+  border-color: {xen:property secondaryLight};
+}
+
+.threadmarker_nav_bottom {
+  overflow:hidden;
+  float:none;
+  text-align:right;
+  padding: 15px 0px 5px 0px;
+}
+
+.threadmarker_nav_bottom .previous a,
+.threadmarker_nav_bottom .index a,
+.threadmarker_nav_bottom .next a,
+.threadmarker_nav_top .previous a,
+.threadmarker_nav_top .index a,
+.threadmarker_nav_top .next a
+{
+  text-decoration: none;
+  display: inline-block;
+  padding: 3px 8px 2px 6px;
+  margin: 0 0 0 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: {xen:property primaryLighterStill};
+}
+
+.threadmarker_nav_bottom .previous a,
+.threadmarker_nav_bottom .index a,
+.threadmarker_nav_bottom .next a
+{
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin: 0 0 0 0;
+}
+
+.threadmarker_nav_bottom .previous a:hover,
+.threadmarker_nav_bottom .index a:hover,
+.threadmarker_nav_bottom .next a:hover,
+.threadmarker_nav_top .previous a:hover,
+.threadmarker_nav_top .index a:hover,
+.threadmarker_nav_top .next a:hover
+{
+  color: {xen:property secondaryDark};
+  text-decoration: none;
+  margin: 0 0 0 4px;
+  background-color: {xen:property secondaryLighter};
+  border-color: {xen:property secondaryLight};
+}
+.threadmarker_nav_bottom .previous a:hover,
+.threadmarker_nav_bottom .index a:hover,
+.threadmarker_nav_bottom .next a:hover
+{
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin: 0 0 0 0;
 }
 
 <xen:if is="{xen:property enableResponsive}">
@@ -254,15 +426,76 @@
     margin-top: 7px;
   }
 }
+@media (max-width:{xen:property maxResponsiveMediumWidth}) {
+}
+@media (max-width:{xen:property maxResponsiveNarrowWidth})
+{
+  .threadmarker {
+    flex-wrap: wrap;
+  }
+  .threadmarker .label 
+  {
+    display: block;
+    max-width: 100% ;
+    width:100%;
+  }
+  .threadmarker .history a
+  {
+    margin:0 0 0 0 ;
+  }
+  .threadmarker .history a:hover
+  {
+    margin:0 0 0 0 ;
+  }
+  .threadmarker_nav_top .previous a,
+  .threadmarker_nav_top .index a,
+  .threadmarker_nav_top .next a,
+  .threadmarker .history a
+  {
+    
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  .threadmarker_nav_top .previous a:hover,
+  .threadmarker_nav_top .index a:hover,
+  .threadmarker_nav_top .next a:hover,
+  .threadmarker .history a:hover
+  {
+    
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+}
 </xen:if>]]></template>
+    <template title="threadmarks_nav" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}"><xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
+  <span class="previous"><a href="{xen:link posts/PreviousThreadmark, $post}">{xen:phrase threadmark_previous}</a></span>
+</xen:if>
+<span class="index"><a href="{xen:link 'threads/threadmarks', $thread}" rel="nofollow" class="OverlayTrigger">{xen:phrase threadmark_index}</a></span>
+<xen:if is="{$threadmark.position} != {$thread.lastThreadmarkId}">
+  <span class="next"><a href="{xen:link posts/NextThreadmark, $post}">{xen:phrase threadmark_next}</a></span>
+</xen:if>
+</xen:if>]]></template>
+    <template title="threadmarks_nav_bottom" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+  <div class="threadmarker_nav_bottom">
+    <xen:include template="threadmarks_nav" />
+  </div>
+</xen:if>]]></template>
+    <template title="threadmarks_nav_top" version_id="9" version_string="1.1.6"><![CDATA[<div class="threadmarker_nav_top">
+  <xen:include template="threadmarks_nav" />
+</div>]]></template>
     <template title="threadmarks_render_flag" version_id="9" version_string="1.1.6"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
-  <div class="threadmarker">
-    <span class="label"><strong>{xen:phrase threadmark}:</strong> {$threadmark.label}</span>
+  <div class="threadmarker ToggleTriggerAnchor">
+    <span class="label" title="{xen:phrase threadmark_created_by_x_on_y, 
+                                           'name={$threadmark.username}',
+                                           'date={xen:datetime $threadmark.post_date}'}">
+      <strong>{xen:phrase threadmark}:</strong> {$threadmark.label}
+    </span>
     <xen:if is="{$threadmark.edit_count} && {$post.canEditThreadmarks}">
-	  <span class="title_history ToggleTriggerAnchor">
-		  <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false"><span></span>{xen:phrase threadmark_history}</a>
+      <span class="history">
+        <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false">{xen:phrase threadmark_history}</a>
       </span>
     </xen:if>
+    <xen:include template="threadmarks_nav_top"/>
   </div>
 </xen:if>]]></template>
   </templates>
@@ -303,6 +536,13 @@ $0]]></replace>
 <xen:include template="threadmarks_render_flag">
   <xen:map from="$post.threadmark" to="$threadmark" />
 </xen:include>]]></replace>
+    </modification>
+    <modification template="message" modification_key="sidaneThreadmarksModification2" description="Add threadmark nav to bottem of the post" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:if is="{$message.last_edit_date}">]]></find>
+      <replace><![CDATA[<xen:include template="threadmarks_nav_bottom">
+  <xen:map from="$post.threadmark" to="$threadmark" />
+</xen:include>
+$0]]></replace>
     </modification>
   </public_template_modifications>
   <bb_code_media_sites/>
