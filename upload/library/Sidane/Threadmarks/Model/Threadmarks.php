@@ -411,6 +411,11 @@ where post.thread_id = ?
       ORDER BY position
     ", 'id', $threadId);
 
+    if (empty($order))
+    {
+        return;
+    }
+
     // build the tree
     $children = array();
     foreach($order as $key => &$threadmark)
@@ -423,7 +428,7 @@ where post.thread_id = ?
           $order[$parent]['children'] = array();
         }
         $order[$parent]['children'][] = &$threadmark;
-        $children = $key;
+        $children[] = $key;
       }
     }
 
@@ -468,30 +473,30 @@ where post.thread_id = ?
     $db = $this->_getDb();
     $args = array();
 
-    $position = 0;
-    $this->preorderTreeTraversal($order, 0, 0, $position, $args);
-
-    if (empty($args))
+    if (!empty($order))
     {
-      return;
+      $position = 0;
+      $this->preorderTreeTraversal($order, 0, 0, $position, $args);
+
+      if (!empty($args))
+      {
+        $args = array_merge($args['pos'], $args['depth'], $args['parent']);
+
+        if (!empty($args))
+        {
+          $args[] = $threadId;
+
+          $sqlBit = str_repeat("WHEN ? THEN ? ", $position);
+          $db->query('
+              UPDATE threadmarks SET
+                position = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
+                depth = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
+                parent_threadmark_id = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END
+              WHERE thread_id = ?
+          ', $args);
+        }
+      }
     }
-
-    $args = array_merge($args['pos'], $args['depth'], $args['parent']);
-
-    if (empty($args))
-    {
-      return;
-    }
-    $args[] = $threadId;
-
-    $sqlBit = str_repeat("WHEN ? THEN ? ", $position);
-    $db->query('
-        UPDATE threadmarks SET
-          position = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
-          depth = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
-          parent_threadmark_id = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END
-        WHERE thread_id = ?
-    ', $args);
 
     $db->query("
         UPDATE xf_thread
