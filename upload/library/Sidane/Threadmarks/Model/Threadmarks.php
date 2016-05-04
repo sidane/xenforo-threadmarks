@@ -408,34 +408,35 @@ where post.thread_id = ?
     $db = $this->_getDb();
     $args = array();
 
-    foreach ($order AS $displayOrder => $data)
+    if (!empty($order))
     {
-      $threadmarkId = is_array($data) ? intval($data[0]) : intval($data);
-      if (empty($threadmarkId))
+      foreach ($order AS $displayOrder => $data)
       {
-          continue;
+        $threadmarkId = is_array($data) ? intval($data[0]) : intval($data);
+        if (empty($threadmarkId))
+        {
+            continue;
+        }
+        $displayOrder = (int)$displayOrder;
+
+        $args[] = $threadmarkId;
+        $args[] = $displayOrder;
+        $sqlOrder .= "WHEN ? THEN ? \n";
       }
-      $displayOrder = (int)$displayOrder;
 
-      $args[] = $threadmarkId;
-      $args[] = $displayOrder;
-      $sqlOrder .= "WHEN ? THEN ? \n";
+      if (!empty($args))
+      {
+        $args[] = $threadId;
+
+        $db->query('
+            UPDATE threadmarks SET
+            position = CASE threadmark_id
+                ' . $sqlOrder . '
+            ELSE 0 END
+            WHERE thread_id = ?
+        ', $args);
+      }
     }
-
-    if (empty($args))
-    {
-        return;
-    }
-
-    $args[] = $threadId;
-
-    $db->query('
-        UPDATE threadmarks SET
-        position = CASE threadmark_id
-            ' . $sqlOrder . '
-        ELSE 0 END
-        WHERE thread_id = ?
-    ', $args);
 
     $db->query("
         UPDATE xf_thread
