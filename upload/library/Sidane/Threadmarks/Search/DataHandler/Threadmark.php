@@ -5,6 +5,15 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
   protected $_threadmarkModel = null;
   protected $_postModel = null;
   protected $_threadModel = null;
+  protected $hasElasticEss = false;
+
+  public function __construct()
+  {
+    // use the proxy class existence as a cheap check for if this addon is enabled.
+    XenForo_Model::create('XenES_Model_Elasticsearch');
+    $this->hasElasticEss = class_exists('XFCP_SV_ElasticEss_XenES_Model_Elasticsearch', false);
+  }
+
 
   /**
    * Inserts a new record or replaces an existing record in the index.
@@ -316,6 +325,16 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
     return $constraints;
   }
 
+  public function filterConstraints(XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints)
+  {
+    $constraints = parent::filterConstraints($sourceHandler, $constraints);
+    if (!isset($constraints['thread']) && !isset($constraints['node']))
+    {
+      $constraints['forum'] = 'all';
+    }
+    return $constraints;
+  }
+
   /**
    * Process a type-specific constraint.
    *
@@ -325,6 +344,29 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
   {
     switch ($constraint)
     {
+      case 'forum':
+        if ($constraintInfo == 'all')
+        {
+          if (!$this->hasElasticEss)
+          {
+            return false;
+          }
+          if (SV_ElasticEss_Globals::$allVisibleNodes === null)
+          {
+            $nodeModel = XenForo_Model::create('XenForo_Model_Node');
+            $nodeList = $nodeModel->getViewableNodeList(null, true);
+            $nodeList = $nodeModel->filterOrphanNodes($nodeList);
+            SV_ElasticEss_Globals::$allVisibleNodes = array_keys($nodeList);
+          }
+          $nodes = SV_ElasticEss_Globals::$allVisibleNodes;
+        }
+        else
+        {
+            $nodes = preg_split('/\D/', strval($constraintInfo));
+        }
+        return array(
+            'metadata' => array('node', array_map('intval', $nodes)),
+        );
       case 'threadmark_count':
         $threadmarkCount = intval($constraintInfo);
         if ($threadmarkCount > 0)
