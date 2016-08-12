@@ -103,6 +103,6 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
   }
 
   private function _getThreadmarksModel() {
-    return $this->getHelper('Sidane_Threadmarks_Model_Threadmarks');
+    return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
   }
 }
