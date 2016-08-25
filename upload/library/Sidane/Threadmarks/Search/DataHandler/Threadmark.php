@@ -170,7 +170,8 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
     $postModel = $this->_getPostModel();
 
     $posts = $postModel->getPostsByIds($ids, array(
-      'join' => XenForo_Model_Post::FETCH_THREAD | XenForo_Model_Post::FETCH_FORUM | XenForo_Model_Post::FETCH_USER | Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL,
+      'includeThreadmark' => true,
+      'join' => XenForo_Model_Post::FETCH_THREAD | XenForo_Model_Post::FETCH_FORUM | XenForo_Model_Post::FETCH_USER,
       'permissionCombinationId' => $viewingUser['permission_combination_id']
     ));
 

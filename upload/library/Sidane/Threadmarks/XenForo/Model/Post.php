@@ -2,38 +2,32 @@
 
 class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenForo_Model_Post
 {
-  const FETCH_THREADMARKS = 0x80000; // hope this doesn't conflict
-  const FETCH_THREADMARKS_FULL = 0x180000; // this includes FETCH_THREADMARKS
-
   public function preparePostJoinOptions(array $fetchOptions)
   {
     $joinOptions = parent::preparePostJoinOptions($fetchOptions);
 
-    if (!empty($fetchOptions['join']))
+    if (!empty($fetchOptions['includeThreadmark']))
     {
-      if ($fetchOptions['join'] & Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS)
-      {
-        $joinOptions['selectFields'] .= ',
-          threadmarks.threadmark_id, threadmarks.label as threadmark_label, threadmarks.edit_count as threadmark_edit_count,
-          threadmarks.user_id as threadmark_user_id, threadmarks.position as threadmark_position
-        ';
-        $joinOptions['joinTables'] .= '
-          LEFT JOIN threadmarks  ON
-            threadmarks.post_id = post.post_id
-        ';
+      $joinOptions['selectFields'] .= ',
+        threadmarks.threadmark_id, threadmarks.label as threadmark_label, threadmarks.edit_count as threadmark_edit_count,
+        threadmarks.user_id as threadmark_user_id, threadmarks.position as threadmark_position
+      ';
+      $joinOptions['joinTables'] .= '
+        LEFT JOIN threadmarks  ON
+          threadmarks.post_id = post.post_id
+      ';
 
-        $joinOptions['selectFields'] .= ',
-          threadmarks.last_edit_date as threadmark_last_edit_date,
-          threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
-          threadmarks.threadmark_date as threadmark_threadmark_date,
-          tm_user.username as threadmark_username
-        ';
+      $joinOptions['selectFields'] .= ',
+        threadmarks.last_edit_date as threadmark_last_edit_date,
+        threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
+        threadmarks.threadmark_date as threadmark_threadmark_date,
+        tm_user.username as threadmark_username
+      ';
           
-        $joinOptions['joinTables'] .= '
-          LEFT JOIN xf_user tm_user  ON
-            tm_user.user_id = threadmarks.user_id
-        ';
-      }
+      $joinOptions['joinTables'] .= '
+        LEFT JOIN xf_user tm_user  ON
+          tm_user.user_id = threadmarks.user_id
+      ';
     }
 
     return $joinOptions;
@@ -47,8 +41,8 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     {
       $fetchOptions['threadmarks'] = array
       (
-        'firstThreadmarkId' => $thread['firstThreadmarkId'],
-        'lastThreadmarkId' => $thread['lastThreadmarkId'],
+        'firstThreadmarkId' => isset($thread['firstThreadmarkId']) ? $thread['firstThreadmarkId'] : 0,
+        'lastThreadmarkId' => isset($thread['lastThreadmarkId']) ? $thread['lastThreadmarkId'] : 0,
       );
     }
 

@@ -5,11 +5,11 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
   protected function _getPostFetchOptions(array $thread, array $forum)
   {
     $postFetchOptions = parent::_getPostFetchOptions($thread, $forum);
-    $threadmarkmodel = $this->_getThreadmarksModel();
 
+    $threadmarkmodel = $this->_getThreadmarksModel();
     if ($threadmarkmodel->canViewThreadmark($thread, $forum))
     {
-      $postFetchOptions['join'] |= Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS;
+      $postFetchOptions['includeThreadmark'] = true;
     }
 
     return $postFetchOptions;

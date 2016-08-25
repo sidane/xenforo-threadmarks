@@ -11,7 +11,8 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
     /* @var $postModel XenForo_Model_Post */
     $postModel = $this->_getPostModel();
     $post = $postModel->getPostById($contentId, array(
-      'join' => XenForo_Model_Post::FETCH_FORUM | XenForo_Model_Post::FETCH_THREAD | XenForo_Model_Post::FETCH_USER |  Sidane_Threadmarks_Model_Post::FETCH_THREADMARKS_FULL,
+      'includeThreadmark' => true,
+      'join' => XenForo_Model_Post::FETCH_FORUM | XenForo_Model_Post::FETCH_THREAD | XenForo_Model_Post::FETCH_USER,
       'permissionCombinationId' => $viewingUser['permission_combination_id']
     ));
     if ($post)
