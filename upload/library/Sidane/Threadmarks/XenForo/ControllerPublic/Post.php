@@ -1,6 +1,6 @@
 <?php
 
-class Sidane_Threadmarks_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_ControllerPublic_Post
+class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_XenForo_ControllerPublic_Post
 {
   public function actionThreadmarkPreview()
   {

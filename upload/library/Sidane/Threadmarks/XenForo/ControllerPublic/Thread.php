@@ -1,6 +1,6 @@
 <?php
 
-class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks_ControllerPublic_Thread
+class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks_XenForo_ControllerPublic_Thread
 {
   protected function _getPostFetchOptions(array $thread, array $forum)
   {

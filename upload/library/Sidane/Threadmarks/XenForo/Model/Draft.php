@@ -1,6 +1,6 @@
 <?php
 
-class Sidane_Threadmarks_Model_Draft extends XFCP_Sidane_Threadmarks_Model_Draft
+class Sidane_Threadmarks_XenForo_Model_Draft extends XFCP_Sidane_Threadmarks_XenForo_Model_Draft
 {
   public function saveDraft($key, $message, array $extraData = array(), array $viewingUser = null, $lastUpdate = null)
   {

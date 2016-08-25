@@ -1,7 +1,6 @@
 <?php
 
-
-class Sidane_Threadmarks_Model_Post extends XFCP_Sidane_Threadmarks_Model_Post
+class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenForo_Model_Post
 {
   const FETCH_THREADMARKS = 0x80000; // hope this doesn't conflict
   const FETCH_THREADMARKS_FULL = 0x180000; // this includes FETCH_THREADMARKS

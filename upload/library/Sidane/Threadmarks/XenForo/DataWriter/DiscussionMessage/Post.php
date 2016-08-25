@@ -1,6 +1,6 @@
 <?php
 
-class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWriter_Post
+class Sidane_Threadmarks_XenForo_DataWriter_DiscussionMessage_Post extends XFCP_Sidane_Threadmarks_XenForo_DataWriter_DiscussionMessage_Post
 {
   protected function _messagePostSave()
   {
