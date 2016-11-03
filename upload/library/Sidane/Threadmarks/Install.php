@@ -142,13 +142,9 @@ class Sidane_Threadmarks_Install
       XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
 
-    if ($version < 11)
+    if ($version < 1020002)
     {
       self::renameColumn('threadmarks', 'post_date', 'threadmark_date', 'int not null default 0');
-    }
-
-    if ($version < 13)
-    {
       self::addColumn('threadmarks','parent_threadmark_id', 'INT UNSIGNED DEFAULT 0 NOT NULL');
       self::addColumn('threadmarks','depth', 'INT UNSIGNED DEFAULT 0 NOT NULL');
     }
