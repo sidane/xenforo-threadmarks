@@ -7,10 +7,11 @@
   <admin_template_modifications/>
   <code_events/>
   <code_event_listeners>
-    <listener event_id="load_class_controller" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Thread" description=""/>
-    <listener event_id="load_class_controller" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Post" description=""/>
-    <listener event_id="load_class_datawriter" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_DiscussionMessage_Post" description=""/>
-    <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Post" description=""/>
+    <listener event_id="load_class_controller" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Thread" description="XenForo_ControllerPublic_Thread"/>
+    <listener event_id="load_class_controller" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Post" description="XenForo_ControllerPublic_Post"/>
+    <listener event_id="load_class_datawriter" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_DiscussionMessage_Post" description="XenForo_DataWriter_DiscussionMessage_Post"/>
+    <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Post" description="XenForo_Model_Post"/>
+    <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Draft" description="XenForo_Model_Draft"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -1331,6 +1332,43 @@
 <xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
 </xen:if>
 </xen:if>]]></template>
+    <template title="quick_reply_threadmark" version_id="1020000" version_string="1.2.0"><![CDATA[<xen:if is="{$debugMode}">
+<xen:require js="js/sidane/threadmarks/threadmarks.js" />
+<xen:else />
+<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
+</xen:if>
+<dl class="ctrlUnit">
+	<dt><label for="ctrl_threadmark">{xen:phrase threadmark_label}:</label></dt>
+	<dd><input type="text" name="threadmark" id="ctrl_threadmark" class="textCtrl" value="{$threadmarkLabel}" maxlength="255" /></dd>
+</dl>]]></template>
+    <template title="quick_reply_threadmark.css" version_id="1020000" version_string="1.2.0"><![CDATA[.threadmark .ctrlUnit > dd
+{
+	width: {xen:property ctrlUnitValueWidth};
+	box-sizing: border-box;
+	float:left;
+	padding-right: {xen:property ctrlUnitEdgeSpacer};
+}
+
+.threadmark .ctrlUnit > dd .textCtrl
+{
+	box-sizing: border-box;
+	width: 100%;
+}
+
+
+.threadmark .ctrlUnit > dt
+{
+	{xen:property ctrlUnitLabel}
+	box-sizing: border-box;
+	float:left;
+}
+
+/* clearfix */ 
+.threadmark .ctrlUnit 
+{ 
+	overflow: auto; 
+	zoom: 1; 
+}]]></template>
     <template title="search_result_threadmark" version_id="11" version_string="1.1.8"><![CDATA[<li id="threadmark-{$threadmark.post_id}" class="searchResult post primaryContent{xen:if $post.isIgnored, ' ignored'}" data-author="{$threadmark.username}">
 
 	<div class="listBlock posterAvatar"><xen:avatar user="$post" size="s" img="true" /></div>
@@ -1715,6 +1753,23 @@ $0]]></replace>
       <replace><![CDATA[<xen:include template="threadmarks_nav_bottom">
   <xen:map from="$post.threadmark" to="$threadmark" />
 </xen:include>
+$0]]></replace>
+    </modification>
+    <modification template="thread_reply" modification_key="thread_reply_threadmark" description="Add threadmarks on reply" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<!-- slot: after_guest -->]]></find>
+      <replace><![CDATA[$0
+<xen:if is="{$canAddThreadmark}">
+<xen:include template="quick_reply_threadmark" />
+</xen:if>]]></replace>
+    </modification>
+    <modification template="quick_reply" modification_key="threadmarks_quick_reply" description="Add threadmarks on quick reply" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:raw $qrEditor}]]></find>
+      <replace><![CDATA[<xen:if is="{$canAddThreadmark}">
+<xen:require css="quick_reply_threadmark.css" />
+<div class="threadmark">
+<xen:include template="quick_reply_threadmark" />
+</div>
+</xen:if>
 $0]]></replace>
     </modification>
   </public_template_modifications>

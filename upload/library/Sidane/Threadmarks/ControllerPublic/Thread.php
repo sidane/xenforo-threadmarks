@@ -22,11 +22,72 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     if ($parent instanceof XenForo_ControllerResponse_View &&
         !empty($parent->params['thread']) && !empty($parent->params['forum']))
     {
+        $thread = $parent->params['thread'];
+        $threadmarkmodel = $this->_getThreadmarksModel();
+        if ($parent->params['canQuickReply'])
+        {
+          $parent->params['canAddThreadmark'] = $threadmarkmodel->canAddThreadmark(null, $thread, $parent->params['forum'], $null);
+        }
+        // draft support for the threadmark field
+        if (!empty($thread['draft_extra']))
+        {
+          $draftExtra = XenForo_Helper_Php::safeUnserialize($thread['draft_extra']);
+          if (!empty($draftExtra['threadmark']))
+          {
+            $parent->params['threadmarkLabel'] = $draftExtra['threadmark'];
+          }
+        }
+
         $threadmarksHelper = $this->_threadmarksHelper();
-        $recentThreadmarks = $threadmarksHelper->getRecentThreadmarks($parent->params['thread'], $parent->params['forum']);
+        $recentThreadmarks = $threadmarksHelper->getRecentThreadmarks($thread, $parent->params['forum']);
         if (!empty($recentThreadmarks)) {
           $parent->params['singlePageThread'] = $parent->params['totalPosts'] <= $parent->params['postsPerPage'];
           $parent->params['thread']['recentThreadmarks'] = $recentThreadmarks;
+        }
+    }
+
+    return $parent;
+  }
+
+  public function actionSaveDraft()
+  {
+    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
+
+    return parent::actionSaveDraft();
+  }
+
+  public function actionAddReply()
+  {
+    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
+
+    return parent::actionAddReply();
+  }
+
+  public function actionReply()
+  {
+    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
+
+    $parent = parent::actionReply();
+
+    if ($parent instanceof XenForo_ControllerResponse_View &&
+        !empty($parent->params['thread']) && !empty($parent->params['forum']))
+    {
+        $thread = $parent->params['thread'];
+        $threadmarkmodel = $this->_getThreadmarksModel();
+        $parent->params['canAddThreadmark'] = $threadmarkmodel->canAddThreadmark(null, $thread, $parent->params['forum'], $null);
+
+        // draft support for the threadmark field
+        if ($this->_input->inRequest('more_options'))
+        {
+           $parent->params['threadmarkLabel'] = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
+        }
+        else if (!empty($thread['draft_extra']))
+        {
+          $draftExtra = XenForo_Helper_Php::safeUnserialize($thread['draft_extra']);
+          if (!empty($draftExtra['threadmark']))
+          {
+            $parent->params['threadmarkLabel'] = $draftExtra['threadmark'];
+          }
         }
     }
 

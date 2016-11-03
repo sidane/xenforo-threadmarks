@@ -33,7 +33,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return false;
   }
 
-  public function canAddThreadmark(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
+  public function canAddThreadmark(array $post = null, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
   {
     $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
 

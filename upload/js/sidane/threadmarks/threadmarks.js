@@ -262,6 +262,13 @@
         });
     }
 
+    XenForo.ThreadmarkQuickReply = function($form)
+    {
+        $form.on('QuickReplyComplete', function() {
+            $("#ctrl_threadmark").val("");
+        });
+    }
+
     if (!XenForo.isTouchBrowser())
     {
         // Register tooltip elements for desktop browsers
@@ -269,5 +276,6 @@
     }
 
     XenForo.register('.ThreadmarkSortable', 'XenForo.ThreadmarkSortable');
+    XenForo.register('#QuickReply', 'XenForo.ThreadmarkQuickReply');
 }
 (jQuery, this, document);

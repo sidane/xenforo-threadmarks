@@ -6,7 +6,7 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
   {
     parent::_messagePostSave();
 
-    if ($this->isChanged('message_state'))
+    if ($this->isUpdate() && $this->isChanged('message_state'))
     {
       $threadmark = $this->_getThreadMarkModel()->getByPostId($this->get('post_id'));
       if (!empty($threadmark))
@@ -16,6 +16,12 @@ class Sidane_Threadmarks_DataWriter_Post extends XFCP_Sidane_Threadmarks_DataWri
         $dw->set('message_state', $this->get('message_state'));
         $dw->save();
       }
+    }
+    else if ($this->isInsert() && Sidane_Threadmarks_Globals::$threadmarkLabel)
+    {
+      $post = $this->getMergedData();
+      $thread = $this->getDiscussionData();
+      $this->_getThreadMarkModel()->setThreadMark($thread, $post, Sidane_Threadmarks_Globals::$threadmarkLabel);
     }
   }
 
