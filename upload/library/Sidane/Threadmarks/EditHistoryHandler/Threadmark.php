@@ -65,7 +65,7 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
     }
     else
     {
-      return htmlspecialchars($content['label']); // TODO
+      return array();
     }
   }
 
