@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.2.0" version_id="1020002" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="2.0.1" version_id="2000100" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -55,10 +55,10 @@
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks_description" version_id="1" version_string="1.0"><![CDATA[]]></phrase>
-    <phrase title="option_sidaneThreadmarksNavLinks" version_id="1" version_string="1.0"><![CDATA[Threadmark Nav links]]></phrase>
-    <phrase title="option_sidaneThreadmarksNavLinks_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, automatically generate index/next/previous threadmark links.]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests" version_id="1" version_string="1.0"><![CDATA[Hide threadmarks drop down menu from guests]]></phrase>
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, guests will have to click the threadmarks link to see the list of threadmarks.]]></phrase>
+    <phrase title="option_sidaneThreadmarksNavLinks" version_id="1" version_string="1.0"><![CDATA[Threadmark Nav links]]></phrase>
+    <phrase title="option_sidaneThreadmarksNavLinks_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, automatically generate index/next/previous threadmark links.]]></phrase>
     <phrase title="permission_forum_sidane_tm_add" version_id="2" version_string="1.0"><![CDATA[Add Threadmarks to Own Thread]]></phrase>
     <phrase title="permission_forum_sidane_tm_delete" version_id="2" version_string="1.0"><![CDATA[Delete Threadmarks in Own Thread]]></phrase>
     <phrase title="permission_forum_sidane_tm_edit" version_id="2" version_string="1.0"><![CDATA[Edit Threadmarks in Own Thread]]></phrase>
@@ -1614,7 +1614,7 @@
   {xen:property ThreadmarkJSTree}
 }
 ]]></template>
-    <template title="threadmarks_nav" version_id="10" version_string="1.1.7c"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
+    <template title="threadmarks_nav" version_id="2000000" version_string="2.0.0"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
 <xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
   <span class="previous">
     <xen:if is="{$post.threadmark_previous}">
