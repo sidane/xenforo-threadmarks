@@ -49,6 +49,18 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
     return $parent;
   }
 
+  protected function _assertCanReplyToThread(array $thread, array $forum)
+  {
+    parent::_assertCanReplyToThread($thread, $forum);
+    if (Sidane_Threadmarks_Globals::$threadmarkLabel)
+    {
+      if (!$this->_getThreadmarksModel()->canAddThreadmark(null, $thread, $forum, $errorPhraseKey))
+      {
+        throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
+      }
+    }
+  }
+
   public function actionSaveDraft()
   {
     Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
@@ -79,7 +91,7 @@ class Sidane_Threadmarks_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks
         // draft support for the threadmark field
         if ($this->_input->inRequest('more_options'))
         {
-           $parent->params['threadmarkLabel'] = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
+           $parent->params['threadmarkLabel'] = Sidane_Threadmarks_Globals::$threadmarkLabel;
         }
         else if (!empty($thread['draft_extra']))
         {
