@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="2.0.1" version_id="2000100" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.2.1" version_id="1020100" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -45,7 +45,7 @@
   <phrases>
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
     <phrase title="add_threadmark_to_end" version_id="12" version_string="1.1.9"><![CDATA[Add to end]]></phrase>
-    <phrase title="click_to_lock" version_id="2000100" version_string="2.0.1"><![CDATA[Click to lock]]></phrase>
+    <phrase title="click_to_lock" version_id="1020100" version_string="1.2.1"><![CDATA[Click to lock]]></phrase>
     <phrase title="click_to_unlock" version_id="12" version_string="1.1.9"><![CDATA[Click to unlock]]></phrase>
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[Edit Threadmark]]></phrase>
