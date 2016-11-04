@@ -45,7 +45,7 @@
   <phrases>
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
     <phrase title="add_threadmark_to_end" version_id="12" version_string="1.1.9"><![CDATA[Add to end]]></phrase>
-    <phrase title="click_to_lock" version_id="12" version_string="1.1.9"><![CDATA[Click to unlock]]></phrase>
+    <phrase title="click_to_lock" version_id="2000100" version_string="2.0.1"><![CDATA[Click to lock]]></phrase>
     <phrase title="click_to_unlock" version_id="12" version_string="1.1.9"><![CDATA[Click to unlock]]></phrase>
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[Edit Threadmark]]></phrase>
