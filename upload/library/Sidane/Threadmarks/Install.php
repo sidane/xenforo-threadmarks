@@ -149,7 +149,10 @@ class Sidane_Threadmarks_Install
       self::addColumn('threadmarks','depth', 'INT UNSIGNED DEFAULT 0 NOT NULL');
     }
 
-    XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
+    if ($version < 1020002)
+    {
+      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
+    }
 
     self::updateXenEsMapping($requireIndexing, array(
       'threadmark' => array(
