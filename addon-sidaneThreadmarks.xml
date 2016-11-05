@@ -3,8 +3,22 @@
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
-  <admin_templates/>
-  <admin_template_modifications/>
+  <admin_templates>
+    <template title="tools_rebuild_threadmarks"><![CDATA[<xen:form action="{xen:adminlink 'tools/trigger-deferred'}">
+	<h2 class="subHeading">{xen:phrase rebuild_threadmarks}</h2>
+	<xen:spinboxunit name="options[batch]" value="100" step="50" min="1" label="{xen:phrase items_to_process_per_page}:" />
+
+	<xen:submitunit save="{xen:phrase rebuild_now}" />
+	<input type="hidden" name="cache" value="Sidane_Threadmarks_Deferred_Cache" />
+</xen:form>
+]]></template>
+  </admin_templates>
+  <admin_template_modifications>
+    <modification template="tools_rebuild" modification_key="threadmarks_tools_rebuild" description="Add the builders for threadmarks" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[/$/]]></find>
+      <replace><![CDATA[<xen:include template="tools_rebuild_threadmarks" />]]></replace>
+    </modification>
+  </admin_template_modifications>
   <code_events/>
   <code_event_listeners>
     <listener event_id="load_class_controller" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Thread" description="XenForo_ControllerPublic_Thread"/>
@@ -67,6 +81,7 @@
     <phrase title="permission_forum_sidane_tm_menu_limit" version_id="2" version_string="1.0"><![CDATA[Max Threadmarks In Menu]]></phrase>
     <phrase title="permission_forum_sidane_tm_view" version_id="2" version_string="1.0"><![CDATA[View Threadmarks]]></phrase>
     <phrase title="please_enter_label_for_threadmark" version_id="1" version_string="1.0"><![CDATA[Please enter label for Threadmark]]></phrase>
+    <phrase title="rebuild_threadmarks" version_id="1030000" version_string="1.3.0"><![CDATA[Rebuild Threadmark Summary Information]]></phrase>
     <phrase title="select_this_threadmark" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark]]></phrase>
     <phrase title="select_this_threadmark_by_x" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark by {name}]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
