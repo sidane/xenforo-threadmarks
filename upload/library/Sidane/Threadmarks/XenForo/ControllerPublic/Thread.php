@@ -5,7 +5,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
   protected function _getPostFetchOptions(array $thread, array $forum)
   {
     $postFetchOptions = parent::_getPostFetchOptions($thread, $forum);
-    if (empty($thread['lastThreadmarkId']) || isset($postFetchOptions['includeThreadmark']) && !$postFetchOptions['includeThreadmark'])
+    if (empty($thread['threadmark_count']) || isset($postFetchOptions['includeThreadmark']) && !$postFetchOptions['includeThreadmark'])
     {
       return $postFetchOptions;
     }
