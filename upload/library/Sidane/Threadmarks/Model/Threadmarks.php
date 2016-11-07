@@ -2,6 +2,7 @@
 
 class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 {
+  const FETCH_POSTS_MINIMAL = 0x01;
 
   public function getMenuLimit(array $thread, array $nodePermissions = null, array $viewingUser = null)
   {
@@ -353,14 +354,50 @@ where post.thread_id = ?
     ",'threadmark_position', $threadId);
   }
 
-  public function getByThreadIdWithMinimalPostData($threadId) {
+  public function getByThreadIdWithMinimalPostData($threadId)
+  {
+    return $this->getThreadmarksByThread(
+      $threadId,
+      array( 'join' => self::FETCH_POSTS_MINIMAL)
+    );
+  }
+
+  public function getThreadmarksByThread($threadId, array $fetchOptions = array())
+  {
+    $joinOptions = $this->prepareThreadmarkJoinOptions($fetchOptions);
+
     return $this->fetchAllKeyed("
-      SELECT threadmarks.*, post.post_date, post.position as post_position
+      SELECT threadmarks.*
+	    " . $joinOptions['selectFields'] . "
       FROM threadmarks
-      JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-      WHERE threadmarks.thread_id = ? and threadmarks.message_state = 'visible'
+        " . $joinOptions['joinTables'] . "
+      WHERE threadmarks.thread_id = ?
+        AND threadmarks.message_state = 'visible'
       ORDER BY threadmarks.position ASC
     ", 'post_id', $threadId);
+  }
+
+  public function prepareThreadmarkJoinOptions(array $fetchOptions)
+  {
+    $selectFields = '';
+    $joinTables = '';
+
+    if (!empty($fetchOptions['join']))
+    {
+      if ($fetchOptions['join'] & self::FETCH_POSTS_MINIMAL)
+      {
+        $selectFields .= ',
+          post.post_date, post.position as post_position';
+        $joinTables .= '
+          JOIN xf_post AS post ON
+            (post.post_id = threadmarks.post_id)';
+      }
+    }
+
+    return array(
+	  'selectFields' => $selectFields,
+	  'joinTables'   => $joinTables
+	);
   }
 
   public function remapThreadmark(array &$source, array &$dest)
