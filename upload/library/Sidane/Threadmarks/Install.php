@@ -171,10 +171,10 @@ class Sidane_Threadmarks_Install
     $db->query("DROP TABLE IF EXISTS threadmarks");
 
     $db->query("delete from xf_permission_entry 
-        where permission_id in 'sidane_tm_manage', 'sidane_tm_add', 'sidane_tm_delete', 'sidane_tm_edit', 'sidane_tm_menu_limit', 'sidane_tm_view'
+        where permission_id in ('sidane_tm_manage', 'sidane_tm_add', 'sidane_tm_delete', 'sidane_tm_edit', 'sidane_tm_menu_limit', 'sidane_tm_view')
     ");
     $db->query("delete from xf_permission_entry_content 
-        where permission_id in 'sidane_tm_manage', 'sidane_tm_add', 'sidane_tm_delete', 'sidane_tm_edit', 'sidane_tm_menu_limit', 'sidane_tm_view'
+        where permission_id in ('sidane_tm_manage', 'sidane_tm_add', 'sidane_tm_delete', 'sidane_tm_edit', 'sidane_tm_menu_limit', 'sidane_tm_view')
     ");
 
     $db->query("

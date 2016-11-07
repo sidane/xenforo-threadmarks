@@ -10,8 +10,11 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
   public function __construct()
   {
     // use the proxy class existence as a cheap check for if this addon is enabled.
-    XenForo_Model::create('XenES_Model_Elasticsearch');
-    $this->hasElasticEss = class_exists('XFCP_SV_ElasticEss_XenES_Model_Elasticsearch', false);
+    if (XenForo_Application::getOptions()->enableElasticsearch && class_exists('XenES_Model_Elasticsearch', true))
+    {
+      XenForo_Model::create('XenES_Model_Elasticsearch');
+      $this->hasElasticEss = class_exists('XFCP_SV_ElasticEss_XenES_Model_Elasticsearch', false);
+    }
   }
 
 
