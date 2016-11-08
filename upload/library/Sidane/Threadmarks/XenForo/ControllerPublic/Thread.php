@@ -125,7 +125,9 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       return $this->getNotFoundResponse();
     }
 
-    $threadmarks = $threadmarksModel->getByThreadIdWithMinimalPostData($thread['thread_id']);
+    $fetchOptions = $this->_getThreadmarkFetchOptions();
+
+    $threadmarks = $threadmarksModel->getThreadmarksByThread($thread['thread_id'], $fetchOptions);
     $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
 
     foreach($threadmarks as &$threadmark)
@@ -159,7 +161,10 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId, $threadFetchOptions, $forumFetchOptions);
     $threadmarksModel = $this->_getThreadmarksModel();
     if (!empty($thread['threadmark_count']) && $threadmarksModel->canViewThreadmark($thread, $forum)) {
-      $threadmarks = $threadmarksModel->getByThreadIdWithMinimalPostData($thread['thread_id']);
+
+      $fetchOptions = $this->_getThreadmarkFetchOptions();
+
+      $threadmarks = $threadmarksModel->getThreadmarksByThread($thread['thread_id'], $fetchOptions);
 
       $threadmarks = $threadmarksModel->prepareThreadmarks($threadmarks, $thread, $forum);
       $threadmarks = $threadmarksModel->preparelistToTree($threadmarks);
@@ -185,6 +190,13 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     } else {
       return $this->getNotFoundResponse();
     }
+  }
+
+  protected function _getThreadmarkFetchOptions()
+  {
+    return array(
+      'join' => Sidane_Threadmarks_Model_Threadmarks::FETCH_POSTS_MINIMAL
+    );
   }
 
   private function _threadmarksHelper() {
