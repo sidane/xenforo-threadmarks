@@ -2,6 +2,7 @@
 
 class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
 {
+  const DATA_THREAD = 'threadInfo';
 
   protected function _getFields()
   {
@@ -75,7 +76,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
 
     parent::_postSave();
   }
-  
+
   protected function _postSaveAfterTransaction()
   {
     parent::_postSaveAfterTransaction();
@@ -107,6 +108,17 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     return $this->get('post_id');
   }
 
+  protected function _getThreadData()
+  {
+    if (!$thread = $this->getExtraData(self::DATA_THREAD))
+    {
+      $thread = $this->_getThreadModel()->getThreadById($this->get('thread_id'));
+      $this->setExtraData(self::DATA_THREAD, $thread);
+    }
+
+    return $thread;
+  }
+
   protected function _indexForSearch()
   {
     if ($this->get('message_state') == 'visible')
@@ -130,7 +142,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       return;
     }
 
-    $thread = $this->_getThreadModel()->getThreadById($this->get('thread_id'));
+    $thread = $this->_getThreadData();
 
     $indexer = new XenForo_Search_Indexer();
     $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $thread);

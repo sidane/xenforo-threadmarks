@@ -201,6 +201,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     $dw->set('thread_id', $thread['thread_id']);
     $dw->set('label', $label);
     $dw->set('message_state', $post['message_state']);
+    $dw->setExtraData(Sidane_Threadmarks_DataWriter_Threadmark::DATA_THREAD, $thread);
     $dw->save();
 
     XenForo_Db::commit($db);
