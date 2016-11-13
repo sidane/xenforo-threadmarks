@@ -9,7 +9,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     
     try
     {
-      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
+      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId, array('join' => XenForo_Model_Post::FETCH_USER));
     }
     catch(Exception $e) {
       return $this->responseView('XenForo_ViewPublic_Thread_Preview', '', array('post' => false));
