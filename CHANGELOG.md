@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## v1.3.0 (2016-11-17)
+
+- Add threadmarks from quick reply/reply
+- Implement require extendability for Word Count support
+- Expose threadmark cache rebuild to the rebuild cache page
+- Reduce data fetching on threads with no threadmarks
+- Fix displaying post user avatar on threadmark preview.
+- Update jsTree library
+
+## v1.2.1 (2016-11-04)
+
+- Use local copy of jstree
+- Fix typo in uninstaller
+- Fix ElasticSearch/XenForo Enhanced Search detection
+- Fix "Click to lock" phrase
+
+## v1.2.0 (2016-11-03)
+
+- Style properties for theming
+- Optional next/previous/index navigation for threadmarked posts.
+- Ability to sortable threadmarks from a thread's threadmark index
+- Threadmark history, and on hover information for who created it.
+- News feed integration
+- Expose threadmarks to the search
+
 ## v1.1.5 (2015-02-17)
 
 - Add more whitespace to a SQL query for compatibility with other addons.
