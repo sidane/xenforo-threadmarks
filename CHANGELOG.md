@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.3.1 (2016-11-24)
+
+- Fix compatibility with pre-XF 1.5 versions
+
 ## v1.3.0 (2016-11-17)
 
 - Add threadmarks from quick reply/reply
