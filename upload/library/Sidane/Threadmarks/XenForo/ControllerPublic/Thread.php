@@ -35,7 +35,14 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
         // draft support for the threadmark field
         if (!empty($thread['draft_extra']))
         {
-          $draftExtra = XenForo_Helper_Php::safeUnserialize($thread['draft_extra']);
+          if (is_callable('XenForo_Helper_Php::safeUnserialize'))
+          {
+            $draftExtra = XenForo_Helper_Php::safeUnserialize($thread['draft_extra']);
+          }
+          else
+          {
+            $draftExtra = @unserialize($thread['draft_extra']);
+          }
           if (!empty($draftExtra['threadmark']))
           {
             $parent->params['threadmarkLabel'] = $draftExtra['threadmark'];
@@ -99,7 +106,14 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
         }
         else if (!empty($thread['draft_extra']))
         {
-          $draftExtra = XenForo_Helper_Php::safeUnserialize($thread['draft_extra']);
+          if (is_callable('XenForo_Helper_Php::safeUnserialize'))
+          {
+            $draftExtra = XenForo_Helper_Php::safeUnserialize($thread['draft_extra']);
+          }
+          else
+          {
+            $draftExtra = @unserialize($thread['draft_extra']);
+          }
           if (!empty($draftExtra['threadmark']))
           {
             $parent->params['threadmarkLabel'] = $draftExtra['threadmark'];
