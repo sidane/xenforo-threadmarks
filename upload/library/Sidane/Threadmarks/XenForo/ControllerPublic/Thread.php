@@ -88,11 +88,11 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
 
   protected function _getNewPosts(array $thread, array $forum, $lastDate, $limit = 3)
   {
-      if (Sidane_Threadmarks_Globals::$threadmarkLabel && empty($thread['threadmark_count']))
-      {
-          $thread['threadmark_count'] = 1;
-      }
-      return parent::_getNewPosts($thread, $forum, $lastDate, $limit);
+    if (Sidane_Threadmarks_Globals::$threadmarkLabel && empty($thread['threadmark_count']))
+    {
+      $thread['threadmark_count'] = 1;
+    }
+    return parent::_getNewPosts($thread, $forum, $lastDate, $limit);
   }
 
   public function actionReply()
