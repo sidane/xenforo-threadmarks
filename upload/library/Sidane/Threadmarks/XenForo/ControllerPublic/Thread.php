@@ -86,6 +86,15 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     return parent::actionAddReply();
   }
 
+  protected function _getNewPosts(array $thread, array $forum, $lastDate, $limit = 3)
+  {
+      if (Sidane_Threadmarks_Globals::$threadmarkLabel && empty($thread['threadmark_count']))
+      {
+          $thread['threadmark_count'] = 1;
+      }
+      return parent::_getNewPosts($thread, $forum, $lastDate, $limit);
+  }
+
   public function actionReply()
   {
     Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle('threadmark', XenForo_Input::STRING);
