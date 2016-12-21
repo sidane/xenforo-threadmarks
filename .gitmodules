@@ -1,0 +1,4 @@
+[submodule "upload/library/SV/Utils"]
+	path = upload/library/SV/Utils
+	url = https://github.com/Xon/XenForo-Utils.git
+	branch = master

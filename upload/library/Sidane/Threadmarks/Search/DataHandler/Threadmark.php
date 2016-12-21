@@ -17,6 +17,12 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
     }
   }
 
+  public function getCustomMapping(array $mapping = array())
+  {
+    $mapping['properties']['node'] = array("type" => "long");
+    $mapping['properties']['thread'] = array("type" => "long");
+    return $mapping;
+  }
 
   /**
    * Inserts a new record or replaces an existing record in the index.

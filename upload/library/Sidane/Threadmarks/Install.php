@@ -41,14 +41,14 @@ class Sidane_Threadmarks_Install
 
     if ($version == 1)
     {
-      self::dropColumn('xf_thread', 'has_threadmarks');
-      self::dropIndex('threadmarks', 'thread_id');
+      SV_Utils_Install::dropColumn('xf_thread', 'has_threadmarks');
+      SV_Utils_Install::dropIndex('threadmarks', 'thread_id');
     }
 
     if ($version < 2)
     {
-      self::addColumn('xf_thread', 'threadmark_count', 'INT UNSIGNED DEFAULT 0 NOT NULL');
-      self::addIndex('threadmarks', 'thread_post_id', array('thread_id','post_id'));
+      SV_Utils_Install::addColumn('xf_thread', 'threadmark_count', 'INT UNSIGNED DEFAULT 0 NOT NULL');
+      SV_Utils_Install::addIndex('threadmarks', 'thread_post_id', array('thread_id','post_id'));
 
       $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
         select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'sidane_tm_manage', permission_value, permission_value_int
@@ -88,13 +88,13 @@ class Sidane_Threadmarks_Install
     }
     if ($version < 3)
     {
-      self::modifyColumn('threadmarks', 'label', 'varchar(100)', 'VARCHAR(255) NOT NULL');
+      SV_Utils_Install::modifyColumn('threadmarks', 'label', 'varchar(100)', 'VARCHAR(255) NOT NULL');
     }
 
     if ($version < 7)
     {
-      self::dropIndex('threadmarks', 'post_id');
-      self::addIndex('threadmarks', 'post_id', array('post_id'));
+      SV_Utils_Install::dropIndex('threadmarks', 'post_id');
+      SV_Utils_Install::addIndex('threadmarks', 'post_id', array('post_id'));
     }
 
     if ($version <= 9)
@@ -115,38 +115,38 @@ class Sidane_Threadmarks_Install
            ,('threadmark', 'news_feed_handler_class', 'Sidane_Threadmarks_NewsFeedHandler_Threadmark')
       ");
 
-      self::addColumn('threadmarks','position', 'int not null default 0');
-      self::addIndex('threadmarks', 'thread_position', array('thread_id', 'position'));
+      SV_Utils_Install::addColumn('threadmarks', 'position', 'int not null default 0');
+      SV_Utils_Install::addIndex('threadmarks', 'thread_position', array('thread_id', 'position'));
 
-      self::addColumn('threadmarks','user_id', 'int not null default 0');
+      SV_Utils_Install::addColumn('threadmarks','user_id', 'int not null default 0');
       $db->query("update threadmarks mark
         join xf_post post on mark.post_id = post.post_id
         set mark.user_id = post.user_id
         where mark.user_id = 0
         ");
-      self::addIndex('threadmarks', 'user_id', array('user_id'));
-      self::addColumn('threadmarks','post_date', 'int not null default 0');
+      SV_Utils_Install::addIndex('threadmarks', 'user_id', array('user_id'));
+      SV_Utils_Install::addColumn('threadmarks', 'post_date', 'int not null default 0');
       $db->query("update threadmarks mark
         join xf_post post on mark.post_id = post.post_id
         set mark.post_date = post.post_date
         where mark.post_date = 0
         ");
-      self::addColumn('threadmarks','message_state', "enum('visible','moderated','deleted') NOT NULL DEFAULT 'visible'");
-      self::addColumn('threadmarks','edit_count', 'int not null default 0');
-      self::addColumn('threadmarks','last_edit_date', 'int not null default 0');
-      self::addColumn('threadmarks','last_edit_user_id', 'int not null default 0');
+      SV_Utils_Install::addColumn('threadmarks', 'message_state', "enum('visible','moderated','deleted') NOT NULL DEFAULT 'visible'");
+      SV_Utils_Install::addColumn('threadmarks', 'edit_count', 'int not null default 0');
+      SV_Utils_Install::addColumn('threadmarks', 'last_edit_date', 'int not null default 0');
+      SV_Utils_Install::addColumn('threadmarks', 'last_edit_user_id', 'int not null default 0');
 
-      self::addColumn('xf_thread', 'firstThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
-      self::addColumn('xf_thread', 'lastThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
+      SV_Utils_Install::addColumn('xf_thread', 'firstThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
+      SV_Utils_Install::addColumn('xf_thread', 'lastThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
 
       XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
 
     if ($version < 1020002)
     {
-      self::renameColumn('threadmarks', 'post_date', 'threadmark_date', 'int not null default 0');
-      self::addColumn('threadmarks','parent_threadmark_id', 'INT UNSIGNED DEFAULT 0 NOT NULL');
-      self::addColumn('threadmarks','depth', 'INT UNSIGNED DEFAULT 0 NOT NULL');
+      SV_Utils_Install::renameColumn('threadmarks', 'post_date', 'threadmark_date', 'int not null default 0');
+      SV_Utils_Install::addColumn('threadmarks', 'parent_threadmark_id', 'INT UNSIGNED DEFAULT 0 NOT NULL');
+      SV_Utils_Install::addColumn('threadmarks', 'depth', 'INT UNSIGNED DEFAULT 0 NOT NULL');
     }
 
     if ($version < 1020002)
@@ -154,21 +154,17 @@ class Sidane_Threadmarks_Install
       XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
     }
 
-    self::updateXenEsMapping($requireIndexing, array(
-      'threadmark' => array(
-        "properties" => array(
-          "node" => array("type" => "long"),
-          "thread" => array("type" => "long"),
-        )
-    )));
+    // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
+    // requires overriding XenES_Model_Elasticsearch
+    SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);
   }
 
   public static function uninstall()
   {
-    self::dropColumn('xf_thread', 'has_threadmarks');
-    self::dropColumn('xf_thread', 'threadmark_count');
-    self::dropColumn('xf_thread', 'firstThreadmarkId');
-    self::dropColumn('xf_thread', 'lastThreadmarkId');
+    SV_Utils_Install::dropColumn('xf_thread', 'has_threadmarks');
+    SV_Utils_Install::dropColumn('xf_thread', 'threadmark_count');
+    SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
+    SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
 
     $db = XenForo_Application::get('db');
     $db->query("DROP TABLE IF EXISTS threadmarks");
@@ -190,164 +186,5 @@ class Sidane_Threadmarks_Install
       WHERE xf_content_type_field.field_value like 'Sidane_Threadmarks_%'
     ");
     XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
-  }
-
-  protected static function _verifyMapping($actualMappingObj, array $expectedMapping)
-  {
-    foreach ($expectedMapping AS $name => $value)
-    {
-      if (!isset($actualMappingObj->$name))
-      {
-        return true;
-      }
-
-      if (is_array($value))
-      {
-        if (self::_verifyMapping($actualMappingObj->$name, $value))
-        {
-          return true;
-        }
-      }
-      else if ($value === 'yes')
-      {
-        if ($actualMappingObj->$name !== true && $actualMappingObj->$name !== 'yes')
-        {
-          return true;
-        }
-      }
-      else if ($value === 'no')
-      {
-        if ($actualMappingObj->$name !== false && $actualMappingObj->$name !== 'no')
-        {
-          return true;
-        }
-      }
-      else if ($actualMappingObj->$name !== $value)
-      {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  public static function getOptimizableMappings(XenES_Model_Elasticsearch $XenEs, array $mappingTypes)
-  {
-    $mappings = $XenEs->getMappings();
-
-    $optimizable = array();
-
-    foreach ($mappingTypes AS $type => $extra)
-    {
-      if (!$mappings || !isset($mappings->$type)) // no index or no mapping
-      {
-        $optimize = true;
-      }
-      else
-      {
-        $mapping = XenForo_Application::mapMerge(XenES_Model_Elasticsearch::$optimizedGenericMapping, $extra);
-        $optimize = self::_verifyMapping($mappings->$type, $mapping);
-      }
-
-      if ($optimize)
-      {
-        $optimizable[] = $type;
-      }
-    }
-
-    return $optimizable;
-  }
-
-  public static function updateXenEsMapping(array $requireIndexing, array $mappings)
-  {
-    if (XenForo_Application::get('options')->enableElasticsearch && $XenEs = XenForo_Model::create('XenES_Model_Elasticsearch'))
-    {
-      $optimizable = self::getOptimizableMappings($XenEs, $mappings);
-      foreach ($optimizable AS $type)
-      {
-        if (isset($mappings[$type]))
-        {
-          $XenEs->optimizeMapping($type, false, $mappings[$type]);
-          $requireIndexing[$type] = true;
-        }
-      }
-    }
-
-    if($requireIndexing)
-    {
-      $types = array();
-      foreach($requireIndexing as $type => $null)
-      {
-        $types[] = new XenForo_Phrase($type);
-      }
-
-      XenForo_Error::logException(new Exception("Please rebuild the search index for the content types: " . implode(', ', $types) ), false);
-    }
-  }
-
-  public static function modifyColumn($table, $column, $oldDefinition, $definition)
-  {
-    $db = XenForo_Application::get('db');
-    $hasColumn = false;
-    if (empty($oldDefinition))
-    {
-      $hasColumn = $db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column);
-    }
-    else
-    {
-      $hasColumn = $db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ? and Type = ?', array($column,$oldDefinition));
-    }
-
-    if($hasColumn)
-    {
-      $db->query('ALTER TABLE `'.$table.'` MODIFY COLUMN `'.$column.'` '.$definition);
-    }
-  }
-
-  public static function dropColumn($table, $column)
-  {
-    $db = XenForo_Application::get('db');
-    if ($db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
-    {
-      $db->query('ALTER TABLE `'.$table.'` drop COLUMN `'.$column.'` ');
-    }
-  }
-
-  public static function addColumn($table, $column, $definition)
-  {
-    $db = XenForo_Application::get('db');
-    if (!$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $column))
-    {
-      $db->query('ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$definition);
-    }
-  }
-
-  public static function renameColumn($table, $old_name, $new_name, $definition)
-  {
-    $db = XenForo_Application::get('db');
-    if ($db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $old_name) &&
-    !$db->fetchRow('SHOW COLUMNS FROM `'.$table.'` WHERE Field = ?', $new_name))
-    {
-      $db->query('ALTER TABLE `'.$table.'` CHANGE COLUMN `'.$old_name.'` `'.$new_name.'` '. $definition);
-    }
-  }
-
-  public static function addIndex($table, $index, array $columns)
-  {
-    $db = XenForo_Application::get('db');
-    if (!$db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
-    {
-      $cols = '(`'. implode('`,`', $columns). '`)';
-      $db->query('ALTER TABLE `'.$table.'` add index `'.$index.'` '. $cols);
-    }
-  }
-
-  public static function dropIndex($table, $index)
-  {
-    $db = XenForo_Application::get('db');
-    if ($db->fetchRow('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', $index))
-    {
-      $db->query('ALTER TABLE `'.$table.'` drop index `'.$index.'` ');
-    }
   }
 }

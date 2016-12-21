@@ -26,6 +26,7 @@
     <listener event_id="load_class_datawriter" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_DiscussionMessage_Post" description="XenForo_DataWriter_DiscussionMessage_Post"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Post" description="XenForo_Model_Post"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Draft" description="XenForo_Model_Draft"/>
+    <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenES_Model_Elasticsearch" description="XenES_Model_Elasticsearch"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
