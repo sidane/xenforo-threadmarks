@@ -590,9 +590,9 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     $children = array();
     foreach($order as $key => &$threadmark)
     {
-      $parent = $threadmark['parent'];
-      if ($parent)
+      if (!empty($threadmark['parent']))
       {
+        $parent = $threadmark['parent'];
         if (empty($order[$parent]['children']))
         {
           $order[$parent]['children'] = array();
