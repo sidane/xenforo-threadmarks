@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.3.3" version_id="1030300" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.3.3a" version_id="1030301" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -1704,7 +1704,7 @@
   {xen:property ThreadmarkJSTree}
 }
 ]]></template>
-    <template title="threadmarks_nav" version_id="2000000" version_string="2.0.0"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
+    <template title="threadmarks_nav" version_id="1030301" version_string="1.3.3a"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
 <xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
   <span class="previous">
     <xen:if is="{$post.threadmark_previous}">
