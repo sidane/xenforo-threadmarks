@@ -235,7 +235,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       // subtract 1 from other threadmark positions
       $this->_db->query(
         "UPDATE threadmarks
-          SET position = position - 1
+          SET position = greatest(cast(position as signed) - 1, 0)
           WHERE thread_id = ?
             AND threadmark_category_id = ?
             AND position >= ?
