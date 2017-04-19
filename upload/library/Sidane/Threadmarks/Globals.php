@@ -5,6 +5,7 @@
 class Sidane_Threadmarks_Globals
 {
   public static $threadmarkLabel = null;
+  public static $threadmarkCategoryId = null;
 
   private function __construct() {}
 }

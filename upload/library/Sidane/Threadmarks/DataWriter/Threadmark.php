@@ -8,23 +8,66 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
   {
     return array(
       'threadmarks' => array(
-        'threadmark_id'          => array('type' => self::TYPE_UINT, 'autoIncrement' => true),
-        'user_id'                => array('type' => self::TYPE_UINT, 'required' => true),
-        'threadmark_date'        => array('type' => self::TYPE_UINT, 'required' => true, 'default' => XenForo_Application::$time),
-        'thread_id'              => array('type' => self::TYPE_UINT, 'required' => true),
-        'post_id'                => array('type' => self::TYPE_UINT, 'required' => true),
-        'label'                  => array('type' => self::TYPE_STRING, 'required' => true, 'maxLength' => 255,
-             'requiredError' => 'please_enter_label_for_threadmark'
+        'threadmark_id' => array(
+          'type'          => self::TYPE_UINT,
+          'autoIncrement' => true
         ),
-        'message_state'          => array('type' => self::TYPE_STRING, 'default' => 'visible',
+        'threadmark_category_id' => array(
+          'type'         => self::TYPE_UINT,
+          'required'     => true,
+          'verification' => array('$this', '_verifyThreadmarkCategoryId')
+        ),
+        'user_id' => array(
+          'type'     => self::TYPE_UINT,
+          'required' => true
+        ),
+        'threadmark_date' => array(
+          'type'     => self::TYPE_UINT,
+          'required' => true,
+          'default'  => XenForo_Application::$time
+        ),
+        'thread_id' => array(
+          'type'     => self::TYPE_UINT,
+          'required' => true
+        ),
+        'post_id' => array(
+          'type'     => self::TYPE_UINT,
+          'required' => true
+        ),
+        'label' => array(
+          'type'          => self::TYPE_STRING,
+          'required'      => true,
+          'maxLength'     => 255,
+          'requiredError' => 'please_enter_label_for_threadmark'
+        ),
+        'message_state' => array(
+          'type'          => self::TYPE_STRING,
+          'default'       => 'visible',
           'allowedValues' => array('visible', 'moderated', 'deleted')
         ),
-        'last_edit_date'         => array('type' => self::TYPE_UINT, 'default' => 0),
-        'last_edit_user_id'      => array('type' => self::TYPE_UINT, 'default' => 0),
-        'edit_count'             => array('type' => self::TYPE_UINT_FORCED, 'default' => 0),
-        'position'               => array('type' => self::TYPE_UINT_FORCED),
-        'parent_threadmark_id'   => array('type' => self::TYPE_UINT_FORCED, 'default' => 0),
-        'depth'                  => array('type' => self::TYPE_UINT_FORCED, 'default' => 0),
+        'last_edit_date' => array(
+          'type'    => self::TYPE_UINT,
+          'default' => 0
+        ),
+        'last_edit_user_id' => array(
+          'type'    => self::TYPE_UINT,
+          'default' => 0
+        ),
+        'edit_count' => array(
+          'type'    => self::TYPE_UINT_FORCED,
+          'default' => 0
+        ),
+        'position' => array(
+          'type' => self::TYPE_UINT_FORCED
+        ),
+        'parent_threadmark_id' => array(
+          'type'    => self::TYPE_UINT_FORCED,
+          'default' => 0
+        ),
+        'depth' => array(
+          'type'    => self::TYPE_UINT_FORCED,
+          'default' => 0
+        )
       )
     );
   }
@@ -65,11 +108,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
         $this->_insertEditHistory();
       }
     }
-    else if ($this->isInsert())
-    {
-    }
 
-    if($this->isChanged('message_state'))
+    if ($this->isChanged('message_state'))
     {
       $this->_updateThreadMarkCount();
     }
@@ -181,44 +221,108 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
 
   protected function _deleteFromNewsFeed()
   {
-    $this->_getNewsFeedModel()->delete($this->getContentType(), $this->getContentId() );
+    $this->_getNewsFeedModel()->delete($this->getContentType(), $this->getContentId());
   }
 
   protected function _updateThreadMarkCount($isDelete = false)
   {
-    if ($this->getExisting('message_state') == 'visible'
-      && ($this->get('message_state') != 'visible' || $isDelete)
+    if (
+      ($this->getExisting('message_state') == 'visible') &&
+      ($this->get('message_state') != 'visible' || $isDelete)
     )
     {
-      $this->_db->query("
-        UPDATE threadmarks
-        SET position = position - 1
-        WHERE thread_id = ? and position >= ? and post_id <> ? and threadmarks.message_state = 'visible'
-      ", array($this->get('thread_id'), $this->get('position'), $this->get('post_id')));
+      // the message is becoming invisible (or this is a deletion)
+      // subtract 1 from other threadmark positions
+      $this->_db->query(
+        "UPDATE threadmarks
+          SET position = position - 1
+          WHERE thread_id = ?
+            AND threadmark_category_id = ?
+            AND position >= ?
+            AND post_id <> ?
+            AND threadmarks.message_state = 'visible'",
+        array(
+          $this->get('thread_id'),
+          $this->get('threadmark_category_id'),
+          $this->get('position'),
+          $this->get('post_id')
+        )
+      );
 
-      $this->_db->query("
-        UPDATE xf_thread
-        SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0)
-           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
-           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
-        WHERE thread_id = ?
-      ", $this->get('thread_id'));
+      // update min/max threadmark ID and threadmark count in thread data
+      $this->_db->query(
+        "UPDATE xf_thread
+          SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0),
+            firstThreadmarkId = COALESCE(
+              (
+                SELECT min(position)
+                  FROM threadmarks
+                  WHERE threadmarks.thread_id = xf_thread.thread_id
+                    AND threadmarks.message_state = 'visible'
+              ),
+              0
+            ),
+            lastThreadmarkId = COALESCE(
+              (
+                SELECT max(position)
+                  FROM threadmarks
+                  WHERE threadmarks.thread_id = xf_thread.thread_id
+                    AND threadmarks.message_state = 'visible'
+              ),
+              0
+            )
+            WHERE thread_id = ?",
+        $this->get('thread_id')
+      );
     }
-    else if ($this->get('message_state') == 'visible' && $this->getExisting('message_state') != 'visible')
+    elseif (
+      ($this->get('message_state') == 'visible') &&
+      ($this->getExisting('message_state') != 'visible')
+    )
     {
-      $this->_db->query("
-        UPDATE threadmarks
-        SET position = position + 1
-        WHERE thread_id = ? and position >= ? and post_id <> ? and threadmarks.message_state = 'visible'
-      ", array($this->get('thread_id'), $this->get('position'), $this->get('post_id')));
+      // the message is becoming visible
+      // add 1 to other threadmark positions
+      $this->_db->query(
+        "UPDATE threadmarks
+          SET position = position + 1
+          WHERE thread_id = ?
+            AND threadmark_category_id = ?
+            AND position >= ?
+            AND post_id <> ?
+            AND threadmarks.message_state = 'visible'",
+      array(
+        $this->get('thread_id'),
+        $this->get('threadmark_category_id'),
+        $this->get('position'),
+        $this->get('post_id')
+        )
+      );
 
-      $this->_db->query("
-        UPDATE xf_thread
-        SET threadmark_count = threadmark_count + 1
-           ,firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
-           ,lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
-        WHERE thread_id = ?
-      ", $this->get('thread_id'));
+      // update min/max threadmark ID and threadmark count in thread data
+      $this->_db->query(
+        "UPDATE xf_thread
+          SET threadmark_count = threadmark_count + 1,
+            firstThreadmarkId = COALESCE(
+              (
+                SELECT min(position)
+                  FROM threadmarks
+                  WHERE threadmarks.thread_id = xf_thread.thread_id
+                    AND threadmarks.message_state = 'visible'
+              ),
+              0
+            ),
+            lastThreadmarkId = COALESCE(
+              (
+                SELECT max(position)
+                  FROM threadmarks
+                  WHERE threadmarks.thread_id = xf_thread.thread_id
+                    AND threadmarks.message_state = 'visible'
+              ),
+              0
+            )
+            WHERE thread_id = ?",
+        $this->get('thread_id')
+      );
     }
   }
 
@@ -232,6 +336,30 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
         'old_text' => $this->getExisting('label')
     ));
     $historyDw->save();
+  }
+
+  protected function _verifyThreadmarkCategoryId($threadmarkCategoryId)
+  {
+    if (empty($threadmarkCategoryId))
+    {
+      return false;
+    }
+
+    $threadmarkCategory = $this
+      ->_getThreadmarksModel()
+      ->getThreadmarkCategoryById($threadmarkCategoryId);
+
+    if (!empty($threadmarkCategory))
+    {
+      return true;
+    }
+
+    $this->error(
+      new XenForo_Phrase('sidane_please_enter_valid_threadmark_category_id'),
+      'threadmark_category_id'
+    );
+
+    return false;
   }
 
   protected function _getSearchDataHandler()

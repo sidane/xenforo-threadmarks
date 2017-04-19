@@ -56,21 +56,38 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return false;
   }
 
-  public function canDeleteThreadmark(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
-  {
-    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+  public function canDeleteThreadmark(
+    array $threadmark,
+    array $post,
+    array $thread,
+    array $forum,
+    &$errorPhraseKey = '',
+    array $nodePermissions = null,
+    array $viewingUser = null
+  ) {
+    $this->standardizeViewingUserReferenceForNode(
+      $thread['node_id'],
+      $viewingUser,
+      $nodePermissions
+    );
 
     if (!$viewingUser['user_id'])
     {
       return false;
     }
 
-    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
+    if (XenForo_Permission::hasContentPermission(
+      $nodePermissions,
+      'sidane_tm_manage'
+    ))
     {
       return true;
     }
 
-    if (($thread['user_id'] == $viewingUser['user_id']) && XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_delete'))
+    if (
+      ($thread['user_id'] == $viewingUser['user_id']) &&
+      XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_delete')
+    )
     {
       return true;
     }
@@ -78,9 +95,20 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return false;
   }
 
-  public function canEditThreadmark(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
-  {
-    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+  public function canEditThreadmark(
+    array $threadmark,
+    array $post,
+    array $thread,
+    array $forum,
+    &$errorPhraseKey = '',
+    array $nodePermissions = null,
+    array $viewingUser = null
+  ) {
+    $this->standardizeViewingUserReferenceForNode(
+      $thread['node_id'],
+      $viewingUser,
+      $nodePermissions
+    );
 
     if (!$viewingUser['user_id'])
     {
@@ -92,7 +120,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       return true;
     }
 
-    if (($thread['user_id'] == $viewingUser['user_id']) && XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_edit'))
+    if (
+      ($thread['user_id'] == $viewingUser['user_id']) &&-
+      XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_edit')
+    )
     {
       return true;
     }
@@ -111,18 +142,49 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $threadmarks;
   }
 
-  public function prepareThreadmark(array $threadmark, array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
-  {
-    $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
+  public function prepareThreadmark(
+    array $threadmark,
+    array $thread,
+    array $forum,
+    array $nodePermissions = null,
+    array $viewingUser = null
+  ) {
+    $this->standardizeViewingUserReferenceForNode(
+      $thread['node_id'],
+      $viewingUser,
+      $nodePermissions
+    );
 
-    $threadmark['canEdit'] = $this->canEditThreadmark($threadmark, $thread, $forum, $null, $nodePermissions, $viewingUser);
-    $threadmark['canDelete'] = $this->canDeleteThreadmark($threadmark, $thread, $forum, $null, $nodePermissions, $viewingUser);
+    $threadmark['canEdit'] = $this->canEditThreadmark(
+      $threadmark,
+      $threadmark,
+      $thread,
+      $forum,
+      $null,
+      $nodePermissions,
+      $viewingUser
+    );
+    $threadmark['canDelete'] = $this->canDeleteThreadmark(
+      $threadmark,
+      $threadmark,
+      $thread,
+      $forum,
+      $null,
+      $nodePermissions,
+      $viewingUser
+    );
 
     if (isset($thread['thread_read_date']) || isset($forum['forum_read_date']))
     {
         $readOptions = array(0);
-        if (isset($thread['thread_read_date'])) { $readOptions[] = $thread['thread_read_date']; }
-        if (isset($forum['forum_read_date'])) { $readOptions[] = $forum['forum_read_date']; }
+        if (isset($thread['thread_read_date']))
+        {
+          $readOptions[] = $thread['thread_read_date'];
+        }
+        if (isset($forum['forum_read_date']))
+        {
+          $readOptions[] = $forum['forum_read_date'];
+        }
 
         $threadmark['isNew'] = (max($readOptions) < $threadmark['threadmark_date']);
     }
@@ -133,11 +195,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     if (isset($threadmark['post_date']) || isset($threadmark['post_position']))
     {
-        $threadmark['post'] = array
-        (
-            'post_id' => $threadmark['post_id'],
+        $threadmark['post'] = array(
+            'post_id'   => $threadmark['post_id'],
             'post_date' => @$threadmark['post_date'],
-            'position' => @$threadmark['post_position'],
+            'position'  => @$threadmark['post_position'],
         );
         unset($threadmark['post_date']);
         unset($threadmark['post_position']);
@@ -155,13 +216,20 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", array($id));
   }
 
-  public function setThreadMark($thread, $post, $label, $add_last = true) {
+  public function setThreadMark(
+    array $thread,
+    array $post,
+    $label,
+    $categoryId,
+    $addLast = true
+  ) {
     $db = $this->_getDb();
 
     XenForo_Db::beginTransaction($db);
 
     $threadmark = $this->getByPostId($post['post_id']);
-    $dw = XenForo_DataWriter::create("Sidane_Threadmarks_DataWriter_Threadmark");
+
+    $dw = XenForo_DataWriter::create('Sidane_Threadmarks_DataWriter_Threadmark');
     if (!empty($threadmark['threadmark_id']))
     {
       $dw->setExistingData($threadmark);
@@ -169,39 +237,62 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     else
     {
       $position = null;
-      if (!$add_last)
+
+      if (!$addLast)
       {
-        $position = $db->fetchOne("
-          select threadmarks.position + 1
-          from xf_post AS post
-          join threadmarks on threadmarks.post_id = post.post_id
-          where post.thread_id = ? and post.position < ?
-          order by threadmarks.position desc
-          limit 1;
-        ", array($thread['thread_id'], $post['position']));
+        // get last threadmark position up to current post and add 1
+        $position = $db->fetchOne(
+          'SELECT threadmarks.position + 1
+            FROM xf_post AS post
+            JOIN threadmarks ON threadmarks.post_id = post.post_id
+            WHERE post.thread_id = ?
+              AND post.position < ?
+              AND threadmark.threadmark_category_id = ?
+            ORDER BY threadmarks.position DESC
+            LIMIT 1',
+          array(
+            $thread['thread_id'],
+            $post['position'],
+            $categoryId
+          )
+        );
       }
+
       if ($position === null)
       {
-        $position = $db->fetchOne("
-          select position + 1
-          from threadmarks
-          where thread_id = ?
-          order by position desc
-          limit 1;
-        ", array($thread['thread_id']));
+        // get last threadmark position and add 1
+        $position = $db->fetchOne(
+          'SELECT position + 1
+            FROM threadmarks
+            WHERE thread_id = ?
+              AND threadmark_category_id = ?
+            ORDER BY position DESC
+            LIMIT 1',
+          array(
+            $thread['thread_id'],
+            $categoryId
+          )
+        );
       }
+
       if ($position === null)
       {
+        // there are no threadmarks
         $position = 0;
       }
+
       $dw->set('user_id', XenForo_Visitor::getUserId());
       $dw->set('post_id', $post['post_id']);
       $dw->set('position', $position);
     }
     $dw->set('thread_id', $thread['thread_id']);
     $dw->set('label', $label);
+    $dw->set('threadmark_category_id', $categoryId);
     $dw->set('message_state', $post['message_state']);
-    $dw->setExtraData(Sidane_Threadmarks_DataWriter_Threadmark::DATA_THREAD, $thread);
+    $dw->setExtraData(
+      Sidane_Threadmarks_DataWriter_Threadmark::DATA_THREAD,
+      $thread
+    );
     $dw->save();
 
     XenForo_Db::commit($db);
@@ -229,56 +320,64 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return true;
   }
 
-  public function rebuildThreadMarkCache($thread_id)
+  public function rebuildThreadMarkCache($threadId)
   {
     $db = $this->_getDb();
 
     // remove orphaned threadmarks (by post)
-    $db->query('
-        DELETE `threadmarks`
-        FROM `threadmarks`
-        LEFT JOIN xf_post AS post on post.post_id = threadmarks.post_id
-        where `threadmarks`.thread_id = ? and post.post_id is null;
-    ', $thread_id);
+    $db->query(
+      'DELETE FROM threadmarks
+        LEFT JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+        WHERE threadmarks.thread_id = ? AND post.post_id IS NULL',
+      $threadId
+    );
 
     // push threadmarks onto the correct thread (aka potentially not this one)
-    $db->query('
-update `threadmarks` marks
-join xf_post AS post on post.post_id = marks.post_id
-set marks.thread_id = post.thread_id
-where marks.thread_id = ?
-    ', $thread_id);
+    $db->query(
+      'UPDATE threadmarks
+        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+        SET threadmarks.thread_id = post.thread_id
+        WHERE threadmarks.thread_id = ?',
+      $threadId
+    );
 
-    // pull threadmarks onto the correct thread (aka potentially this one). This can be fairly slow depending on the thread length.
-    $db->query('
-update `threadmarks` marks
-join xf_post AS post on post.post_id = marks.post_id
-set marks.thread_id = post.thread_id
-where post.thread_id = ?
-    ', $thread_id);
+    // pull threadmarks onto the correct thread (aka potentially this one)
+    // this can be fairly slow depending on the thread length
+    $db->query(
+      'UPDATE threadmarks
+        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+        SET threadmarks.thread_id = post.thread_id
+        WHERE post.thread_id = ?',
+      $threadId
+    );
 
     // ensure resync attributes off the xf_post table
     $db->query('
-        update `threadmarks` marks
-        join xf_post AS post on post.post_id = marks.post_id
-        set marks.message_state = post.message_state
-        where marks.thread_id = ?
-    ', $thread_id);
+      UPDATE threadmarks
+        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+        SET threadmarks.message_state = post.message_state
+        WHERE threadmarks.thread_id = ?',
+      $threadId
+    );
 
     // recompute threadmark totals
-    $db->query("
-        UPDATE xf_thread
-        SET threadmark_count = (SELECT count(threadmarks.threadmark_id)
-                                FROM threadmarks
-                                where xf_thread.thread_id = threadmarks.thread_id and threadmarks.message_state = 'visible')
-        WHERE thread_id = ?
-    ", $thread_id);
+    $db->query(
+      "UPDATE xf_thread
+        SET threadmark_count = (
+          SELECT COUNT(threadmarks.threadmark_id)
+            FROM threadmarks
+            WHERE xf_thread.thread_id = threadmarks.thread_id
+              AND threadmarks.message_state = 'visible'
+        )
+        WHERE thread_id = ?",
+      $threadId
+    );
 
     XenForo_Db::beginTransaction($db);
 
     // update display ordering
-    $order = $this->recomputeDisplayOrder($thread_id);
-    $this->massUpdateDisplayOrder($thread_id, $order);
+    $order = $this->recomputeDisplayOrder($threadId);
+    $this->massUpdateDisplayOrder($threadId, $order);
 
     XenForo_Db::commit($db);
   }
@@ -401,10 +500,29 @@ where post.thread_id = ?
 	);
   }
 
+  /**
+   * Maps threadmark data from the source array to the correct fields in the
+   * destination array.
+   *
+   * @param array $source
+   * @param array $dest
+   */
   public function remapThreadmark(array &$source, array &$dest)
   {
     $prefix = 'threadmark';
-    $remap = array('label', 'edit_count', 'user_id', 'username', 'last_edit_date', 'last_edit_user_id', 'position', 'threadmark_date', 'message_state');
+    $remap = array(
+      'threadmark_category_id',
+      'user_id',
+      'username',
+      'threadmark_date',
+      'position',
+      'message_state',
+      'edit_count',
+      'last_edit_date',
+      'last_edit_user_id',
+      'label'
+    );
+
     foreach($remap as $remapItem)
     {
       $key = $prefix .'_'. $remapItem;
@@ -418,26 +536,40 @@ where post.thread_id = ?
 
   public function getNextThreadmark($threadmark)
   {
-    return $this->_getDb()->fetchRow("
-      select threadmarks.*
-      from threadmarks
-      where thread_id = ? and position > ? and
-            threadmarks.message_state = 'visible'
-      order by position
-      limit 1
-    ", array($threadmark['thread_id'], $threadmark['position']));
+    return $this->_getDb()->fetchRow(
+      "SELECT *
+        FROM threadmarks
+        WHERE thread_id = ?
+          AND threadmark_category_id = ?
+          AND position > ?
+          AND message_state = 'visible'
+        ORDER BY position
+        LIMIT 1",
+      array(
+        $threadmark['thread_id'],
+        $threadmark['threadmark_category_id'],
+        $threadmark['position']
+      )
+    );
   }
 
   public function getPreviousThreadmark($threadmark)
   {
-    return $this->_getDb()->fetchRow("
-      select threadmarks.*
-      from threadmarks
-      where threadmarks.thread_id = ? and position < ? and
-            threadmarks.message_state = 'visible'
-      order by position desc
-      limit 1
-    ", array($threadmark['thread_id'], $threadmark['position']));
+    return $this->_getDb()->fetchRow(
+      "SELECT *
+        FROM threadmarks
+        WHERE thread_id = ?
+          AND threadmark_category_id = ?
+          AND position < ?
+          AND message_state = 'visible'
+        ORDER BY position DESC
+        LIMIT 1",
+      array(
+        $threadmark['thread_id'],
+        $threadmark['threadmark_category_id'],
+        $threadmark['position']
+      )
+    );
   }
 
   public function recomputeDisplayOrder($threadId)
@@ -580,5 +712,139 @@ where post.thread_id = ?
       }
     }
     return $threadmarks;
+  }
+
+  public function getThreadmarkCategoryById($threadmarkCategoryId)
+  {
+    return $this->_getDb()->fetchRow(
+      'SELECT *
+        FROM threadmark_category
+        WHERE threadmark_category_id = ?',
+      $threadmarkCategoryId
+    );
+  }
+
+  public function getAllThreadmarkCategories()
+  {
+    return $this->fetchAllKeyed(
+      'SELECT *
+        FROM threadmark_category
+        ORDER BY display_order',
+      'threadmark_category_id'
+    );
+  }
+
+  public function prepareThreadmarkCategory(array $threadmarkCategory)
+  {
+    if (!empty($threadmarkCategory['threadmark_category_id']))
+    {
+      $threadmarkCategory['title'] = new XenForo_Phrase(
+        $this->getThreadmarkCategoryTitlePhraseName(
+          $threadmarkCategory['threadmark_category_id']
+        )
+      );
+    }
+
+    return $threadmarkCategory;
+  }
+
+  public function prepareThreadmarkCategories(array $threadmarkCategories)
+  {
+    return array_map(
+      array($this, 'prepareThreadmarkCategory'),
+      $threadmarkCategories
+    );
+  }
+
+  public function getThreadmarkCategoryOptions(
+    $filterUsable = false,
+    array $viewingUser = null
+  ) {
+    $threadmarkCategories = $this->getAllThreadmarkCategories();
+    $threadmarkCategories = $this->prepareThreadmarkCategories(
+      $threadmarkCategories
+    );
+
+    if ($filterUsable)
+    {
+      $this->standardizeViewingUserReference($viewingUser);
+
+      foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
+      {
+        if (!$this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser))
+        {
+          unset($threadmarkCategories[$threadmarkCategoryId]);
+        }
+      }
+    }
+
+    $options = array();
+
+    foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
+    {
+      $options[$threadmarkCategoryId] = $threadmarkCategory['title'];
+    }
+
+    return $options;
+  }
+
+  public function canUseThreadmarkCategory(
+    array $threadmarkCategory,
+    array $viewingUser = null
+  )
+  {
+    if (empty($threadmarkCategory) ||
+      empty($threadmarkCategory['allowed_user_group_ids']))
+    {
+      return false;
+    }
+
+    $this->standardizeViewingUserReference($viewingUser);
+
+    $allowedUserGroupIds = explode(
+      ',',
+      $threadmarkCategory['allowed_user_group_ids']
+    );
+    $secondaryUserGroupIds = explode(
+        ',',
+        $viewingUser['secondary_group_ids']
+    );
+    $matchingSecondaryUserGroupIds = array_intersect(
+        $allowedUserGroupIds,
+        $secondaryUserGroupIds
+      );
+
+    if (in_array($viewingUser['user_group_id'], $allowedUserGroupIds) ||
+        !empty($matchingSecondaryUserGroupIds))
+    {
+        return true;
+    }
+
+    return false;
+  }
+
+  public function getThreadmarkCategoryTitlePhraseName($threadmarkCategoryId)
+  {
+    return "sidane_threadmarks_category_{$threadmarkCategoryId}_title";
+  }
+
+  public function getThreadmarkCategoryMasterTitlePhraseName($threadmarkCategoryId)
+  {
+    $phraseName = $this->getThreadmarkCategoryTitlePhraseName($threadmarkCategoryId);
+
+    return $this
+      ->getModelFromCache('XenForo_Model_Phrase')
+      ->getMasterPhraseValue($phraseName);
+  }
+
+  public function getThreadmarksInCategory($threadmarkCategoryId)
+  {
+    return $this->fetchAllKeyed(
+      'SELECT *
+        FROM threadmarks
+        WHERE threadmark_category_id = ?',
+      'threadmark_id',
+      $threadmarkCategoryId
+    );
   }
 }

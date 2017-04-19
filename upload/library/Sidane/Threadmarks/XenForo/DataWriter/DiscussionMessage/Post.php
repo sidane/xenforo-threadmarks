@@ -25,18 +25,31 @@ class Sidane_Threadmarks_XenForo_DataWriter_DiscussionMessage_Post extends XFCP_
       if (!empty($threadmark))
       {
         $thread = $this->getDiscussionData();
-        $dw = XenForo_DataWriter::create("Sidane_Threadmarks_DataWriter_Threadmark");
+        $dw = XenForo_DataWriter::create(
+          'Sidane_Threadmarks_DataWriter_Threadmark'
+        );
         $dw->setExistingData($threadmark['threadmark_id']);
-        $dw->setExtraData(Sidane_Threadmarks_DataWriter_Threadmark::DATA_THREAD, $thread);
+        $dw->setExtraData(
+          Sidane_Threadmarks_DataWriter_Threadmark::DATA_THREAD,
+          $thread
+        );
         $dw->set('message_state', $this->get('message_state'));
         $dw->save();
       }
     }
-    else if ($this->isInsert() && Sidane_Threadmarks_Globals::$threadmarkLabel)
+    else if ($this->isInsert() &&
+      Sidane_Threadmarks_Globals::$threadmarkLabel &&
+      Sidane_Threadmarks_Globals::$threadmarkCategoryId
+    )
     {
       $post = $this->getMergedData();
       $thread = $this->getDiscussionData();
-      $this->_getThreadMarkModel()->setThreadMark($thread, $post, Sidane_Threadmarks_Globals::$threadmarkLabel);
+      $this->_getThreadMarkModel()->setThreadMark(
+        $thread,
+        $post,
+        Sidane_Threadmarks_Globals::$threadmarkLabel,
+        Sidane_Threadmarks_Globals::$threadmarkCategoryId
+      );
     }
   }
 

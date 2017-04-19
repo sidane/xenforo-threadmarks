@@ -20,7 +20,7 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
       $post['permissions'] = XenForo_Permission::unserializePermissions($post['node_permission_cache']);
       $threadmarkModel = $this->_getThreadmarkModel();
       $threadmarkModel->remapThreadmark($post,$post);
-    }      
+    }
     return $post;
   }
 
@@ -35,8 +35,15 @@ class Sidane_Threadmarks_EditHistoryHandler_Threadmark extends XenForo_EditHisto
 
   protected function _canRevertContent(array $content, array $viewingUser)
   {
-    $threadmarkModel = $this->_getThreadmarkModel();
-    return $threadmarkModel->canEditThreadmark($content, $content, $content, $null, $content['permissions'], $viewingUser);
+    return $this->_getThreadmarkModel()->canEditThreadmark(
+      $content,
+      $content,
+      $content,
+      $content,
+      $null,
+      $content['permissions'],
+      $viewingUser
+    );
   }
 
   public function getText(array $content)

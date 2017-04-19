@@ -1,9 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.3.3a" version_id="1030301" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
-  <admin_navigation/>
-  <admin_permissions/>
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.4.0" version_id="1040000" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+  <admin_navigation>
+    <navigation navigation_id="sidane_tm_categories" parent_navigation_id="threadsPosts" display_order="5" link="threadmark-categories" admin_permission_id="sidane_threadmarks" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions>
+    <admin_permission admin_permission_id="sidane_threadmarks" display_order="121"/>
+  </admin_permissions>
   <admin_style_properties/>
   <admin_templates>
+    <template title="sidane_threadmarks_category_delete"><![CDATA[<xen:title>{xen:phrase sidane_confirm_deletion_of_threadmark_category}: {$threadmarkCategory.title}</xen:title>
+<xen:h1>{xen:phrase sidane_confirm_deletion_of_threadmark_category}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:adminlink 'threadmark-categories/edit', $threadmarkCategory}">{$threadmarkCategory.title}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="public:delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'threadmark-categories/delete', $threadmarkCategory}" class="deleteConfirmForm formOverlay">
+	<p>{xen:phrase sidane_please_confirm_that_you_want_to_delete_following_threadmark_category}:</p>
+	
+	<strong><a href="{xen:adminlink 'threadmark-categories/edit', $threadmarkCategory}">{$threadmarkCategory.title}</a></strong>
+	
+	<p>{xen:phrase sidane_confirm_delete_threadmark_category_footnote}</p>
+
+	<xen:submitunit save="{xen:phrase sidane_delete_threadmark_category}" />
+
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="sidane_threadmarks_category_edit"><![CDATA[<xen:title>{xen:if '{$threadmarkCategory.threadmark_category_id}', '{xen:phrase sidane_edit_threadmark_category}: {$threadmarkCategory.title}', '{xen:phrase sidane_create_new_threadmark_category}'}</xen:title>
+
+<xen:if is="{$threadmarkCategory.threadmark_category_id}">
+	<xen:navigation>
+		<xen:breadcrumb href="{xen:adminlink threadmark-categories}#{xen:helper listitemid, $threadmarkCategory.threadmark_category_id}">{$threadmarkCategory.title}</xen:breadcrumb>
+	</xen:navigation>
+</xen:if>
+
+<xen:form class="AutoValidator"
+	action="{xen:adminlink 'threadmark-categories/save', $threadmarkCategory}"
+	data-redirect="on">
+
+	<xen:textboxunit label="{xen:phrase title}:" name="title" value="{$threadmarkCategory.title}" data-optinout="OptOut" data-livetitletemplate="{xen:if {$threadmarkCategory.threadmark_category_id},
+		'{xen:phrase sidane_edit_threadmark_category}: <em>%s</em>',
+		'{xen:phrase sidane_create_new_threadmark_category}: <em>%s</em>'}" />
+
+	<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$threadmarkCategory.display_order}" min="0" step="10" />
+
+	<xen:checkboxunit id="allowedUserGroups" label="{xen:phrase sidane_allowed_user_groups}:" name="allowed_user_group_ids[]" listclass="checkboxColumns">
+		<xen:hint><br /><label><input type="checkbox" class="CheckAll" data-target="#allowedUserGroups" /> {xen:phrase select_all}</label></xen:hint>
+		<xen:options source="$userGroups" />
+	</xen:checkboxunit>
+
+	<xen:submitunit save="{xen:phrase sidane_save_threadmark_category}">
+		<xen:if is="{$threadmarkCategory.threadmark_category_id}"><a href="{xen:adminlink 'threadmark-categories/delete', $threadmarkCategory}" class="button OverlayTrigger">{xen:phrase sidane_delete_threadmark_category}...</a></xen:if>
+	</xen:submitunit>
+</xen:form>]]></template>
+    <template title="sidane_threadmarks_category_list"><![CDATA[<xen:title>{xen:phrase sidane_threadmark_categories}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:adminlink threadmark-categories/add}" class="button">+ {xen:phrase sidane_create_new_threadmark_category}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<xen:form action="{xen:adminlink threadmark-categories}" class="section">
+	<xen:if is="{$threadmarkCategories}">
+		<h2 class="subHeading">
+			<xen:include template="filter_list_controls" />
+			{xen:phrase sidane_threadmark_categories}
+		</h2>
+	
+		<ol class="FilterList Scrollable">
+			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
+				<xen:listitem
+					id="{$threadmarkCategory.threadmark_category_id}"
+					label="{$threadmarkCategory.title}"
+					href="{xen:adminlink threadmark-categories/edit, $threadmarkCategory}"
+					delete="{xen:adminlink threadmark-categories/delete, $threadmarkCategory}" />
+			</xen:foreach>
+		</ol>
+	
+		<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $threadmarkCategories}</span>', 'total={xen:count $threadmarkCategories}'}</p>
+	<xen:else />
+		<div class="noResults">{xen:phrase sidane_no_threadmark_categories_have_been_defined}</div>
+	</xen:if>
+</xen:form>]]></template>
     <template title="tools_rebuild_threadmarks"><![CDATA[<xen:form action="{xen:adminlink 'tools/trigger-deferred'}">
 	<h2 class="subHeading">{xen:phrase rebuild_threadmarks}</h2>
 	<xen:spinboxunit name="options[batch]" value="100" step="50" min="1" label="{xen:phrase items_to_process_per_page}:" />
@@ -61,6 +143,8 @@
   <phrases>
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
     <phrase title="add_threadmark_to_end" version_id="12" version_string="1.1.9"><![CDATA[Add to end]]></phrase>
+    <phrase title="admin_navigation_sidane_tm_categories" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Categories]]></phrase>
+    <phrase title="admin_permission_sidane_threadmarks" version_id="1040000" version_string="1.4.0"><![CDATA[Manage threadmarks]]></phrase>
     <phrase title="click_to_lock" version_id="1020100" version_string="1.2.1"><![CDATA[Click to lock]]></phrase>
     <phrase title="click_to_unlock" version_id="12" version_string="1.1.9"><![CDATA[Click to unlock]]></phrase>
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
@@ -85,7 +169,19 @@
     <phrase title="rebuild_threadmarks" version_id="1030000" version_string="1.3.0"><![CDATA[Rebuild Threadmark Summary Information]]></phrase>
     <phrase title="select_this_threadmark" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark]]></phrase>
     <phrase title="select_this_threadmark_by_x" version_id="9" version_string="1.1.6"><![CDATA[Select this threadmark by {name}]]></phrase>
+    <phrase title="sidane_allowed_user_groups" version_id="1040000" version_string="1.4.0"><![CDATA[Allowed User Groups]]></phrase>
+    <phrase title="sidane_confirm_delete_threadmark_category_footnote" version_id="1040000" version_string="1.4.0"><![CDATA[Any threadmarks belonging to this category will also be deleted.]]></phrase>
+    <phrase title="sidane_confirm_deletion_of_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Confirm Deletion of Threadmark Category]]></phrase>
+    <phrase title="sidane_create_new_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Create New Threadmark Category]]></phrase>
+    <phrase title="sidane_delete_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Delete Threadmark Category]]></phrase>
+    <phrase title="sidane_edit_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Edit Threadmark Category]]></phrase>
+    <phrase title="sidane_please_confirm_that_you_want_to_delete_following_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Please confirm that you want to delete the following threadmark category]]></phrase>
+    <phrase title="sidane_please_enter_valid_threadmark_category_id" version_id="1040000" version_string="1.4.0"><![CDATA[Please enter a valid threadmark category ID.]]></phrase>
+    <phrase title="sidane_requested_threadmark_category_not_found" version_id="1040000" version_string="1.4.0"><![CDATA[The requested threadmark categorycould not be found.]]></phrase>
+    <phrase title="sidane_save_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Save Threadmark Category]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
+    <phrase title="sidane_threadmark_categories" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Categories]]></phrase>
+    <phrase title="sidane_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Category]]></phrase>
     <phrase title="style_property_group_Threadmarks_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarks]]></phrase>
     <phrase title="style_property_group_Threadmarks_master_desc" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarks and Threadmark Byproducts]]></phrase>
     <phrase title="style_property_messageNewIndicatorInnerThreadmarks_description_master" version_id="17" version_string="1.1.11b"><![CDATA[?????]]></phrase>
@@ -118,7 +214,7 @@
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
     <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
     <phrase title="threadmark_index" version_id="9" version_string="1.1.6"><![CDATA[Index]]></phrase>
-    <phrase title="threadmark_label" version_id="1" version_string="1.0"><![CDATA[Threadmark label]]></phrase>
+    <phrase title="threadmark_label" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Label]]></phrase>
     <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[&gt;&gt;]]></phrase>
     <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[&lt;&lt;]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
@@ -130,7 +226,11 @@
     <phrase title="you_do_not_have_permission_to_delete_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to delete threadmarks.]]></phrase>
     <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
   </phrases>
-  <route_prefixes/>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="threadmark-categories" class="Sidane_Threadmarks_Route_PrefixAdmin_ThreadmarkCategories" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
   <style_properties>
     <property property_name="Threadmarker" property_type="css" definition="1" group_name="Threadmarks" title="Threadmarker" description="The space above the Threadmarked post." css_components="background,border,layout" scalar_type="" scalar_parameters="" display_order="1" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighterStill","border-bottom-style":"solid","border-bottom-width":"1px","margin-bottom":"10px","margin-left":"0","margin-right":"0","margin-top":"0"}]]></property>
     <property property_name="ThreadmarkLabel" property_type="css" definition="1" group_name="Threadmarks" title="Threadmark Label" description="Styling of what you name the threadmark" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="2" sub_group=""><![CDATA[{"background-color":"@primaryLighterStill","border-top-left-radius":"4px","border-top-right-radius":"4px","color":"@contentText","font-size":"12px","padding-bottom":"2px","padding-left":"6px","padding-right":"8px","padding-top":"3px"}]]></property>
@@ -149,7 +249,7 @@
     </group>
   </style_properties>
   <templates>
-    <template title="edit_threadmark" version_id="2" version_string="1.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
+    <template title="edit_threadmark" version_id="1040000" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
 <xen:h1>{xen:phrase edit_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -162,16 +262,31 @@
 <xen:container var="$searchBar.forum"><xen:include template="search_bar_forum_only" /></xen:container>
 
 <form action="{xen:link 'posts/threadmark', $post}" method="post" class="xenForm formOverlay AutoValidator" data-redirect="on">
-
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
 		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="255" <xen:if is="!{$post.canEditThreadmarks}">readonly</xen:if> /></dd>
-
-        <xen:if is="{$post.canDeleteThreadmarks}">
-        <dt>&nbsp;</dt>
-        <dd><label><input type="checkbox" name="_xfConfirm" value="1" /> {xen:phrase delete_threadmark}</label></dd>
-        </xen:if>
 	</dl>
+
+	<dl class="ctrlUnit">
+		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
+		<dd>
+			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
+				<option value="0"></option>
+				<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
+					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark.threadmark_category_id}'}>{$threadmarkCategory}</option>
+				</xen:foreach>
+			</select>
+		</dd>
+	</dl>
+	
+	<xen:if is="{$post.canDeleteThreadmarks}">
+		<dl class="ctrlUnit">
+			<dt></dt>
+			<dd>
+				<label><input type="checkbox" name="_xfConfirm" value="1" /> {xen:phrase delete_threadmark}</label>
+			</dd>
+		</dl>
+	</xen:if>
 
 	<dl class="ctrlUnit submitUnit">
 		<dt></dt>
@@ -1310,7 +1425,7 @@
 <p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
 
 <xen:include template="news_feed_attached_images" />]]></template>
-    <template title="new_threadmark" version_id="12" version_string="1.1.9"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
+    <template title="new_threadmark" version_id="1040000" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -1325,11 +1440,27 @@
 <form action="{xen:link 'posts/threadmark', $post}" method="post" class="xenForm formOverlay AutoValidator" data-redirect="on">
 
 	<dl class="ctrlUnit">
-		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
-		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" maxlength="255" /></dd>
+		<dt><label for="ctrl_label">{xen:phrase threadmark_label}:</label></dt>
+		<dd><input type="text" name="label" id="ctrl_label" class="textCtrl" maxlength="255" /></dd>
+	</dl>
+	
+	<dl class="ctrlUnit">
+		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
+		<dd>
+			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
+				<option value="0"></option>
+				<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
+					<option value="{$threadmarkCategoryId}">{$threadmarkCategory}</option>
+				</xen:foreach>
+			</select>
+		</dd>
+	</dl>
 
-        	<dt>&nbsp;</dt>
-	        <dd><label><input type="checkbox" name="add_last" value="1" {xen:checked 1}/> {xen:phrase add_threadmark_to_end}</label></dd>
+	<dl class="ctrlUnit">
+		<dt></dt>
+		<dd>
+			<label><input type="checkbox" name="add_last" value="1" {xen:checked 1}/> {xen:phrase add_threadmark_to_end}</label>
+		</dd>
 	</dl>
 
 	<dl class="ctrlUnit submitUnit">
@@ -1384,14 +1515,27 @@
 <xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
 </xen:if>
 </xen:if>]]></template>
-    <template title="quick_reply_threadmark" version_id="1020000" version_string="1.2.0"><![CDATA[<xen:if is="{$debugMode}">
-<xen:require js="js/sidane/threadmarks/threadmarks.js" />
+    <template title="quick_reply_threadmark" version_id="1040000" version_string="1.4.0"><![CDATA[<xen:if is="{$debugMode}">
+	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
 <xen:else />
-<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
+	<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
 </xen:if>
+
 <dl class="ctrlUnit">
 	<dt><label for="ctrl_threadmark">{xen:phrase threadmark_label}:</label></dt>
-	<dd><input type="text" name="threadmark" id="ctrl_threadmark" class="textCtrl" value="{$threadmarkLabel}" maxlength="255" /></dd>
+	<dd><input type="text" name="threadmark" id="ctrl_threadmark" class="textCtrl" value="{$draftThreadmarkLabel}" maxlength="255" /></dd>
+</dl>
+
+<dl class="ctrlUnit">
+	<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
+	<dd>
+		<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
+			<option value="0"></option>
+			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
+				<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$draftThreadmarkCategoryId}'}>{$threadmarkCategory}</option>
+			</xen:foreach>
+		</select>
+	</dd>
 </dl>]]></template>
     <template title="quick_reply_threadmark.css" version_id="1020000" version_string="1.2.0"><![CDATA[.threadmark .ctrlUnit > dd
 {

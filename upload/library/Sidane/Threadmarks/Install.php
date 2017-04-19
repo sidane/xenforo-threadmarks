@@ -18,6 +18,7 @@ class Sidane_Threadmarks_Install
       $db->query("
         CREATE TABLE IF NOT EXISTS threadmarks (
           threadmark_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+          threadmark_category_id INT UNSIGNED NOT NULL,
           thread_id INT UNSIGNED NOT NULL,
           post_id INT UNSIGNED NOT NULL,
           user_id int not null default 0,
@@ -154,6 +155,54 @@ class Sidane_Threadmarks_Install
       XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
     }
 
+    if ($version < 1040000)
+    {
+      // create threadmark category table
+      $db->query(
+        "CREATE TABLE IF NOT EXISTS threadmark_category (
+          threadmark_category_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+          display_order INT UNSIGNED NOT NULL DEFAULT 0,
+          allowed_user_group_ids VARBINARY(255) NOT NULL DEFAULT '2',
+          PRIMARY KEY (threadmark_category_id)
+        ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci"
+      );
+
+      // add column to threadmarks table if it is non-existent
+      SV_Utils_Install::addColumn(
+        'threadmarks',
+        'threadmark_category_id',
+        'INT UNSIGNED NOT NULL'
+      );
+
+      // ensure model is loaded before accessing static properties
+      XenForo_Model::create('XenForo_Model_User');
+      $defaultUserGroupId = XenForo_Model_User::$defaultRegisteredGroupId;
+
+      // create default threadmark category
+      $db->query(
+        'INSERT IGNORE INTO threadmark_category
+          (threadmark_category_id, display_order, allowed_user_group_ids)
+          VALUES
+            (1, 0, ?)',
+        array($defaultUserGroupId)
+      );
+      // add default threadmark category title to phrases
+      $db->query(
+        "INSERT IGNORE INTO xf_phrase
+          (language_id, title, phrase_text, global_cache, addon_id)
+        VALUES
+          (0, 'sidane_threadmarks_category_1_title', 'Threadmarks', 0, '')"
+      );
+
+      // set all threadmarks to be in the default category
+      $db->query(
+        'UPDATE threadmarks
+          SET threadmark_category_id = 1
+          WHERE threadmark_category_id = 0'
+      );
+
+    }
+
     // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
     // requires overriding XenES_Model_Elasticsearch
     SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);
@@ -168,11 +217,12 @@ class Sidane_Threadmarks_Install
 
     $db = XenForo_Application::get('db');
     $db->query("DROP TABLE IF EXISTS threadmarks");
+    $db->query('DROP TABLE IF EXISTS threadmark_category');
 
-    $db->query("delete from xf_permission_entry 
+    $db->query("delete from xf_permission_entry
         where permission_id in ('sidane_tm_manage', 'sidane_tm_add', 'sidane_tm_delete', 'sidane_tm_edit', 'sidane_tm_menu_limit', 'sidane_tm_view')
     ");
-    $db->query("delete from xf_permission_entry_content 
+    $db->query("delete from xf_permission_entry_content
         where permission_id in ('sidane_tm_manage', 'sidane_tm_add', 'sidane_tm_delete', 'sidane_tm_edit', 'sidane_tm_menu_limit', 'sidane_tm_view')
     ");
 

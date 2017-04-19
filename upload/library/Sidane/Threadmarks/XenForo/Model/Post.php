@@ -9,40 +9,45 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     if (!empty($fetchOptions['includeThreadmark']))
     {
       $joinOptions['selectFields'] .= ',
-        threadmarks.threadmark_id, threadmarks.label as threadmark_label, threadmarks.edit_count as threadmark_edit_count,
-        threadmarks.user_id as threadmark_user_id, threadmarks.position as threadmark_position
-      ';
-      $joinOptions['joinTables'] .= '
-        LEFT JOIN threadmarks  ON
-          threadmarks.post_id = post.post_id
-      ';
-
-      $joinOptions['selectFields'] .= ',
+        threadmarks.threadmark_id,
+        threadmarks.threadmark_category_id as threadmark_category_id,
+        threadmarks.label as threadmark_label,
+        threadmarks.edit_count as threadmark_edit_count,
+        threadmarks.user_id as threadmark_user_id,
+        threadmarks.position as threadmark_position,
         threadmarks.last_edit_date as threadmark_last_edit_date,
         threadmarks.last_edit_user_id as threadmark_last_edit_user_id,
-        threadmarks.threadmark_date as threadmark_threadmark_date,
-        tm_user.username as threadmark_username
-      ';
-          
+        threadmarks.threadmark_date as threadmark_threadmark_date';
       $joinOptions['joinTables'] .= '
-        LEFT JOIN xf_user tm_user  ON
-          tm_user.user_id = threadmarks.user_id
-      ';
+        LEFT JOIN threadmarks ON threadmarks.post_id = post.post_id';
+
+      $joinOptions['selectFields'] .= ',
+        tm_user.username as threadmark_username';
+      $joinOptions['joinTables'] .= '
+        LEFT JOIN xf_user AS tm_user ON tm_user.user_id = threadmarks.user_id';
     }
 
     return $joinOptions;
   }
 
-  public function getPermissionBasedPostFetchOptions(array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
-  {
-    $fetchOptions = parent::getPermissionBasedPostFetchOptions($thread, $forum, $nodePermissions, $viewingUser);
+  public function getPermissionBasedPostFetchOptions(
+    array $thread,
+    array $forum,
+    array $nodePermissions = null,
+    array $viewingUser = null
+  ) {
+    $fetchOptions = parent::getPermissionBasedPostFetchOptions(
+      $thread,
+      $forum,
+      $nodePermissions,
+      $viewingUser
+    );
 
     if (!empty($thread['firstThreadmarkId']) || !empty($thread['lastThreadmarkId']))
     {
-      $fetchOptions['threadmarks'] = array
-      (
+      $fetchOptions['threadmarks'] = array(
         'firstThreadmarkId' => isset($thread['firstThreadmarkId']) ? $thread['firstThreadmarkId'] : 0,
-        'lastThreadmarkId' => isset($thread['lastThreadmarkId']) ? $thread['lastThreadmarkId'] : 0,
+        'lastThreadmarkId'  => isset($thread['lastThreadmarkId']) ? $thread['lastThreadmarkId'] : 0,
       );
     }
 
@@ -119,34 +124,93 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     return $posts;
   }
 
-  public function preparePost(array $post, array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
-  {
-    $post = parent::preparePost($post, $thread, $forum, $nodePermissions, $viewingUser);
+  public function preparePost(
+    array $post,
+    array $thread,
+    array $forum,
+    array $nodePermissions = null,
+    array $viewingUser = null
+  ) {
+    $post = parent::preparePost(
+      $post,
+      $thread,
+      $forum,
+      $nodePermissions,
+      $viewingUser
+    );
 
-    $threadmarkmodel = $this->_getThreadmarksModel();
-    $post['canAddThreadmarks'] = $threadmarkmodel->canAddThreadmark($post, $thread, $forum, $null, $nodePermissions, $viewingUser);
-    $post['canEditThreadmarks'] = $threadmarkmodel->canEditThreadmark($post, $thread, $forum, $null, $nodePermissions, $viewingUser);
-    $post['canDeleteThreadmarks'] = $threadmarkmodel->canDeleteThreadmark($post, $thread, $forum, $null, $nodePermissions, $viewingUser);
-    $post['canViewThreadmarks'] = $threadmarkmodel->canViewThreadmark($thread, $forum, $null, $nodePermissions, $viewingUser);
+    $threadmarksModel = $this->_getThreadmarksModel();
+
+    $canViewThreadmarks = $threadmarksModel->canViewThreadmark(
+      $thread,
+      $forum,
+      $null,
+      $nodePermissions,
+      $viewingUser
+    );
+    $canAddThreadmarks = $threadmarksModel->canAddThreadmark(
+      $post,
+      $thread,
+      $forum,
+      $null,
+      $nodePermissions,
+      $viewingUser
+    );
+    $canEditThreadmarks = false;
+    $canDeleteThreadmarks = false;
 
     if (!empty($post['threadmark_id']))
     {
       $post['threadmark'] = array('threadmark_id' => $post['threadmark_id']);
-      $threadmarkmodel->remapThreadmark($post, $post['threadmark']);
-      $post['threadmark'] = $threadmarkmodel->prepareThreadmark($post['threadmark'], $thread, $forum, $nodePermissions, $viewingUser);
+      $threadmarksModel->remapThreadmark($post, $post['threadmark']);
+
+      $post['threadmark'] = $threadmarksModel->prepareThreadmark(
+        $post['threadmark'],
+        $thread,
+        $forum,
+        $nodePermissions,
+        $viewingUser
+      );
+
+      $canEditThreadmarks = $threadmarksModel->canEditThreadmark(
+        $post['threadmark'],
+        $post,
+        $thread,
+        $forum,
+        $null,
+        $nodePermissions,
+        $viewingUser
+      );
+      $canDeleteThreadmarks = $threadmarksModel->canDeleteThreadmark(
+        $post['threadmark'],
+        $post,
+        $thread,
+        $forum,
+        $null,
+        $nodePermissions,
+        $viewingUser
+      );
     }
+
+    $post['canViewThreadmarks'] = $canViewThreadmarks;
+    $post['canAddThreadmarks'] = $canAddThreadmarks;
+    $post['canEditThreadmarks'] = $canEditThreadmarks;
+    $post['canDeleteThreadmarks'] = $canDeleteThreadmarks;
 
     return $post;
   }
 
   public function recalculatePostPositionsInThread($threadId)
   {
-    $ret = parent::recalculatePostPositionsInThread($threadId);
+    $data = parent::recalculatePostPositionsInThread($threadId);
+
     $this->_getThreadmarksModel()->rebuildThreadMarkCache($threadId);
-    return $ret;
+
+    return $data;
   }
 
-  protected function _getThreadmarksModel() {
+  protected function _getThreadmarksModel()
+  {
     return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
   }
 }
