@@ -236,17 +236,35 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     }
   }
 
-  public function actionThreadmarkPosition()
+  public function actionAddThreadmarkPosition()
   {
+    $postId = $this->_input->filterSingle(
+        'post_id', 
+        XenForo_Input::UINT
+    );
     $categoryId = $this->_input->filterSingle(
         'position', 
         XenForo_Input::UINT
     );
 
-    $viewParams['previousThreadmark'] = $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']);
-    $viewParams['lastThreadmark'] = $threadmarksModel->getPreviousThreadmarkByLocation($category['threadmark_category_id'], $post['thread_id']);
-    
-    return null;
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
+      $postId
+    );
+
+    $threadmarksModel = $this->_getThreadmarksModel();
+    $category = $threadmarksModel->getThreadmarkCategoryById($categoryId);
+    if (empty($category) || !$threadmarksModel->canAddThreadmark($post, $thread, $forum))
+    {
+      throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_add_threadmarks');
+    }
+  
+    $view = $this->responseView();
+    $view->jsonParams = array(
+        'previousThreadmark' => $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']),
+        'lastThreadmark' => $threadmarksModel->getPreviousThreadmarkByLocation($category['threadmark_category_id'], $post['thread_id']),
+    );
+    return $view;
   }
 
   public function actionNextThreadmark()
