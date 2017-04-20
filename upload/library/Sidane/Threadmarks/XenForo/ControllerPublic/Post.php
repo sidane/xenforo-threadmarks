@@ -144,16 +144,21 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
             'you_do_not_have_permission_to_add_threadmarks'
           );
         }
-        $addLast = $this->_input->filterSingle(
-          'add_last',
-          XenForo_Input::BOOLEAN
+        $resetNesting = $this->_input->filterSingle(
+            'reset_nesting', 
+            XenForo_Input::BOOLEAN
+        );
+        $position = $this->_input->filterSingle(
+            'position', 
+            XenForo_Input::UINT
         );
         $threadmarksModel->setThreadMark(
           $thread,
           $post,
           $input['label'],
           $input['threadmark_category_id'],
-          $addLast
+          $position,
+          $resetNesting
         );
         $phrase = 'threadmark_created';
         XenForo_Model_Log::logModeratorAction(
@@ -211,11 +216,16 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       }
       else
       {
-        if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum))
+        $category = $threadmarksModel->getDefaultThreadmarkCategory();
+        if (empty($category) || !$threadmarksModel->canAddThreadmark($post, $thread, $forum))
         {
           throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_add_threadmarks');
         }
         $templateName = 'new_threadmark';
+
+        $viewParams['threadmark_category_id'] = $category['threadmark_category_id'];
+        $viewParams['previousThreadmark'] = $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']);
+        $viewParams['lastThreadmark'] = $threadmarksModel->getPreviousThreadmarkByLocation($category['threadmark_category_id'], $post['thread_id']);
       }
 
       return $this->responseView(
@@ -224,6 +234,19 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
         $viewParams
       );
     }
+  }
+
+  public function actionThreadmarkPosition()
+  {
+    $categoryId = $this->_input->filterSingle(
+        'position', 
+        XenForo_Input::UINT
+    );
+
+    $viewParams['previousThreadmark'] = $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']);
+    $viewParams['lastThreadmark'] = $threadmarksModel->getPreviousThreadmarkByLocation($category['threadmark_category_id'], $post['thread_id']);
+    
+    return null;
   }
 
   public function actionNextThreadmark()

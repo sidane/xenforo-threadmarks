@@ -142,7 +142,6 @@
   </permissions>
   <phrases>
     <phrase title="add_threadmark" version_id="1" version_string="1.0"><![CDATA[Add Threadmark]]></phrase>
-    <phrase title="add_threadmark_to_end" version_id="12" version_string="1.1.9"><![CDATA[Add to end]]></phrase>
     <phrase title="admin_navigation_sidane_tm_categories" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Categories]]></phrase>
     <phrase title="admin_permission_sidane_threadmarks" version_id="1040000" version_string="1.4.0"><![CDATA[Manage threadmarks]]></phrase>
     <phrase title="click_to_lock" version_id="1020100" version_string="1.2.1"><![CDATA[Click to lock]]></phrase>
@@ -212,10 +211,13 @@
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
     <phrase title="threadmark_created_by_x_on_y" version_id="9" version_string="1.1.6"><![CDATA[Threadmark created by {name} on {date}]]></phrase>
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
+    <phrase title="threadmark_end_of_index" version_id="1040004" version_string="1.4.0 rc4"><![CDATA[This threadmark is at the end of the threadmark index]]></phrase>
     <phrase title="threadmark_history" version_id="9" version_string="1.1.6"><![CDATA[History]]></phrase>
     <phrase title="threadmark_index" version_id="9" version_string="1.1.6"><![CDATA[Index]]></phrase>
+    <phrase title="threadmark_insert_before_existing" version_id="1040004" version_string="1.4.0 rc4"><![CDATA[Insert before existing threadmarks]]></phrase>
     <phrase title="threadmark_label" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Label]]></phrase>
     <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[&gt;&gt;]]></phrase>
+    <phrase title="threadmark_position_after" version_id="1040004" version_string="1.4.0 rc4"><![CDATA[Add threadmark after]]></phrase>
     <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[&lt;&lt;]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
@@ -271,7 +273,6 @@
 		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 		<dd>
 			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
-				<option value="0"></option>
 				<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
 					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark.threadmark_category_id}'}>{$threadmarkCategory}</option>
 				</xen:foreach>
@@ -1448,19 +1449,30 @@
 		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 		<dd>
 			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
-				<option value="0"></option>
 				<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
-					<option value="{$threadmarkCategoryId}">{$threadmarkCategory}</option>
+					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark_category_id}'}>{$threadmarkCategory}</option>
 				</xen:foreach>
 			</select>
 		</dd>
 	</dl>
 
-	<dl class="ctrlUnit">
-		<dt></dt>
-		<dd>
-			<label><input type="checkbox" name="add_last" value="1" {xen:checked 1}/> {xen:phrase add_threadmark_to_end}</label>
+<xen:if is="{$previousThreadmark} || {$lastThreadmark}">
+		<dt>&nbsp;</dt>
+		<dd><label><input type="checkbox" name="reset_nesting" value="1"/> {xen:phrase threadmark_reset_nesting}</label></dd>
+		<dt>{xen:phrase threadmark_position_after}:</dt>
+	        <dd>
+			<ol>
+			<xen:if is="{$previousThreadmark}">
+				<li><input type="radio" name="position" checked value="{xen:calc '{$previousThreadmark.threadmark_position}+1'}"> <a href="{xen:link 'threads/post-permalink', $thread, 'post={$previousThreadmark}'}" title="{xen:phrase threadmark_before_this_post}">{$previousThreadmark.label}</a></li>
+			<xen:else />
+				<li><input type="radio" name="position" checked value="0">&nbsp;{xen:phrase threadmark_insert_before_existing}</li>
+			</xen:if>
+			<xen:if is="{$lastThreadmark} && {$previousThreadmark.position} != {$lastThreadmark.position}">
+				<li><input type="radio" name="position" value="{xen:calc '{$lastThreadmark.threadmark_position}+1'}"> <a href="{xen:link 'threads/post-permalink', $thread, 'post={$lastThreadmark}'}" title="{xen:phrase threadmark_end_of_index}">{$lastThreadmark.label}</a></li>
+			</xen:if>
+			</ol>
 		</dd>
+</xen:if>
 	</dl>
 
 	<dl class="ctrlUnit submitUnit">

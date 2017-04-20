@@ -216,12 +216,45 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", array($id));
   }
 
+  public function getPreviousThreadmarkByPost($categoryId, $threadId, $postPosition)
+  {
+    return $this->_getDb()->fetchRow("
+          select threadmarks.*, post.post_id, post.position, threadmark_id, threadmarks.position as threadmark_position
+          from xf_post AS post
+          join threadmarks on threadmarks.post_id = post.post_id
+          where post.thread_id = ? and post.position < ? and threadmarks.thread_id = ? and threadmarks.threadmark_category_id = ? and threadmarks.message_state = 'visible'
+          order by post.position desc
+          limit 1;
+        ", array($threadId, $postPosition, $threadId, $categoryId));
+  }
+  
+  public function getPreviousThreadmarkByLocation($categoryId, $threadId, $threadmarkPosition = false)
+  {
+    $args = array($threadId, $categoryId);
+    $sql = '';
+    if ($threadmarkPosition !== false)
+    {
+        $sql = ' and threadmarks.position < ? ';
+        $args[] = $threadmarkPosition;
+    }
+    
+    return $this->_getDb()->fetchRow("
+          select threadmarks.*, post.post_id, post.position, threadmark_id, threadmarks.position as threadmark_position
+          from threadmarks
+          join xf_post AS post on  threadmarks.post_id = post.post_id 
+          where threadmarks.thread_id = ? and threadmarks.threadmark_category_id = ? and threadmarks.message_state = 'visible' {$sql}
+          order by threadmarks.position desc
+          limit 1;
+        ", $args);
+  }
+
   public function setThreadMark(
     array $thread,
     array $post,
     $label,
     $categoryId,
-    $addLast = true
+    $position = false, 
+    $resetNesting = false
   ) {
     $db = $this->_getDb();
 
@@ -236,51 +269,45 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     }
     else
     {
-      $position = null;
-
-      if (!$addLast)
+      if ($position === false)
       {
-        // get last threadmark position up to current post and add 1
-        $position = $db->fetchOne(
-          'SELECT threadmarks.position + 1
-            FROM xf_post AS post
-            JOIN threadmarks ON threadmarks.post_id = post.post_id
-            WHERE post.thread_id = ?
-              AND post.position < ?
-              AND threadmark.threadmark_category_id = ?
-            ORDER BY threadmarks.position DESC
-            LIMIT 1',
-          array(
-            $thread['thread_id'],
-            $post['position'],
-            $categoryId
-          )
-        );
+        $prevThreadmark = $this->getPreviousThreadmarkByPost($categoryId, $post['thread_id'], $post['position']);
+        if (isset($prevThreadmark['threadmark_position']))
+        {
+           $position = $prevThreadmark['threadmark_position'] + 1;
+           if (!$resetNesting)
+           {
+             $dw->set('depth', $prevThreadmark['depth']);
+             $dw->set('parent_threadmark_id', $prevThreadmark['parent_threadmark_id']);
+           }
+        }
+        if ($position === false)
+        {
+          $prevThreadmark = $this->getPreviousThreadmarkByLocation($categoryId, $thread['thread_id']);
+          if (isset($prevThreadmark['threadmark_position']))
+          {
+             $position = $prevThreadmark['threadmark_position'] + 1;
+             if (!$resetNesting)
+      {
+               $dw->set('depth', $prevThreadmark['depth']);
+               $dw->set('parent_threadmark_id', $prevThreadmark['parent_threadmark_id']);
+             }
+          }
+        }
       }
-
-      if ($position === null)
+      else if (!$resetNesting)
       {
-        // get last threadmark position and add 1
-        $position = $db->fetchOne(
-          'SELECT position + 1
-            FROM threadmarks
-            WHERE thread_id = ?
-              AND threadmark_category_id = ?
-            ORDER BY position DESC
-            LIMIT 1',
-          array(
-            $thread['thread_id'],
-            $categoryId
-          )
-        );
+        $prevThreadmark = $this->getPreviousThreadmarkByLocation($categoryId, $post['thread_id'], $position);
+        if (isset($prevThreadmark['position']))
+      {
+           $dw->set('depth', $prevThreadmark['depth']);
+           $dw->set('parent_threadmark_id', $prevThreadmark['parent_threadmark_id']);
       }
-
-      if ($position === null)
+      }
+      if ($position === false)
       {
-        // there are no threadmarks
         $position = 0;
       }
-
       $dw->set('user_id', XenForo_Visitor::getUserId());
       $dw->set('post_id', $post['post_id']);
       $dw->set('position', $position);
@@ -712,6 +739,21 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       }
     }
     return $threadmarks;
+  }
+
+  public function getDefaultThreadmarkCategory(array $viewingUser = null)
+  {
+    $this->standardizeViewingUserReference($viewingUser);
+
+    $categories = $this->getAllThreadmarkCategories();
+    foreach($categories as $category)
+    {
+        if ($this->canUseThreadmarkCategory($category, $viewingUser))
+        {
+           return $category;
+        }
+    }
+    return null;
   }
 
   public function getThreadmarkCategoryById($threadmarkCategoryId)

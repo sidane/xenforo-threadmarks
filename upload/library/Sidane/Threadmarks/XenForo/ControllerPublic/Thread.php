@@ -115,7 +115,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     parent::_assertCanReplyToThread($thread, $forum);
 
     if (
-      Sidane_Threadmarks_Globals::$threadmarkLabel ||
+      Sidane_Threadmarks_Globals::$threadmarkLabel &&
       Sidane_Threadmarks_Globals::$threadmarkCategoryId
     )
     {
