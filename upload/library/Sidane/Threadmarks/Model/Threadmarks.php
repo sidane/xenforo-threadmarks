@@ -121,7 +121,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     }
 
     if (
-      ($thread['user_id'] == $viewingUser['user_id']) &&-
+      ($thread['user_id'] == $viewingUser['user_id']) &&
       XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_edit')
     )
     {
