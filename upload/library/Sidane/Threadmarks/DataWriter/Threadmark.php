@@ -109,9 +109,12 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       }
     }
 
-    if ($this->isChanged('message_state'))
+    if (
+      $this->isChanged('message_state') ||
+      $this->isChanged('threadmark_category_id')
+    )
     {
-      $this->_updateThreadMarkCount();
+      $this->_updateThreadmarkCount();
     }
 
     parent::_postSave();
@@ -133,7 +136,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->getContentType(), $this->getContentId()
     );
 
-    $this->_updateThreadMarkCount(true);
+    $this->_updateThreadmarkCount(true);
     $this->_deleteFromSearchIndex();
     $this->_deleteFromNewsFeed();
   }
@@ -224,104 +227,68 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     $this->_getNewsFeedModel()->delete($this->getContentType(), $this->getContentId());
   }
 
-  protected function _updateThreadMarkCount($isDelete = false)
+  protected function _updateThreadmarkCount($isDelete = false)
   {
     if (
       ($this->getExisting('message_state') == 'visible') &&
-      ($this->get('message_state') != 'visible' || $isDelete)
+      (
+        (($this->get('message_state') != 'visible') || $isDelete) ||
+        $this->isChanged('threadmark_category_id')
+      )
     )
     {
-      // the message is becoming invisible (or this is a deletion)
-      // subtract 1 from other threadmark positions
+      // message has become invisible or threadmark has changed categories
       $this->_db->query(
         "UPDATE threadmarks
-          SET position = greatest(cast(position as signed) - 1, 0)
+          SET position = GREATEST(CAST(position AS signed) - 1, 0)
           WHERE thread_id = ?
             AND threadmark_category_id = ?
-            AND position >= ?
             AND post_id <> ?
-            AND threadmarks.message_state = 'visible'",
+            AND message_state = 'visible'
+            AND position >= ?",
         array(
-          $this->get('thread_id'),
-          $this->get('threadmark_category_id'),
-          $this->get('position'),
-          $this->get('post_id')
+          $this->getExisting('thread_id'),
+          $this->getExisting('threadmark_category_id'),
+          $this->getExisting('post_id'),
+          $this->getExisting('position')
         )
       );
 
-      // update min/max threadmark ID and threadmark count in thread data
-      $this->_db->query(
-        "UPDATE xf_thread
-          SET threadmark_count = IF(threadmark_count > 0, threadmark_count - 1, 0),
-            firstThreadmarkId = COALESCE(
-              (
-                SELECT min(position)
-                  FROM threadmarks
-                  WHERE threadmarks.thread_id = xf_thread.thread_id
-                    AND threadmarks.message_state = 'visible'
-              ),
-              0
-            ),
-            lastThreadmarkId = COALESCE(
-              (
-                SELECT max(position)
-                  FROM threadmarks
-                  WHERE threadmarks.thread_id = xf_thread.thread_id
-                    AND threadmarks.message_state = 'visible'
-              ),
-              0
-            )
-            WHERE thread_id = ?",
-        $this->get('thread_id')
+      // TODO: support for upating multiple categories at once
+      $this->_getThreadmarksModel()->updateThreadmarkCategoryPositionForThread(
+        $this->get('thread_id'),
+        $this->getExisting('threadmark_category_id')
       );
     }
-    elseif (
+
+    if (
       ($this->get('message_state') == 'visible') &&
-      ($this->getExisting('message_state') != 'visible')
+      (
+        ($this->getExisting('message_state') != 'visible') ||
+        $this->isChanged('threadmark_category_id')
+      )
     )
     {
-      // the message is becoming visible
-      // add 1 to other threadmark positions
+      // message has become visible or threadmark has changed categories
       $this->_db->query(
         "UPDATE threadmarks
           SET position = position + 1
           WHERE thread_id = ?
             AND threadmark_category_id = ?
-            AND position >= ?
             AND post_id <> ?
-            AND threadmarks.message_state = 'visible'",
-      array(
-        $this->get('thread_id'),
-        $this->get('threadmark_category_id'),
-        $this->get('position'),
-        $this->get('post_id')
+            AND message_state = 'visible'
+            AND position >= ?",
+        array(
+          $this->get('thread_id'),
+          $this->get('threadmark_category_id'),
+          $this->get('post_id'),
+          $this->get('position')
         )
       );
 
-      // update min/max threadmark ID and threadmark count in thread data
-      $this->_db->query(
-        "UPDATE xf_thread
-          SET threadmark_count = threadmark_count + 1,
-            firstThreadmarkId = COALESCE(
-              (
-                SELECT min(position)
-                  FROM threadmarks
-                  WHERE threadmarks.thread_id = xf_thread.thread_id
-                    AND threadmarks.message_state = 'visible'
-              ),
-              0
-            ),
-            lastThreadmarkId = COALESCE(
-              (
-                SELECT max(position)
-                  FROM threadmarks
-                  WHERE threadmarks.thread_id = xf_thread.thread_id
-                    AND threadmarks.message_state = 'visible'
-              ),
-              0
-            )
-            WHERE thread_id = ?",
-        $this->get('thread_id')
+      $this->_getThreadmarksModel()->updateThreadmarkCategoryPositionForThread(
+        $this->get('thread_id'),
+        $this->get('threadmark_category_id')
       );
     }
   }

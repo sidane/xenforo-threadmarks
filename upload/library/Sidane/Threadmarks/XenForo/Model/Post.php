@@ -43,13 +43,15 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       $viewingUser
     );
 
-    if (!empty($thread['firstThreadmarkId']) || !empty($thread['lastThreadmarkId']))
+    $threadmarkCategoryPositions = array();
+    if (!empty($thread['threadmark_category_positions']))
     {
-      $fetchOptions['threadmarks'] = array(
-        'firstThreadmarkId' => isset($thread['firstThreadmarkId']) ? $thread['firstThreadmarkId'] : 0,
-        'lastThreadmarkId'  => isset($thread['lastThreadmarkId']) ? $thread['lastThreadmarkId'] : 0,
-      );
+      $threadmarkCategoryPositions = $this
+        ->_getThreadmarksModel()
+        ->getThreadmarkCategoryPositionsByThread($thread);
     }
+
+    $fetchOptions['threadmarks']['threadmark_category_positions'] = $threadmarkCategoryPositions;
 
     return $fetchOptions;
   }
@@ -63,62 +65,85 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       return $posts;
     }
 
-    // find the first & last threadmarks on this page,
-    // this allows detection of if we need to fetch more threadmarks to resolve links
+    // build an array of threadmarked post IDs, and an array of threadmarks
+    // indexed by threadmark category and position
+    $threadmarkedPostIds = array();
     $threadmarks = array();
-    $threadmarkedPosts = array();
-    foreach ($posts AS $postId => &$post)
+    foreach ($posts as $postId => $post)
     {
       if (empty($post['threadmark_id']))
       {
         continue;
       }
-      $threadmarkedPosts[] = $postId;
-      $threadmarks[$post['threadmark_position']] = array
-      (
-        'post_id' => $post['post_id'],
-        'position' => $post['position'] ? $post['position'] : 1,
-        'threadmark_id' => $post['threadmark_id'],
-        'threadmark_position' => $post['threadmark_position'],
+
+      $threadmarkedPostIds[] = $postId;
+      $threadmarks[$post['threadmark_category_id']][$post['threadmark_position']] = array(
+        'post_id'                => $post['post_id'],
+        'position'               => $post['position'] ? $post['position'] : 1,
+        'threadmark_id'          => $post['threadmark_id'],
+        'threadmark_category_id' => $post['threadmark_category_id'],
+        'threadmark_position'    => $post['threadmark_position']
       );
     }
 
-    $firstThreadmark = $fetchOptions['threadmarks']['firstThreadmarkId'];
-    $lastThreadmark = $fetchOptions['threadmarks']['lastThreadmarkId'];
-    $missingThreadmarkPositions = array();
-    foreach ($threadmarks AS $position => &$threadmark)
+    // calculate missing threadmarks for each category
+    $threadmarkCategoryPositions = $fetchOptions['threadmarks']['threadmark_category_positions'];
+    $missingThreadmarks = array();
+    foreach ($threadmarks as $threadmarkCategoryId => $_threadmarks)
     {
-      $prevPosition = $position -1;
-      if ($prevPosition >= $firstThreadmark && !isset($threadmarks[$prevPosition]))
+      $firstCategoryPosition = 0;
+      $lastCategoryPosition = 0;
+      if (!empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
       {
-        $missingThreadmarkPositions[$prevPosition] = true;
-
+        $lastCategoryPosition = $threadmarkCategoryPositions[$threadmarkCategoryId];
       }
-      $nextPosition = $position + 1;
-      if ($nextPosition <= $lastThreadmark && !isset($threadmarks[$nextPosition]))
+
+      foreach ($_threadmarks as $position => $threadmark)
       {
-        $missingThreadmarkPositions[$nextPosition] = true;
+        $prevPosition = $position - 1;
+        if (
+          ($prevPosition >= $firstCategoryPosition) &&
+          !isset($_threadmarks[$prevPosition])
+        )
+        {
+          $missingThreadmarks[$threadmarkCategoryId][] = $prevPosition;
+        }
+
+        $nextPosition = $position + 1;
+        if (
+          ($nextPosition <= $lastCategoryPosition) &&
+          !isset($_threadmarks[$nextPosition])
+        )
+        {
+          $missingThreadmarks[$threadmarkCategoryId][] = $nextPosition;
+        }
       }
     }
+
     // resolve any missing threadmark positions
-    if ($missingThreadmarkPositions)
+    if (!empty($missingThreadmarks))
     {
-        $missingThreadmarkPositions = array_keys($missingThreadmarkPositions);
-        $extraThreadmarks = $this->_getThreadmarksModel()->getThreadMarkByPositions($threadId, $missingThreadmarkPositions);
-        $threadmarks = $threadmarks + $extraThreadmarks;
+      $extraThreadmarks = $this
+        ->_getThreadmarksModel()
+        ->getThreadmarksByCategoryAndPosition($threadId, $missingThreadmarks);
+
+      $threadmarks = array_replace_recursive($threadmarks, $extraThreadmarks);
     }
 
-    foreach ($threadmarkedPosts AS $postId)
+    foreach ($threadmarkedPostIds as $postId)
     {
-        $position = $posts[$postId]['threadmark_position'];
-        if (isset($threadmarks[$position + 1]))
-        {
-            $posts[$postId]['threadmark_next'] = $threadmarks[$position + 1];
-        }
-        if (isset($threadmarks[$position - 1]))
-        {
-            $posts[$postId]['threadmark_previous'] = $threadmarks[$position - 1];
-        }
+      $threadmarkCategoryId = $posts[$postId]['threadmark_category_id'];
+      $threadmarkPosition = $posts[$postId]['threadmark_position'];
+
+      if (isset($threadmarks[$threadmarkCategoryId][$threadmarkPosition + 1]))
+      {
+        $posts[$postId]['threadmark_next'] = $threadmarks[$threadmarkCategoryId][$threadmarkPosition + 1];
+      }
+
+      if (isset($threadmarks[$threadmarkCategoryId][$threadmarkPosition - 1]))
+      {
+        $posts[$postId]['threadmark_previous'] = $threadmarks[$threadmarkCategoryId][$threadmarkPosition - 1];
+      }
     }
 
     return $posts;

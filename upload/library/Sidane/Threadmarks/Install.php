@@ -137,9 +137,6 @@ class Sidane_Threadmarks_Install
       SV_Utils_Install::addColumn('threadmarks', 'last_edit_date', 'int not null default 0');
       SV_Utils_Install::addColumn('threadmarks', 'last_edit_user_id', 'int not null default 0');
 
-      SV_Utils_Install::addColumn('xf_thread', 'firstThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
-      SV_Utils_Install::addColumn('xf_thread', 'lastThreadmarkId', 'INT UNSIGNED DEFAULT 0 NOT NULL' );
-
       XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
 
@@ -200,7 +197,18 @@ class Sidane_Threadmarks_Install
           SET threadmark_category_id = 1
           WHERE threadmark_category_id = 0'
       );
+    }
 
+    if ($version < 1040005)
+    {
+      SV_Utils_Install::addColumn(
+        'xf_thread',
+        'threadmark_category_positions',
+        'TEXT'
+      );
+
+      SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
+      SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
     }
 
     // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
@@ -214,6 +222,7 @@ class Sidane_Threadmarks_Install
     SV_Utils_Install::dropColumn('xf_thread', 'threadmark_count');
     SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
     SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
+    SV_Utils_Install::dropColumn('xf_thread', 'threadmark_category_positions');
 
     $db = XenForo_Application::get('db');
     $db->query("DROP TABLE IF EXISTS threadmarks");

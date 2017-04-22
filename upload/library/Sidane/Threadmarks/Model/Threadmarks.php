@@ -465,20 +465,45 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ",'threadmark_id');
   }
 
-  public function getThreadMarkByPositions($threadId, $positions)
+  public function getThreadmarksByCategoryAndPosition(
+    $threadId,
+    $threadmarkCategories
+  )
   {
-    if (empty($positions))
+    if (empty($threadmarkCategories))
     {
       return array();
     }
 
-    return $this->fetchAllKeyed("
-      SELECT post.post_id, post.position, threadmark_id, threadmarks.position as threadmark_position
-      FROM threadmarks
-      JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-      WHERE threadmarks.thread_id = ? and threadmarks.position IN (" . $this->_getDb()->quote($positions) . ") and threadmarks.message_state = 'visible'
-      ORDER BY threadmarks.position ASC
-    ",'threadmark_position', $threadId);
+    $clauses = array();
+    foreach ($threadmarkCategories as $threadmarkCategoryId => $positions)
+    {
+      $positions = $this->_getDb()->quote($positions);
+      $clauses[] = "(threadmarks.threadmark_category_id = {$threadmarkCategoryId}
+          AND threadmarks.position IN ({$positions}))";
+    }
+    $clauses = '('.implode(' OR ', $clauses).')';
+
+    $_threadmarks = $this->fetchAllKeyed(
+      "SELECT threadmarks.threadmark_id, threadmarks.threadmark_category_id, threadmarks.position AS threadmark_position, post.post_id, post.position
+        FROM threadmarks
+        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+        WHERE threadmarks.thread_id = ?
+          AND {$clauses}
+          AND threadmarks.message_state = 'visible'
+        ORDER BY threadmarks.position ASC",
+      'threadmark_category_id',
+      $threadId
+    );
+
+    $threadmarks = array();
+    foreach ($_threadmarks as $threadmarkCategoryId => $threadmark)
+    {
+      $threadmarkPosition = $threadmark['threadmark_position'];
+      $threadmarks[$threadmarkCategoryId][$threadmarkPosition] = $threadmark;
+    }
+
+    return $threadmarks;
   }
 
   public function getByThreadIdWithMinimalPostData($threadId)
@@ -888,5 +913,112 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       'threadmark_id',
       $threadmarkCategoryId
     );
+  }
+
+  public function updateThreadmarkCategoryPositionForThread(
+    $thread,
+    $threadmarkCategoryId
+  ) {
+    if (is_array($thread) && isset($thread['thread_id']))
+    {
+      $threadId = $thread['thread_id'];
+    }
+    elseif (is_numeric($thread))
+    {
+      $threadId = $thread;
+    }
+    else
+    {
+      return false;
+    }
+
+    $threadmarkCategoryPositions = $this->getThreadmarkCategoryPositionsByThread(
+      $thread
+    );
+    $lastPosition = $this->getLastThreadmarkCategoryPositionByThread(
+      $threadId,
+      $threadmarkCategoryId
+    );
+    $threadmarkCategoryPositions[$threadmarkCategoryId] = $lastPosition;
+
+    return $this->setThreadmarkCategoryPositionsForThread(
+      $threadId,
+      $threadmarkCategoryPositions
+    );
+  }
+
+  public function getThreadmarkCategoryPositionsByThread($thread)
+  {
+    if (is_numeric($thread))
+    {
+      $thread = $this->_getThreadModel()->getThreadById($thread);
+    }
+    elseif (!is_array($thread) || !isset($thread['threadmark_category_positions']))
+    {
+      return false;
+    }
+
+    $threadmarkCategoryPositions = @json_decode(
+      $thread['threadmark_category_positions'],
+      true
+    );
+
+    if (empty($threadmarkCategoryPositions))
+    {
+      $threadmarkCategoryPositions = array();
+    }
+
+    return $threadmarkCategoryPositions;
+  }
+
+  public function setThreadmarkCategoryPositionsForThread(
+    $threadId,
+    array $threadmarkCategoryPositions
+  ) {
+    $threadmarkCategoryPositions = json_encode($threadmarkCategoryPositions);
+
+    return $this->_getDb()->query(
+      "UPDATE xf_thread
+        SET threadmark_category_positions = ?
+        WHERE thread_id = ?",
+      array(
+        $threadmarkCategoryPositions,
+        $threadId
+      )
+    );
+  }
+
+  public function getLastThreadmarkCategoryPositionByThread(
+    $threadId,
+    $threadmarkCategoryId
+  )
+  {
+    $lastPosition = $this->_getDb()->fetchOne(
+      'SELECT threadmarks.position
+        FROM threadmarks
+        WHERE threadmarks.thread_id = ?
+          AND threadmarks.threadmark_category_id = ?
+        ORDER BY threadmarks.position DESC
+        LIMIT 1',
+      array(
+        $threadId,
+        $threadmarkCategoryId
+      )
+    );
+
+    if (!$lastPosition)
+    {
+      $lastPosition = 0;
+    }
+
+    return $lastPosition;
+  }
+
+  /**
+   * @return XenForo_Model_Thread
+   */
+  protected function _getThreadModel()
+  {
+    return $this->getModelFromCache('XenForo_Model_Thread');
   }
 }
