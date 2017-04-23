@@ -227,7 +227,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
           limit 1;
         ", array($threadId, $postPosition, $threadId, $categoryId));
   }
-  
+
   public function getPreviousThreadmarkByLocation($categoryId, $threadId, $threadmarkPosition = false)
   {
     $args = array($threadId, $categoryId);
@@ -237,11 +237,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         $sql = ' and threadmarks.position < ? ';
         $args[] = $threadmarkPosition;
     }
-    
+
     return $this->_getDb()->fetchRow("
           select threadmarks.*, post.post_id, post.position, threadmark_id, threadmarks.position as threadmark_position
           from threadmarks
-          join xf_post AS post on  threadmarks.post_id = post.post_id 
+          join xf_post AS post on  threadmarks.post_id = post.post_id
           where threadmarks.thread_id = ? and threadmarks.threadmark_category_id = ? and threadmarks.message_state = 'visible' {$sql}
           order by threadmarks.position desc
           limit 1;
@@ -253,7 +253,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     array $post,
     $label,
     $categoryId,
-    $position = false, 
+    $position = false,
     $resetNesting = false
   ) {
     $db = $this->_getDb();
