@@ -353,9 +353,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     // remove orphaned threadmarks (by post)
     $db->query(
-      'DELETE FROM threadmarks
-        LEFT JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-        WHERE threadmarks.thread_id = ? AND post.post_id IS NULL',
+      'DELETE threadmarks
+        FROM threadmarks
+        LEFT JOIN xf_post AS post ON (post.post_id = threadmarks.post_id)
+        WHERE threadmarks.thread_id = ?
+          AND post.post_id IS NULL',
       $threadId
     );
 
