@@ -114,7 +114,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->isChanged('threadmark_category_id')
     )
     {
-      $this->_updateThreadmarkCount();
+      $this->_updateThreadmarkPositions();
     }
 
     parent::_postSave();
@@ -136,7 +136,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       $this->getContentType(), $this->getContentId()
     );
 
-    $this->_updateThreadmarkCount(true);
+    $this->_updateThreadmarkPositions(true);
     $this->_deleteFromSearchIndex();
     $this->_deleteFromNewsFeed();
   }
@@ -227,7 +227,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     $this->_getNewsFeedModel()->delete($this->getContentType(), $this->getContentId());
   }
 
-  protected function _updateThreadmarkCount($isDelete = false)
+  protected function _updateThreadmarkPositions($isDelete = false)
   {
     if (
       ($this->getExisting('message_state') == 'visible') &&
