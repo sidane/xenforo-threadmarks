@@ -110,6 +110,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     }
 
     if (
+      $this->isInsert() ||
       $this->isChanged('message_state') ||
       $this->isChanged('threadmark_category_id')
     )
@@ -230,6 +231,11 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
   protected function _updateThreadmarkPositions($isDelete = false)
   {
     $updateThreadData = false;
+
+    if ($this->isInsert())
+    {
+      $updateThreadData = true;
+    }
 
     if (
       ($this->getExisting('message_state') == 'visible') &&
