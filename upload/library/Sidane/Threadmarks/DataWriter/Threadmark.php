@@ -229,6 +229,8 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
 
   protected function _updateThreadmarkPositions($isDelete = false)
   {
+    $updateThreadData = false;
+
     if (
       ($this->getExisting('message_state') == 'visible') &&
       (
@@ -240,7 +242,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       // message has become invisible or threadmark has changed categories
       $this->_db->query(
         "UPDATE threadmarks
-          SET position = GREATEST(CAST(position AS signed) - 1, 0)
+          SET position = GREATEST(CAST(position AS SIGNED) - 1, 0)
           WHERE thread_id = ?
             AND threadmark_category_id = ?
             AND post_id <> ?
@@ -254,11 +256,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
         )
       );
 
-      // TODO: support for upating multiple categories at once
-      $this->_getThreadmarksModel()->updateThreadmarkCategoryPositionForThread(
-        $this->get('thread_id'),
-        $this->getExisting('threadmark_category_id')
-      );
+      $updateThreadData = true;
     }
 
     if (
@@ -286,9 +284,13 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
         )
       );
 
-      $this->_getThreadmarksModel()->updateThreadmarkCategoryPositionForThread(
-        $this->get('thread_id'),
-        $this->get('threadmark_category_id')
+      $updateThreadData = true;
+    }
+
+    if ($updateThreadData)
+    {
+      $this->_getThreadmarksModel()->updateThreadmarkDataForThread(
+        $this->get('thread_id')
       );
     }
   }
