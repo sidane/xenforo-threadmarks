@@ -229,7 +229,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
   {
     $data = parent::recalculatePostPositionsInThread($threadId);
 
-    $this->_getThreadmarksModel()->rebuildThreadMarkCache($threadId);
+    $this->_getThreadmarksModel()->rebuildThreadmarkCache($threadId);
 
     return $data;
   }

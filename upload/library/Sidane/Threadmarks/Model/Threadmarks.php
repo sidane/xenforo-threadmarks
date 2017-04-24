@@ -347,7 +347,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return true;
   }
 
-  public function rebuildThreadMarkCache($threadId)
+  public function rebuildThreadmarkCache($threadId)
   {
     $db = $this->_getDb();
 
@@ -381,32 +381,19 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
 
     // ensure resync attributes off the xf_post table
-    $db->query('
-      UPDATE threadmarks
+    $db->query(
+      'UPDATE threadmarks
         JOIN xf_post AS post ON post.post_id = threadmarks.post_id
         SET threadmarks.message_state = post.message_state
         WHERE threadmarks.thread_id = ?',
       $threadId
     );
 
-    // recompute threadmark totals
-    $db->query(
-      "UPDATE xf_thread
-        SET threadmark_count = (
-          SELECT COUNT(threadmarks.threadmark_id)
-            FROM threadmarks
-            WHERE xf_thread.thread_id = threadmarks.thread_id
-              AND threadmarks.message_state = 'visible'
-        )
-        WHERE thread_id = ?",
-      $threadId
-    );
-
     XenForo_Db::beginTransaction($db);
 
     // update display ordering
-    $order = $this->recomputeDisplayOrder($threadId);
-    $this->massUpdateDisplayOrder($threadId, $order);
+    $threadmarks = $this->recomputeDisplayOrder($threadId);
+    $this->massUpdateDisplayOrder($threadId, $threadmarks);
 
     XenForo_Db::commit($db);
   }
@@ -626,109 +613,123 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
   }
 
+  public function massUpdateDisplayOrder($threadId, array $threadmarks)
+  {
+    if (empty($threadmarks))
+    {
+      return;
+    }
+
+    $positions = array();
+    $depths = array();
+    $parentThreadmarkIds = array();
+    foreach ($threadmarks as $threadmarkId => $threadmark)
+    {
+      $positions[] = $threadmarkId;
+      $positions[] = $threadmark['position'];
+
+      $depths[] = $threadmarkId;
+      $depths[] = $threadmark['depth'];
+
+      $parentThreadmarkIds[] = $threadmarkId;
+      $parentThreadmarkIds[] = $threadmark['parent_threadmark_id'];
+    }
+
+    $conditions = str_repeat("WHEN ? THEN ? ", count($threadmarks));
+    $parameters = array_merge(
+      $positions,
+      $depths,
+      $parentThreadmarkIds,
+      array($threadId)
+    );
+
+    $this->_getDb()->query(
+      "UPDATE threadmarks
+        SET position = CASE threadmark_id {$conditions} ELSE 0 END,
+          depth = CASE threadmark_id {$conditions} ELSE 0 END,
+          parent_threadmark_id = CASE threadmark_id {$conditions} ELSE 0 END
+        WHERE thread_id = ?",
+      $parameters
+    );
+
+    $this->updateThreadmarkDataForThread($threadId);
+  }
+
   public function recomputeDisplayOrder($threadId)
   {
-    $order = $this->fetchAllKeyed("
-      SELECT threadmark_id as id, parent_threadmark_id as parent
-      FROM threadmarks
-      WHERE thread_id = ?
-      ORDER BY position
-    ", 'id', $threadId);
+    $threadmarks = $this->fetchAllKeyed(
+      'SELECT threadmark_id, threadmark_category_id, parent_threadmark_id
+        FROM threadmarks
+        WHERE thread_id = ?
+        ORDER BY position',
+      'threadmark_id',
+      $threadId
+    );
 
-    if (empty($order))
+    if (empty($threadmarks))
     {
         return;
     }
 
-    // build the tree
-    $children = array();
-    foreach($order as $key => &$threadmark)
+    $groupedThreadmarks = array();
+    foreach ($threadmarks as $threadmarkId => $threadmark)
     {
-      if (!empty($threadmark['parent']))
-      {
-        $parent = $threadmark['parent'];
-        if (empty($order[$parent]['children']))
-        {
-          $order[$parent]['children'] = array();
-        }
-        $order[$parent]['children'][] = &$threadmark;
-        $children[] = $key;
-      }
+      $threadmarkCategoryId = $threadmark['threadmark_category_id'];
+      $groupedThreadmarks[$threadmarkCategoryId][$threadmarkId] = $threadmark;
     }
 
-    // cleanup non-root level nodes
-    foreach($children as $key)
+    $categoryTrees = array();
+    foreach ($groupedThreadmarks as $threadmarkCategoryId => $threadmarks)
     {
-      unset($order[$key]);
+      $categoryTrees[$threadmarkCategoryId] = $this->buildThreadmarkTree(
+        $threadmarks
+      );
     }
 
-    return $order;
+    $threadmarks = array();
+    foreach ($categoryTrees as $threadmarkCategoryId => $threadmarkTree)
+    {
+      $threadmarks += $this->flattenThreadmarkTree($threadmarkTree);
+    }
+
+    return $threadmarks;
   }
 
-  protected function preorderTreeTraversal($order, $parentThreadmarkId, $depth, &$position, array &$args)
-  {
-    foreach($order as &$item)
+  public function buildThreadmarkTree(
+    array &$threadmarks,
+    $parentThreadmarkId = 0,
+    $depth = 0,
+    &$position = 1
+  ) {
+    $branch = array();
+
+    foreach ($threadmarks as $threadmarkId => $threadmark)
     {
-      if (empty($item['id']))
+      if ($threadmark['parent_threadmark_id'] == $parentThreadmarkId)
       {
-        continue;
-      }
-      $threadmarkId = $item['id'];
+        $threadmark['depth'] = $depth;
+        $threadmark['position'] = $position;
 
-      $oldposition = $position;
-      $position += 1;
-      if (!empty($item['children']))
-      {
-        $this->preorderTreeTraversal($item['children'], $threadmarkId, $depth + 1, $position, $args);
-      }
+        $position++;
 
-      $args['pos'][] = $threadmarkId;
-      $args['pos'][] = $oldposition;
-      $args['depth'][] = $threadmarkId;
-      $args['depth'][] = $depth;
-      $args['parent'][] = $threadmarkId;
-      $args['parent'][] = $parentThreadmarkId;
-    }
-  }
+        $children = $this->buildThreadmarkTree(
+          $threadmarks,
+          $threadmarkId,
+          $depth + 1,
+          $position
+        );
 
-  public function massUpdateDisplayOrder($threadId, $order)
-  {
-    $sqlOrder = '';
-    $db = $this->_getDb();
-    $args = array();
-
-    if (!empty($order))
-    {
-      $position = 0;
-      $this->preorderTreeTraversal($order, 0, 0, $position, $args);
-
-      if (!empty($args))
-      {
-        $args = array_merge($args['pos'], $args['depth'], $args['parent']);
-
-        if (!empty($args))
+        if (!empty($children))
         {
-          $args[] = $threadId;
-
-          $sqlBit = str_repeat("WHEN ? THEN ? ", $position);
-          $db->query('
-              UPDATE threadmarks SET
-                position = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
-                depth = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END,
-                parent_threadmark_id = CASE threadmark_id ' . $sqlBit . '  ELSE 0 END
-              WHERE thread_id = ?
-          ', $args);
+          $threadmark['children'] = $children;
         }
+
+        $branch[$threadmarkId] = $threadmark;
+        unset($threadmarks[$threadmarkId]);
       }
     }
 
-    $db->query("
-        UPDATE xf_thread
-        SET
-           firstThreadmarkId = COALESCE((SELECT min(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0),
-           lastThreadmarkId = COALESCE((SELECT max(position) FROM threadmarks WHERE threadmarks.thread_id = xf_thread.thread_id and threadmarks.message_state = 'visible'), 0 )
-        WHERE thread_id = ?
-    ", $threadId);
+    return $branch;
   }
 
   public function preparelistToTree($threadmarks)
@@ -765,6 +766,26 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         $lastThreadmark['templateHelperEnd'] .= str_repeat('</ul></li>', $lastThreadmark['depth'] - 1);
       }
     }
+
+    return $threadmarks;
+  }
+
+
+  public function flattenThreadmarkTree(array $threadmarkTree)
+  {
+    $threadmarks = array();
+
+    foreach ($threadmarkTree as $threadmarkId => $threadmark)
+    {
+      $threadmarks[$threadmarkId] = $threadmark;
+
+      if (!empty($threadmark['children']))
+      {
+        $threadmarks += $this->flattenThreadmarkTree($threadmark['children']);
+        unset($threadmarks[$threadmarkId]['children']);
+      }
+    }
+
     return $threadmarks;
   }
 
