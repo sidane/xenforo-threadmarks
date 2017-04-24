@@ -91,6 +91,28 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
   {
     parent::_preSave();
 
+    if ($this->isInsert() || $this->isChanged('threadmark_category_id'))
+    {
+      $threadmarkCategoryPositions = $this
+        ->_getThreadmarksModel()
+        ->getThreadmarkCategoryPositionsByThread($this->_getThreadData());
+      $threadmarkCategoryId = $this->get('threadmark_category_id');
+
+      $lastCategoryPosition = 0;
+      if (isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
+      {
+        $lastCategoryPosition = $threadmarkCategoryPositions[$threadmarkCategoryId];
+      }
+
+      $maxPosition = $lastCategoryPosition + 1;
+      $currentPosition = $this->get('position');
+
+      if ($currentPosition > $maxPosition)
+      {
+        $this->set('position', $maxPosition);
+      }
+    }
+
     if ($this->isUpdate() && $this->isChanged('label'))
     {
       $this->set('last_edit_date', XenForo_Application::$time);
