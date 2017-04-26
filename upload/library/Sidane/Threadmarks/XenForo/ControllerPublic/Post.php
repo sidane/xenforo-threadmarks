@@ -180,7 +180,12 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     }
     else
     {
+      $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+      $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+        $threadmarkCategories
+      );
       $threadmarkCategories = $threadmarksModel->getThreadmarkCategoryOptions(
+        $threadmarkCategories,
         true
       );
 

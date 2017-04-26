@@ -846,9 +846,26 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
   }
 
-  public function getThreadmarkCategoryOptions(
-    $filterUsable = false,
+  public function filterUsableThreadmarkCategories(
+    array $threadmarkCategories,
     array $viewingUser = null
+  ) {
+    $this->standardizeViewingUserReference($viewingUser);
+
+    foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
+    {
+      if (!$this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser))
+      {
+        unset($threadmarkCategories[$threadmarkCategoryId]);
+      }
+    }
+
+    return $threadmarkCategories;
+  }
+
+  public function getThreadmarkCategoryOptions(
+    array $threadmarkCategories,
+    $filterUsable = false
   ) {
     $threadmarkCategories = $this->getAllThreadmarkCategories();
     $threadmarkCategories = $this->prepareThreadmarkCategories(
@@ -857,15 +874,9 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     if ($filterUsable)
     {
-      $this->standardizeViewingUserReference($viewingUser);
-
-      foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
-      {
-        if (!$this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser))
-        {
-          unset($threadmarkCategories[$threadmarkCategoryId]);
-        }
-      }
+      $threadmarkCategories = $this->filterUsableThreadmarkCategories(
+        $threadmarkCategories
+      );
     }
 
     $options = array();

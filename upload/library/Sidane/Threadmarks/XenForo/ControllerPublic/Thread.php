@@ -58,7 +58,12 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       $threadmarkCategories = array();
       if ($canAddThreadmark)
       {
+        $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+        $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+          $threadmarkCategories
+        );
         $threadmarkCategories = $threadmarksModel->getThreadmarkCategoryOptions(
+          $threadmarkCategories,
           true
         );
 
@@ -216,7 +221,12 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $threadmarkCategories = array();
     if ($canAddThreadmark)
     {
+      $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+      $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+        $threadmarkCategories
+      );
       $threadmarkCategories = $threadmarksModel->getThreadmarkCategoryOptions(
+        $threadmarkCategories,
         true
       );
 
