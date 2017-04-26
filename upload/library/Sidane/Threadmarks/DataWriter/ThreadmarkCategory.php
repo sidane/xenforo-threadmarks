@@ -82,7 +82,7 @@ class Sidane_Threadmarks_DataWriter_ThreadmarkCategory extends XenForo_DataWrite
 
     $children = $this
       ->_getThreadmarksModel()
-      ->getThreadmarksInCategory($threadmarkCategoryId);
+      ->getThreadmarksByCategory($threadmarkCategoryId);
 
     foreach ($children as $child)
     {

@@ -30,32 +30,6 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     return $joinOptions;
   }
 
-  public function getPermissionBasedPostFetchOptions(
-    array $thread,
-    array $forum,
-    array $nodePermissions = null,
-    array $viewingUser = null
-  ) {
-    $fetchOptions = parent::getPermissionBasedPostFetchOptions(
-      $thread,
-      $forum,
-      $nodePermissions,
-      $viewingUser
-    );
-
-    $threadmarkCategoryPositions = array();
-    if (!empty($thread['threadmark_category_positions']))
-    {
-      $threadmarkCategoryPositions = $this
-        ->_getThreadmarksModel()
-        ->getThreadmarkCategoryPositionsByThread($thread);
-    }
-
-    $fetchOptions['threadmarks']['threadmark_category_positions'] = $threadmarkCategoryPositions;
-
-    return $fetchOptions;
-  }
-
   public function getPostsInThread($threadId, array $fetchOptions = array())
   {
     $posts = parent::getPostsInThread($threadId, $fetchOptions);
@@ -226,6 +200,32 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     $post['canDeleteThreadmarks'] = $canDeleteThreadmarks;
 
     return $post;
+  }
+
+  public function getPermissionBasedPostFetchOptions(
+    array $thread,
+    array $forum,
+    array $nodePermissions = null,
+    array $viewingUser = null
+  ) {
+    $fetchOptions = parent::getPermissionBasedPostFetchOptions(
+      $thread,
+      $forum,
+      $nodePermissions,
+      $viewingUser
+    );
+
+    $threadmarkCategoryPositions = array();
+    if (!empty($thread['threadmark_category_positions']))
+    {
+      $threadmarkCategoryPositions = $this
+        ->_getThreadmarksModel()
+        ->getThreadmarkCategoryPositionsByThread($thread);
+    }
+
+    $fetchOptions['threadmarks']['threadmark_category_positions'] = $threadmarkCategoryPositions;
+
+    return $fetchOptions;
   }
 
   public function recalculatePostPositionsInThread($threadId)

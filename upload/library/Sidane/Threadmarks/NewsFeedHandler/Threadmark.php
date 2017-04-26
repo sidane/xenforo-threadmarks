@@ -5,7 +5,7 @@ class Sidane_Threadmarks_NewsFeedHandler_Threadmark extends XenForo_NewsFeedHand
   protected $_threadmarkModel = null;
   protected $_postModel = null;
   protected $_threadModel = null;
-  
+
   public function getContentByIds(array $contentIds, $model, array $viewingUser)
   {
     $postModel = $this->_getPostModel();
@@ -40,7 +40,7 @@ class Sidane_Threadmarks_NewsFeedHandler_Threadmark extends XenForo_NewsFeedHand
     $item['content'] = $post;
     return parent::prepareNewsFeedItem($item, $viewingUser);
 	}
-  
+
   protected function _getThreadmarkModel()
   {
     if (!$this->_threadmarkModel)
@@ -50,7 +50,7 @@ class Sidane_Threadmarks_NewsFeedHandler_Threadmark extends XenForo_NewsFeedHand
 
     return $this->_threadmarkModel;
   }
-  
+
   protected function _getPostModel()
   {
     if (!$this->_postModel)

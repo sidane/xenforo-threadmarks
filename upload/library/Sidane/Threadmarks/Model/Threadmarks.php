@@ -271,39 +271,66 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     {
       if ($position === false)
       {
-        $prevThreadmark = $this->getPreviousThreadmarkByPost($categoryId, $post['thread_id'], $post['position']);
+        $prevThreadmark = $this->getPreviousThreadmarkByPost(
+          $categoryId,
+          $post['thread_id'],
+          $post['position']
+        );
+
         if (isset($prevThreadmark['threadmark_position']))
         {
            $position = $prevThreadmark['threadmark_position'] + 1;
+
            if (!$resetNesting)
            {
              $dw->set('depth', $prevThreadmark['depth']);
-             $dw->set('parent_threadmark_id', $prevThreadmark['parent_threadmark_id']);
+             $dw->set(
+               'parent_threadmark_id',
+               $prevThreadmark['parent_threadmark_id']
+             );
            }
         }
+
         if ($position === false)
         {
-          $prevThreadmark = $this->getPreviousThreadmarkByLocation($categoryId, $thread['thread_id']);
+          $prevThreadmark = $this->getPreviousThreadmarkByLocation(
+            $categoryId,
+            $thread['thread_id']
+          );
+
           if (isset($prevThreadmark['threadmark_position']))
           {
-             $position = $prevThreadmark['threadmark_position'] + 1;
-             if (!$resetNesting)
-      {
+            $position = $prevThreadmark['threadmark_position'] + 1;
+
+            if (!$resetNesting)
+            {
                $dw->set('depth', $prevThreadmark['depth']);
-               $dw->set('parent_threadmark_id', $prevThreadmark['parent_threadmark_id']);
+               $dw->set(
+                 'parent_threadmark_id',
+                 $prevThreadmark['parent_threadmark_id']
+               );
              }
           }
         }
       }
       else if (!$resetNesting)
       {
-        $prevThreadmark = $this->getPreviousThreadmarkByLocation($categoryId, $post['thread_id'], $position);
+        $prevThreadmark = $this->getPreviousThreadmarkByLocation(
+          $categoryId,
+          $post['thread_id'],
+          $position
+        );
+
         if (isset($prevThreadmark['position']))
-      {
+        {
            $dw->set('depth', $prevThreadmark['depth']);
-           $dw->set('parent_threadmark_id', $prevThreadmark['parent_threadmark_id']);
+           $dw->set(
+             'parent_threadmark_id',
+             $prevThreadmark['parent_threadmark_id']
+           );
+        }
       }
-      }
+
       if ($position === false)
       {
         $position = 0;
@@ -312,6 +339,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       $dw->set('post_id', $post['post_id']);
       $dw->set('position', $position);
     }
+
     $dw->set('thread_id', $thread['thread_id']);
     $dw->set('label', $label);
     $dw->set('threadmark_category_id', $categoryId);
@@ -452,6 +480,17 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       FROM threadmarks
       WHERE threadmark_id IN (" . $this->_getDb()->quote($Ids) . ")
     ",'threadmark_id');
+  }
+
+  public function getThreadmarksByCategory($threadmarkCategoryId)
+  {
+    return $this->fetchAllKeyed(
+      'SELECT *
+        FROM threadmarks
+        WHERE threadmark_category_id = ?',
+      'threadmark_id',
+      $threadmarkCategoryId
+    );
   }
 
   public function getThreadmarksByCategoryAndPosition(
@@ -778,19 +817,14 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $threadmarks;
   }
 
-  public function getDefaultThreadmarkCategory(array $viewingUser = null)
+  public function getAllThreadmarkCategories()
   {
-    $this->standardizeViewingUserReference($viewingUser);
-
-    $categories = $this->getAllThreadmarkCategories();
-    foreach($categories as $category)
-    {
-        if ($this->canUseThreadmarkCategory($category, $viewingUser))
-        {
-           return $category;
-        }
-    }
-    return null;
+    return $this->fetchAllKeyed(
+      'SELECT *
+        FROM threadmark_category
+        ORDER BY display_order',
+      'threadmark_category_id'
+    );
   }
 
   public function getThreadmarkCategoryById($threadmarkCategoryId)
@@ -803,14 +837,20 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
   }
 
-  public function getAllThreadmarkCategories()
+  public function getDefaultThreadmarkCategory(array $viewingUser = null)
   {
-    return $this->fetchAllKeyed(
-      'SELECT *
-        FROM threadmark_category
-        ORDER BY display_order',
-      'threadmark_category_id'
-    );
+    $this->standardizeViewingUserReference($viewingUser);
+
+    $categories = $this->getAllThreadmarkCategories();
+    foreach ($categories as $category)
+    {
+        if ($this->canUseThreadmarkCategory($category, $viewingUser))
+        {
+           return $category;
+        }
+    }
+
+    return null;
   }
 
   public function prepareThreadmarkCategory(array $threadmarkCategory)
@@ -833,6 +873,41 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       array($this, 'prepareThreadmarkCategory'),
       $threadmarkCategories
     );
+  }
+
+  public function canUseThreadmarkCategory(
+    array $threadmarkCategory,
+    array $viewingUser = null
+  )
+  {
+    if (empty($threadmarkCategory) ||
+      empty($threadmarkCategory['allowed_user_group_ids']))
+    {
+      return false;
+    }
+
+    $this->standardizeViewingUserReference($viewingUser);
+
+    $allowedUserGroupIds = explode(
+      ',',
+      $threadmarkCategory['allowed_user_group_ids']
+    );
+    $secondaryUserGroupIds = explode(
+        ',',
+        $viewingUser['secondary_group_ids']
+    );
+    $matchingSecondaryUserGroupIds = array_intersect(
+        $allowedUserGroupIds,
+        $secondaryUserGroupIds
+      );
+
+    if (in_array($viewingUser['user_group_id'], $allowedUserGroupIds) ||
+        !empty($matchingSecondaryUserGroupIds))
+    {
+        return true;
+    }
+
+    return false;
   }
 
   public function filterUsableThreadmarkCategories(
@@ -878,41 +953,6 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $options;
   }
 
-  public function canUseThreadmarkCategory(
-    array $threadmarkCategory,
-    array $viewingUser = null
-  )
-  {
-    if (empty($threadmarkCategory) ||
-      empty($threadmarkCategory['allowed_user_group_ids']))
-    {
-      return false;
-    }
-
-    $this->standardizeViewingUserReference($viewingUser);
-
-    $allowedUserGroupIds = explode(
-      ',',
-      $threadmarkCategory['allowed_user_group_ids']
-    );
-    $secondaryUserGroupIds = explode(
-        ',',
-        $viewingUser['secondary_group_ids']
-    );
-    $matchingSecondaryUserGroupIds = array_intersect(
-        $allowedUserGroupIds,
-        $secondaryUserGroupIds
-      );
-
-    if (in_array($viewingUser['user_group_id'], $allowedUserGroupIds) ||
-        !empty($matchingSecondaryUserGroupIds))
-    {
-        return true;
-    }
-
-    return false;
-  }
-
   public function getThreadmarkCategoryTitlePhraseName($threadmarkCategoryId)
   {
     return "sidane_threadmarks_category_{$threadmarkCategoryId}_title";
@@ -925,17 +965,6 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $this
       ->getModelFromCache('XenForo_Model_Phrase')
       ->getMasterPhraseValue($phraseName);
-  }
-
-  public function getThreadmarksInCategory($threadmarkCategoryId)
-  {
-    return $this->fetchAllKeyed(
-      'SELECT *
-        FROM threadmarks
-        WHERE threadmark_category_id = ?',
-      'threadmark_id',
-      $threadmarkCategoryId
-    );
   }
 
   /**

@@ -2,51 +2,6 @@
 
 class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threadmarks_XenForo_ControllerPublic_Post
 {
-  public function actionThreadmarkPreview()
-  {
-    $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
-    $ftpHelper = $this->getHelper('ForumThreadPost');
-
-    try
-    {
-      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
-        $postId,
-        array('join' => XenForo_Model_Post::FETCH_USER)
-      );
-    }
-    catch(Exception $e) {
-      return $this->responseView(
-        'XenForo_ViewPublic_Thread_Preview',
-        '',
-        array('post' => false)
-      );
-    }
-
-    $threadmarksModel = $this->_getThreadmarksModel();
-    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
-
-    if (empty($threadmark)) {
-      return $this->responseView(
-        'XenForo_ViewPublic_Thread_Preview',
-        '',
-        array('post' => false)
-      );
-    }
-
-    $viewParams = array(
-      'threadmark' => $threadmark,
-      'post'       => $post,
-      'thread'     => $thread,
-      'forum'      => $forum
-    );
-
-    return $this->responseView(
-      'XenForo_ViewPublic_Thread_Preview',
-      'threadmark_preview',
-      $viewParams
-    );
-  }
-
   public function actionThreadmark()
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
@@ -239,6 +194,20 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     }
   }
 
+  public function actionThreadmarkHistory()
+  {
+    $this->_request->setParam('content_type', 'threadmark');
+    $this->_request->setParam(
+      'content_id',
+      $this->_input->filterSingle('post_id', XenForo_Input::UINT)
+    );
+
+    return $this->responseReroute(
+      'XenForo_ControllerPublic_EditHistory',
+      'index'
+    );
+  }
+
   public function actionAddThreadmarkPosition()
   {
     $postId = $this->_input->filterSingle(
@@ -270,26 +239,49 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     return $view;
   }
 
-  public function actionNextThreadmark()
+  public function actionThreadmarkPreview()
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
-
     $ftpHelper = $this->getHelper('ForumThreadPost');
-    list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
-      $postId
-    );
 
-    $threadmarksModel = $this->_getThreadmarksModel();
-    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
-    if ($threadmark)
+    try
     {
-      $nextThreadmark = $threadmarksModel->getNextThreadmark($threadmark);
       list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
-        @$nextThreadmark['post_id']
+        $postId,
+        array('join' => XenForo_Model_Post::FETCH_USER)
+      );
+    }
+    catch(Exception $e) {
+      return $this->responseView(
+        'XenForo_ViewPublic_Thread_Preview',
+        '',
+        array('post' => false)
       );
     }
 
-    return $this->getPostSpecificRedirect($post, $thread);
+    $threadmarksModel = $this->_getThreadmarksModel();
+    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
+
+    if (empty($threadmark)) {
+      return $this->responseView(
+        'XenForo_ViewPublic_Thread_Preview',
+        '',
+        array('post' => false)
+      );
+    }
+
+    $viewParams = array(
+      'threadmark' => $threadmark,
+      'post'       => $post,
+      'thread'     => $thread,
+      'forum'      => $forum
+    );
+
+    return $this->responseView(
+      'XenForo_ViewPublic_Thread_Preview',
+      'threadmark_preview',
+      $viewParams
+    );
   }
 
   public function actionPreviousThreadmark()
@@ -314,18 +306,26 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     return $this->getPostSpecificRedirect($post, $thread);
   }
 
-  public function actionThreadmarkHistory()
+  public function actionNextThreadmark()
   {
-    $this->_request->setParam('content_type', 'threadmark');
-    $this->_request->setParam(
-      'content_id',
-      $this->_input->filterSingle('post_id', XenForo_Input::UINT)
+    $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
+      $postId
     );
 
-    return $this->responseReroute(
-      'XenForo_ControllerPublic_EditHistory',
-      'index'
-    );
+    $threadmarksModel = $this->_getThreadmarksModel();
+    $threadmark = $threadmarksModel->getByPostId($post['post_id']);
+    if ($threadmark)
+    {
+      $nextThreadmark = $threadmarksModel->getNextThreadmark($threadmark);
+      list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
+        @$nextThreadmark['post_id']
+      );
+    }
+
+    return $this->getPostSpecificRedirect($post, $thread);
   }
 
   protected function _getThreadmarksModel()

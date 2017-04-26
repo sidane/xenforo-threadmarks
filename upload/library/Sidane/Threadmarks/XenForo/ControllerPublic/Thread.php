@@ -2,29 +2,6 @@
 
 class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Threadmarks_XenForo_ControllerPublic_Thread
 {
-  protected function _getPostFetchOptions(array $thread, array $forum)
-  {
-    $postFetchOptions = parent::_getPostFetchOptions($thread, $forum);
-
-    if (
-      empty($thread['threadmark_count']) ||
-      (
-        isset($postFetchOptions['includeThreadmark']) &&
-        !$postFetchOptions['includeThreadmark']
-      )
-    )
-    {
-      return $postFetchOptions;
-    }
-
-    if ($this->_getThreadmarksModel()->canViewThreadmark($thread, $forum))
-    {
-      $postFetchOptions['includeThreadmark'] = true;
-    }
-
-    return $postFetchOptions;
-  }
-
   public function actionIndex()
   {
     $response = parent::actionIndex();
@@ -119,71 +96,27 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     return $response;
   }
 
-  protected function _assertCanReplyToThread(array $thread, array $forum)
+  protected function _getPostFetchOptions(array $thread, array $forum)
   {
-    parent::_assertCanReplyToThread($thread, $forum);
+    $postFetchOptions = parent::_getPostFetchOptions($thread, $forum);
 
     if (
-      Sidane_Threadmarks_Globals::$threadmarkLabel &&
-      Sidane_Threadmarks_Globals::$threadmarkCategoryId
+      empty($thread['threadmark_count']) ||
+      (
+        isset($postFetchOptions['includeThreadmark']) &&
+        !$postFetchOptions['includeThreadmark']
+      )
     )
     {
-      if (!$this->_getThreadmarksModel()->canAddThreadmark(
-        null,
-        $thread,
-        $forum,
-        $errorPhraseKey
-      ))
-      {
-        throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
-      }
+      return $postFetchOptions;
     }
-  }
 
-  public function actionSaveDraft()
-  {
-    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle(
-      'threadmark',
-      XenForo_Input::STRING
-    );
-    Sidane_Threadmarks_Globals::$threadmarkCategoryId = $this->_input->filterSingle(
-      'threadmark_category_id',
-      XenForo_Input::UINT
-    );
-
-    return parent::actionSaveDraft();
-  }
-
-  public function actionAddReply()
-  {
-    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle(
-      'threadmark',
-      XenForo_Input::STRING
-    );
-    Sidane_Threadmarks_Globals::$threadmarkCategoryId = $this->_input->filterSingle(
-      'threadmark_category_id',
-      XenForo_Input::UINT
-    );
-
-    return parent::actionAddReply();
-  }
-
-  protected function _getNewPosts(
-    array $thread,
-    array $forum,
-    $lastDate,
-    $limit = 3
-  ) {
-    if (
-      Sidane_Threadmarks_Globals::$threadmarkLabel &&
-      Sidane_Threadmarks_Globals::$threadmarkCategoryId &&
-      empty($thread['threadmark_count'])
-    )
+    if ($this->_getThreadmarksModel()->canViewThreadmark($thread, $forum))
     {
-      $thread['threadmark_count'] = 1;
+      $postFetchOptions['includeThreadmark'] = true;
     }
 
-    return parent::_getNewPosts($thread, $forum, $lastDate, $limit);
+    return $postFetchOptions;
   }
 
   public function actionReply()
@@ -272,52 +205,71 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     return $response;
   }
 
-  public function actionThreadmarksDisplayOrder()
+  public function actionAddReply()
   {
-    // TODO
-    $this->_assertPostOnly();
+    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle(
+      'threadmark',
+      XenForo_Input::STRING
+    );
+    Sidane_Threadmarks_Globals::$threadmarkCategoryId = $this->_input->filterSingle(
+      'threadmark_category_id',
+      XenForo_Input::UINT
+    );
 
-    $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
-    $order = $this->_input->filterSingle('order', XenForo_Input::ARRAY_SIMPLE);
+    return parent::actionAddReply();
+  }
 
-    $ftpHelper = $this->getHelper('ForumThreadPost');
-    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable($threadId);
+  protected function _getNewPosts(
+    array $thread,
+    array $forum,
+    $lastDate,
+    $limit = 3
+  ) {
+    if (
+      Sidane_Threadmarks_Globals::$threadmarkLabel &&
+      Sidane_Threadmarks_Globals::$threadmarkCategoryId &&
+      empty($thread['threadmark_count'])
+    )
+    {
+      $thread['threadmark_count'] = 1;
+    }
 
-    $threadmarksModel = $this->_getThreadmarksModel();
+    return parent::_getNewPosts($thread, $forum, $lastDate, $limit);
+  }
+
+  public function actionSaveDraft()
+  {
+    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle(
+      'threadmark',
+      XenForo_Input::STRING
+    );
+    Sidane_Threadmarks_Globals::$threadmarkCategoryId = $this->_input->filterSingle(
+      'threadmark_category_id',
+      XenForo_Input::UINT
+    );
+
+    return parent::actionSaveDraft();
+  }
+
+  protected function _assertCanReplyToThread(array $thread, array $forum)
+  {
+    parent::_assertCanReplyToThread($thread, $forum);
 
     if (
-      empty($thread['threadmark_count']) ||
-      !$threadmarksModel->canViewThreadmark($thread, $forum)
-    ) {
-      return $this->getNotFoundResponse();
-    }
-
-    $fetchOptions = $this->_getThreadmarkFetchOptions();
-
-    $threadmarks = $threadmarksModel->getThreadmarksByThread(
-      $thread['thread_id'],
-      $fetchOptions
-    );
-    $threadmarks = $threadmarksModel->prepareThreadmarks(
-      $threadmarks,
-      $thread,
-      $forum
-    );
-
-    foreach ($threadmarks as &$threadmark)
+      Sidane_Threadmarks_Globals::$threadmarkLabel &&
+      Sidane_Threadmarks_Globals::$threadmarkCategoryId
+    )
     {
-      if (empty($threadmark['canEdit']))
+      if (!$this->_getThreadmarksModel()->canAddThreadmark(
+        null,
+        $thread,
+        $forum,
+        $errorPhraseKey
+      ))
       {
-          return $this->getNoPermissionResponseException();
+        throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
       }
     }
-
-    $threadmarksModel->massUpdateDisplayOrder($thread['thread_id'], $order);
-
-    return $this->responseRedirect(
-      XenForo_ControllerResponse_Redirect::SUCCESS,
-      XenForo_Link::buildPublicLink('threads/threadmarks', $thread)
-    );
   }
 
   public function actionThreadmarks()
