@@ -469,30 +469,30 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     {
       $positions = $this->_getDb()->quote($positions);
       $clauses[] = "(threadmarks.threadmark_category_id = {$threadmarkCategoryId}
-          AND threadmarks.position IN ({$positions}))";
+        AND threadmarks.position IN ({$positions}))";
     }
     $clauses = '('.implode(' OR ', $clauses).')';
 
-    $_threadmarks = $this->fetchAllKeyed(
+    $threadmarks = $this->fetchAllKeyed(
       "SELECT threadmarks.threadmark_id, threadmarks.threadmark_category_id, threadmarks.position AS threadmark_position, post.post_id, post.position
         FROM threadmarks
         JOIN xf_post AS post ON post.post_id = threadmarks.post_id
         WHERE threadmarks.thread_id = ?
           AND {$clauses}
           AND threadmarks.message_state = 'visible'
-        ORDER BY threadmarks.position ASC",
+        ORDER BY threadmarks.position",
       'threadmark_category_id',
       $threadId
     );
 
-    $threadmarks = array();
-    foreach ($_threadmarks as $threadmarkCategoryId => $threadmark)
+    $groupedThreadmarks = array();
+    foreach ($threadmarks as $threadmarkCategoryId => $threadmark)
     {
       $threadmarkPosition = $threadmark['threadmark_position'];
       $threadmarks[$threadmarkCategoryId][$threadmarkPosition] = $threadmark;
     }
 
-    return $threadmarks;
+    return $groupedThreadmarks;
   }
 
   public function getByThreadIdWithMinimalPostData($threadId)

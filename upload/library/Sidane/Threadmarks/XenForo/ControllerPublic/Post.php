@@ -145,11 +145,11 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           );
         }
         $resetNesting = $this->_input->filterSingle(
-            'reset_nesting', 
+            'reset_nesting',
             XenForo_Input::BOOLEAN
         );
         $position = $this->_input->filterSingle(
-            'position', 
+            'position',
             XenForo_Input::UINT
         );
         $threadmarksModel->setThreadMark(
@@ -239,11 +239,11 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
   public function actionAddThreadmarkPosition()
   {
     $postId = $this->_input->filterSingle(
-        'post_id', 
+        'post_id',
         XenForo_Input::UINT
     );
     $categoryId = $this->_input->filterSingle(
-        'position', 
+        'position',
         XenForo_Input::UINT
     );
 
@@ -258,7 +258,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     {
       throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_add_threadmarks');
     }
-  
+
     $view = $this->responseView();
     $view->jsonParams = array(
         'previousThreadmark' => $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']),

@@ -68,7 +68,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     // build an array of threadmarked post IDs, and an array of threadmarks
     // indexed by threadmark category and position
     $threadmarkedPostIds = array();
-    $threadmarks = array();
+    $groupedThreadmarks = array();
     foreach ($posts as $postId => $post)
     {
       if (empty($post['threadmark_id']))
@@ -77,7 +77,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       }
 
       $threadmarkedPostIds[] = $postId;
-      $threadmarks[$post['threadmark_category_id']][$post['threadmark_position']] = array(
+      $groupedThreadmarks[$post['threadmark_category_id']][$post['threadmark_position']] = array(
         'post_id'                => $post['post_id'],
         'position'               => $post['position'] ? $post['position'] : 1,
         'threadmark_id'          => $post['threadmark_id'],
@@ -89,7 +89,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     // calculate missing threadmarks for each category
     $threadmarkCategoryPositions = $fetchOptions['threadmarks']['threadmark_category_positions'];
     $missingThreadmarks = array();
-    foreach ($threadmarks as $threadmarkCategoryId => $_threadmarks)
+    foreach ($groupedThreadmarks as $threadmarkCategoryId => $threadmarks)
     {
       $firstCategoryPosition = 1;
       $lastCategoryPosition = 0;
@@ -98,12 +98,12 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
         $lastCategoryPosition = $threadmarkCategoryPositions[$threadmarkCategoryId];
       }
 
-      foreach ($_threadmarks as $position => $threadmark)
+      foreach ($threadmarks as $position => $threadmark)
       {
         $prevPosition = $position - 1;
         if (
           ($prevPosition >= $firstCategoryPosition) &&
-          !isset($_threadmarks[$prevPosition])
+          !isset($threadmarks[$prevPosition])
         )
         {
           $missingThreadmarks[$threadmarkCategoryId][] = $prevPosition;
@@ -112,7 +112,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
         $nextPosition = $position + 1;
         if (
           ($nextPosition <= $lastCategoryPosition) &&
-          !isset($_threadmarks[$nextPosition])
+          !isset($threadmarks[$nextPosition])
         )
         {
           $missingThreadmarks[$threadmarkCategoryId][] = $nextPosition;
@@ -127,7 +127,10 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
         ->_getThreadmarksModel()
         ->getThreadmarksByCategoryAndPosition($threadId, $missingThreadmarks);
 
-      $threadmarks = array_replace_recursive($threadmarks, $extraThreadmarks);
+      $groupedThreadmarks = array_replace_recursive(
+        $groupedThreadmarks,
+        $extraThreadmarks
+      );
     }
 
     foreach ($threadmarkedPostIds as $postId)
@@ -135,14 +138,14 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       $threadmarkCategoryId = $posts[$postId]['threadmark_category_id'];
       $threadmarkPosition = $posts[$postId]['threadmark_position'];
 
-      if (isset($threadmarks[$threadmarkCategoryId][$threadmarkPosition + 1]))
+      if (isset($groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition + 1]))
       {
-        $posts[$postId]['threadmark_next'] = $threadmarks[$threadmarkCategoryId][$threadmarkPosition + 1];
+        $posts[$postId]['threadmark_next'] = $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition + 1];
       }
 
-      if (isset($threadmarks[$threadmarkCategoryId][$threadmarkPosition - 1]))
+      if (isset($groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition - 1]))
       {
-        $posts[$postId]['threadmark_previous'] = $threadmarks[$threadmarkCategoryId][$threadmarkPosition - 1];
+        $posts[$postId]['threadmark_previous'] = $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition - 1];
       }
     }
 
