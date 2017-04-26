@@ -32,7 +32,12 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       {
         if ($this->isConfirmedPost())
         {
-          if (!$threadmarksModel->canDeleteThreadmark($post, $thread, $forum))
+          if (!$threadmarksModel->canDeleteThreadmark(
+            $existingThreadmark,
+            $post,
+            $thread,
+            $forum
+          ))
           {
             throw $this->getErrorOrNoPermissionResponseException(
               'you_do_not_have_permission_to_delete_threadmarks'
