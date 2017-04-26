@@ -19,9 +19,9 @@
 
 <xen:form action="{xen:adminlink 'threadmark-categories/delete', $threadmarkCategory}" class="deleteConfirmForm formOverlay">
 	<p>{xen:phrase sidane_please_confirm_that_you_want_to_delete_following_threadmark_category}:</p>
-
+	
 	<strong><a href="{xen:adminlink 'threadmark-categories/edit', $threadmarkCategory}">{$threadmarkCategory.title}</a></strong>
-
+	
 	<p>{xen:phrase sidane_confirm_delete_threadmark_category_footnote}</p>
 
 	<xen:submitunit save="{xen:phrase sidane_delete_threadmark_category}" />
@@ -70,7 +70,7 @@
 			<xen:include template="filter_list_controls" />
 			{xen:phrase sidane_threadmark_categories}
 		</h2>
-
+	
 		<ol class="FilterList Scrollable">
 			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
 				<xen:listitem
@@ -80,7 +80,7 @@
 					delete="{xen:adminlink threadmark-categories/delete, $threadmarkCategory}" />
 			</xen:foreach>
 		</ol>
-
+	
 		<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $threadmarkCategories}</span>', 'total={xen:count $threadmarkCategories}'}</p>
 	<xen:else />
 		<div class="noResults">{xen:phrase sidane_no_threadmark_categories_have_been_defined}</div>
@@ -279,7 +279,7 @@
 			</select>
 		</dd>
 	</dl>
-
+	
 	<xen:if is="{$post.canDeleteThreadmarks}">
 		<dl class="ctrlUnit">
 			<dt></dt>
@@ -1444,7 +1444,7 @@
 		<dt><label for="ctrl_label">{xen:phrase threadmark_label}:</label></dt>
 		<dd><input type="text" name="label" id="ctrl_label" class="textCtrl" maxlength="255" /></dd>
 	</dl>
-
+	
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 		<dd>
@@ -1571,11 +1571,11 @@
 	float:left;
 }
 
-/* clearfix */
-.threadmark .ctrlUnit
-{
-	overflow: auto;
-	zoom: 1;
+/* clearfix */ 
+.threadmark .ctrlUnit 
+{ 
+	overflow: auto; 
+	zoom: 1; 
 }]]></template>
     <template title="search_result_threadmark" version_id="11" version_string="1.1.8"><![CDATA[<li id="threadmark-{$threadmark.post_id}" class="searchResult post primaryContent{xen:if $post.isIgnored, ' ignored'}" data-author="{$threadmark.username}">
 
