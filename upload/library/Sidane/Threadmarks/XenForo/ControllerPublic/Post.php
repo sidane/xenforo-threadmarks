@@ -184,17 +184,15 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
         $threadmarkCategories
       );
-      $threadmarkCategories = $threadmarksModel->getThreadmarkCategoryOptions(
-        $threadmarkCategories,
-        true
-      );
+      $threadmarkCategoryOptions = $threadmarksModel
+        ->getThreadmarkCategoryOptions($threadmarkCategories, true);
 
       $viewParams = array(
-        'post'                 => $post,
-        'thread'               => $thread,
-        'forum'                => $forum,
-        'threadmarkCategories' => $threadmarkCategories,
-        'nodeBreadCrumbs'      => $ftpHelper->getNodeBreadCrumbs($forum),
+        'post'                      => $post,
+        'thread'                    => $thread,
+        'forum'                     => $forum,
+        'threadmarkCategoryOptions' => $threadmarkCategoryOptions,
+        'nodeBreadCrumbs'           => $ftpHelper->getNodeBreadCrumbs($forum),
       );
 
       if ($existingThreadmark)

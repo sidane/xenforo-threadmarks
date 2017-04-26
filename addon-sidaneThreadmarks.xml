@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.4.0" version_id="1040000" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.4.0" version_id="1040006" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="sidane_tm_categories" parent_navigation_id="threadsPosts" display_order="5" link="threadmark-categories" admin_permission_id="sidane_threadmarks" debug_only="0" hide_no_children="0"/>
   </admin_navigation>
@@ -19,9 +19,9 @@
 
 <xen:form action="{xen:adminlink 'threadmark-categories/delete', $threadmarkCategory}" class="deleteConfirmForm formOverlay">
 	<p>{xen:phrase sidane_please_confirm_that_you_want_to_delete_following_threadmark_category}:</p>
-	
+
 	<strong><a href="{xen:adminlink 'threadmark-categories/edit', $threadmarkCategory}">{$threadmarkCategory.title}</a></strong>
-	
+
 	<p>{xen:phrase sidane_confirm_delete_threadmark_category_footnote}</p>
 
 	<xen:submitunit save="{xen:phrase sidane_delete_threadmark_category}" />
@@ -70,7 +70,7 @@
 			<xen:include template="filter_list_controls" />
 			{xen:phrase sidane_threadmark_categories}
 		</h2>
-	
+
 		<ol class="FilterList Scrollable">
 			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
 				<xen:listitem
@@ -80,7 +80,7 @@
 					delete="{xen:adminlink threadmark-categories/delete, $threadmarkCategory}" />
 			</xen:foreach>
 		</ol>
-	
+
 		<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $threadmarkCategories}</span>', 'total={xen:count $threadmarkCategories}'}</p>
 	<xen:else />
 		<div class="noResults">{xen:phrase sidane_no_threadmark_categories_have_been_defined}</div>
@@ -251,7 +251,7 @@
     </group>
   </style_properties>
   <templates>
-    <template title="edit_threadmark" version_id="1040000" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
+    <template title="edit_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
 <xen:h1>{xen:phrase edit_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -273,13 +273,13 @@
 		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 		<dd>
 			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
-				<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
-					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark.threadmark_category_id}'}>{$threadmarkCategory}</option>
+				<xen:foreach loop="$threadmarkCategoryOptions" key="$threadmarkCategoryId" value="$threadmarkCategoryOption">
+					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark.threadmark_category_id}'}>{$threadmarkCategoryOption}</option>
 				</xen:foreach>
 			</select>
 		</dd>
 	</dl>
-	
+
 	<xen:if is="{$post.canDeleteThreadmarks}">
 		<dl class="ctrlUnit">
 			<dt></dt>
@@ -1426,7 +1426,7 @@
 <p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
 
 <xen:include template="news_feed_attached_images" />]]></template>
-    <template title="new_threadmark" version_id="1040000" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
+    <template title="new_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -1444,13 +1444,13 @@
 		<dt><label for="ctrl_label">{xen:phrase threadmark_label}:</label></dt>
 		<dd><input type="text" name="label" id="ctrl_label" class="textCtrl" maxlength="255" /></dd>
 	</dl>
-	
+
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 		<dd>
 			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
-				<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
-					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark_category_id}'}>{$threadmarkCategory}</option>
+				<xen:foreach loop="$threadmarkCategoryOptions" key="$threadmarkCategoryId" value="$threadmarkCategoryOption">
+					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark_category_id}'}>{$threadmarkCategoryOption}</option>
 				</xen:foreach>
 			</select>
 		</dd>
@@ -1527,7 +1527,7 @@
 <xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
 </xen:if>
 </xen:if>]]></template>
-    <template title="quick_reply_threadmark" version_id="1040000" version_string="1.4.0"><![CDATA[<xen:if is="{$debugMode}">
+    <template title="quick_reply_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$debugMode}">
 	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
 <xen:else />
 	<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
@@ -1543,8 +1543,8 @@
 	<dd>
 		<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
 			<option value="0"></option>
-			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
-				<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$draftThreadmarkCategoryId}'}>{$threadmarkCategory}</option>
+			<xen:foreach loop="$threadmarkCategoryOptions" key="$threadmarkCategoryId" value="$threadmarkCategoryOption">
+				<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$draftThreadmarkCategoryId}'}>{$threadmarkCategoryOption}</option>
 			</xen:foreach>
 		</select>
 	</dd>
@@ -1571,11 +1571,11 @@
 	float:left;
 }
 
-/* clearfix */ 
-.threadmark .ctrlUnit 
-{ 
-	overflow: auto; 
-	zoom: 1; 
+/* clearfix */
+.threadmark .ctrlUnit
+{
+	overflow: auto;
+	zoom: 1;
 }]]></template>
     <template title="search_result_threadmark" version_id="11" version_string="1.1.8"><![CDATA[<li id="threadmark-{$threadmark.post_id}" class="searchResult post primaryContent{xen:if $post.isIgnored, ' ignored'}" data-author="{$threadmark.username}">
 
@@ -1607,116 +1607,149 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="1020101" version_string="1.2.1"><![CDATA[<xen:require css="threadmarks.css"/>
-<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+    <template title="threadmarks" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}
-    <xen:if is="{$canEditThreadMarks}">
-    <i class="fa fa-unlock Tooltip" style="display:none" title="{xen:phrase click_to_lock}"></i>
-    <i class="fa fa-lock Tooltip" style="display:none" title="{xen:phrase click_to_unlock}"></i>
-    </xen:if>
+	<xen:if is="{$canEditThreadMarks}">
+		<i class="fa fa-unlock Tooltip" style="display:none" title="{xen:phrase click_to_lock}"></i>
+		<i class="fa fa-lock Tooltip" style="display:none" title="{xen:phrase click_to_unlock}"></i>
+	</xen:if>
 </xen:h1>
 
-<xen:container var="$head.noindex">
-  <meta name="robots" content="noindex" />
-</xen:container>
-
 <xen:navigation>
-  <xen:breadcrumb source="$nodeBreadCrumbs" />
-  <xen:breadcrumb href="{xen:link full:forums, $forum}">{$forum.title}</xen:breadcrumb>
-  <xen:breadcrumb href="{xen:link full:threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link full:forums, $forum}">{$forum.title}</xen:breadcrumb>
+	<xen:breadcrumb href="{xen:link full:threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
 </xen:navigation>
 
-<div class="section jstree-open">
-  <div class="overlayScroll threadmarks {xen:if {$canEditThreadMarks}, 'ThreadmarkSortable'}" data-sort-url="{xen:link threads/threadmarks-display-order, $thread}">
-  <ul>
-    <xen:foreach loop="$threadmarks" value="$threadmark">
-      <li class="primaryContent memberListItem threadmarkItem {$threadmark.extraCss} depth{$threadmark.depth} {xen:if {$threadmark.depth}, 'child'}" id="{$threadmark.threadmark_id}">
-          <xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
-          <a href="{xen:link threads/post-permalink, $thread, 'post={$threadmark.post}'}"
-             class="{xen:if $thread.hasPreview, PreviewTooltip}"
-             data-previewUrl="{xen:if $thread.hasPreview, {xen:link posts/threadmarkpreview, $threadmark}}">{$threadmark.label}
-          </a>
-          <div class="extra">
-            <xen:datetime time="{$threadmark.post.post_date}" />
-          </div>
-          {xen:if {$threadmark.templateHelperChild}, {xen:raw $threadmark.templateHelperChild}}
-      {xen:if {$threadmark.templateHelperEnd}, {xen:raw $threadmark.templateHelperEnd}}
-    </xen:foreach>
-  </ul>
-  </div>
-  <div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
-  <xen:include template="preview_tooltip" />
-</div>
+<xen:container var="$head.noindex">
+	<meta name="robots" content="noindex" />
+</xen:container>
+
+<xen:require css="threadmarks.css" />
 
 <xen:if is="{$canEditThreadMarks}">
-<xen:require css="jstree.css" />
-<xen:require js="js/jsTree/jstree.min.js" />
-<xen:if is="{$debugMode}">
-<xen:require js="js/sidane/threadmarks/threadmarks.js" />
-<xen:else />
-<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
+	<xen:require css="jstree.css" />
+	<xen:require js="js/jsTree/jstree.min.js" />
+
+	<xen:if is="{$debugMode}">
+		<xen:require js="js/sidane/threadmarks/full/threadmarks.js" />
+	<xen:else />
+		<xen:require js="js/sidane/threadmarks/threadmarks.js" />
+	</xen:if>
 </xen:if>
-</xen:if>]]></template>
-    <template title="threadmarks.css" version_id="17" version_string="1.1.11b"><![CDATA[.PageNav.threadmarksSinglePage {
-  float: left;
-  min-width: 0;
+
+<div class="threadmarks section">
+	<xen:if is="{$threadmarkCategoryCount} > 1">
+		<ol class="tabs">
+			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
+				<li class="{xen:if '{$threadmarkCategoryId} == {$activeThreadmarkCategory.threadmark_category_id}', 'active'}">
+					<h4>
+						<a
+							href="{xen:link threads/threadmarks, $thread, 'category_id={$threadmarkCategoryId}'}"
+							class="OverlayTrigger"
+							data-cacheOverlay="true"
+						>
+							{$threadmarkCategory.title}
+						</a>
+					</h4>
+				</li>
+			</xen:foreach>
+		</ol>
+	<xen:else />
+		<h2 class="textHeading">{$activeThreadmarkCategory.title}</h2>
+	</xen:if>
+
+	<ol class="overlayScroll">
+		<xen:foreach loop="$threadmarks" value="$threadmark">
+			<li class="primaryContent threadmarkItem _depth{$threadmark.depth}">
+				<xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
+				<a
+					href="{xen:link threads/post-permalink, $thread, 'post={$threadmark.post}'}"
+        				class="{xen:if $thread.hasPreview, PreviewTooltip}"
+            				data-previewUrl="{xen:if $thread.hasPreview, {xen:link posts/threadmarkpreview, $threadmark}}"
+            			>
+            				{$threadmark.label}
+            			</a>
+
+             			<div class="extra muted">
+					<xen:datetime time="{$threadmark.post.post_date}" />
+				</div>
+			</li>
+		</xen:foreach>
+	</ol>
+
+	<xen:include template="preview_tooltip" />
+
+	<div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
+</div>]]></template>
+    <template title="threadmarks.css" version_id="1040006" version_string="1.4.0"><![CDATA[.PageNav.threadmarksSinglePage
+{
+	float: left;
+	min-width: 0;
 }
 
-.PageNav a.threadmarksTrigger {
-  width: auto !important;
-  padding-left: 4px;
-  padding-right: 4px;
+.PageNav a.threadmarksTrigger
+{
+	width: auto !important;
+	padding-left: 4px;
+	padding-right: 4px;
 }
 
-.threadmarksMenu h4 {
-  font-size: 14px;
-  font-weight: bold;
-  background-color: transparent;
+.threadmarksMenu h4
+{
+	font-size: 14px;
+	font-weight: bold;
+	background-color: transparent;
 }
 
-.messageList .message.hasThreadmark {
-  padding-top: 0;
-  border-top: 0;
+.messageList .message.hasThreadmark
+{
+	padding-top: 0;
+	border-top: 0;
 }
 
-.threadmarker {
+.threadmarker
+{
 	{xen:property Threadmarker}
-  display: flex;
-  align-items: flex-end ;
+	display: flex;
+	align-items: flex-end ;
 }
 
-.threadmarker .label {
-  display: inline-block;
-  wordwrap: broken-word;
-  word-break: break-word;
-  overflow-x: hidden ;
-  align-self: flex-start ;
-  flex-basis: auto ;
-  flex-grow: 0 ;
-  flex-shrink: 1 ;
-  {xen:property ThreadmarkLabel}
+.threadmarker .label
+{
+	display: inline-block;
+	wordwrap: broken-word;
+	word-break: break-word;
+	overflow-x: hidden ;
+	align-self: flex-start ;
+	flex-basis: auto ;
+	flex-grow: 0 ;
+	flex-shrink: 1 ;
+	{xen:property ThreadmarkLabel}
 }
 
-.threadmarker .label strong {
-  {xen:property ThreadmarkLabelStrong}
+.threadmarker .label strong
+{
+	{xen:property ThreadmarkLabelStrong}
 }
 
-.threadmarker_nav_top {
-  display: flex;
-  flex-wrap: nowrap;
-  flex-basis: auto ;
-  flex-grow: 0 ;
-  flex-shrink: 0 ;
-  margin-left: auto ;
-  justify-content: flex-end ;
+.threadmarker_nav_top
+{
+	display: flex;
+	flex-wrap: nowrap;
+	flex-basis: auto ;
+	flex-grow: 0 ;
+	flex-shrink: 0 ;
+	margin-left: auto ;
+	justify-content: flex-end ;
 }
 
 .threadmarker .history
 {
-  flex-basis: auto ;
-  flex-grow: 0 ;
-  flex-shrink: 0 ;
+	flex-basis: auto ;
+	flex-grow: 0 ;
+	flex-shrink: 0 ;
 }
 
 .threadmarker_nav_bottom .previous a,
@@ -1727,19 +1760,20 @@
 .threadmarker_nav_top .next a,
 .threadmarker .history a
 {
-  {xen:property ThreadmarkButtons}
+	{xen:property ThreadmarkButtons}
 }
 
 .threadmarker .history a
 {
-  {xen:property ThreadmarkHistory}
+	{xen:property ThreadmarkHistory}
 }
 
-.threadmarker_nav_bottom {
-  overflow:hidden;
-  float:none;
-  text-align:right;
-  padding: 15px 0px 5px 0px;
+.threadmarker_nav_bottom
+{
+	overflow:hidden;
+	float:none;
+	text-align:right;
+	padding: 15px 0px 5px 0px;
 }
 
 .threadmarker_nav_bottom .previous a,
@@ -1749,16 +1783,16 @@
 .threadmarker_nav_top .index a,
 .threadmarker_nav_top .next a
 {
-  {xen:property ThreadmarkIndexButtons}
+	{xen:property ThreadmarkIndexButtons}
 }
 
 .threadmarker_nav_top .previous a,
 .threadmarker_nav_top .index a,
 .threadmarker_nav_top .next a
 {
-  margin: 0 0 0 4px;
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
+	margin: 0 0 0 4px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
 
 .threadmarker_nav_bottom .previous a:hover,
@@ -1769,119 +1803,138 @@
 .threadmarker_nav_top .next a:hover,
 .threadmarker .history a:hover
 {
-  {xen:property ThreadmarkButtonHover}
+	{xen:property ThreadmarkButtonHover}
 }
 
 <xen:if is="{xen:property enableResponsive}">
-@media (max-width:{xen:property maxResponsiveWideWidth})
-{
-  .Responsive .PageNav a.threadmarksTrigger {
-    clear: left;
-    margin-top: 7px;
-  }
-}
-@media (max-width:{xen:property maxResponsiveMediumWidth}) {
-}
-@media (max-width:{xen:property maxResponsiveNarrowWidth})
-{
-  .threadmarker {
-    flex-wrap: wrap;
-  }
-  .threadmarker .label
+  @media (max-width:{xen:property maxResponsiveWideWidth})
   {
-    display: block;
-    max-width: 100% ;
-    width:100%;
+    .Responsive .PageNav a.threadmarksTrigger
+    {
+      clear: left;
+      margin-top: 7px;
+    }
   }
-  .threadmarker .history a
+
+  @media (max-width:{xen:property maxResponsiveNarrowWidth})
   {
-    margin:0 0 0 0 ;
+    .threadmarker
+    {
+      flex-wrap: wrap;
+    }
+
+    .threadmarker .label
+    {
+      display: block;
+      max-width: 100% ;
+      width:100%;
+    }
+
+    .threadmarker .history a
+    {
+      margin:0 0 0 0 ;
+    }
+
+    .threadmarker .history a:hover
+    {
+      margin:0 0 0 0 ;
+    }
+
+    .threadmarker_nav_top .previous a,
+    .threadmarker_nav_top .index a,
+    .threadmarker_nav_top .next a,
+    .threadmarker .history a
+    {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+    }
+
+    .threadmarker_nav_top .previous a:hover,
+    .threadmarker_nav_top .index a:hover,
+    .threadmarker_nav_top .next a:hover,
+    .threadmarker .history a:hover
+    {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+    }
   }
-  .threadmarker .history a:hover
-  {
-    margin:0 0 0 0 ;
-  }
-  .threadmarker_nav_top .previous a,
-  .threadmarker_nav_top .index a,
-  .threadmarker_nav_top .next a,
-  .threadmarker .history a
-  {
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-  }
-  .threadmarker_nav_top .previous a:hover,
-  .threadmarker_nav_top .index a:hover,
-  .threadmarker_nav_top .next a:hover,
-  .threadmarker .history a:hover
-  {
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-  }
-}
 </xen:if>
 
 .ThreadmarkSortable
 {
-  {xen:property ThreadmarkSortable}
+	{xen:property ThreadmarkSortable}
 }
 
-.threadmarks .child
+.threadmarks .primaryContent { padding: 10px 0; }
+
+.threadmarks ._depth0 { padding-left: 10px; }
+.threadmarks ._depth1 { padding-left: 42px; }
+.threadmarks ._depth2 { padding-left: 74px; }
+.threadmarks ._depth3 { padding-left: 106px; }
+.threadmarks ._depth4 { padding-left: 138px; }
+.threadmarks ._depth5 { padding-left: 170px; }
+.threadmarks ._depth6 { padding-left: 202px; }
+.threadmarks ._depth7 { padding-left: 234px; }
+.threadmarks ._depth8 { padding-left: 266px; }
+.threadmarks ._depth9 { padding-left: 298px; }
+
+li.threadmarkItem .extra
 {
-    border-bottom: none;
-    padding-bottom:0;
+	float: right;
+	font-size: 11px;
+	padding-right: 10px;
 }
 
-.threadmarks ul,
-.threadmarks li
+li.threadmarkItem .newIndicator
 {
-  width:auto;
-  padding-right:0;
+		{xen:property messageNewIndicatorThreadmarks}
 }
 
-.threadmarks li
+li.threadmarkItem .newIndicator span
 {
-  overflow:visible;
-}
-
-.threadmarkItem .newIndicator
-{
-    {xen:property messageNewIndicatorThreadmarks}
-}
-.threadmarkItem .newIndicator span
-{
-    {xen:property messageNewIndicatorInnerThreadmarks}
+		{xen:property messageNewIndicatorInnerThreadmarks}
 }
 
 .primaryContent .jstree-anchor,
 .primaryContent .jstree-anchor:link,
 .primaryContent .jstree-anchor:visited,
 .primaryContent .jstree-anchor:hover,
-.primaryContent .jstree-anchor:active {
-  {xen:property ThreadmarkJSTree}
-}
-]]></template>
-    <template title="threadmarks_nav" version_id="1030301" version_string="1.3.3a"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
-<xen:if is="{$threadmark.position} != {$thread.firstThreadmarkId}">
-  <span class="previous">
-    <xen:if is="{$post.threadmark_previous}">
-    <a href="{xen:link threads/post-permalink, $thread, 'post={$post.threadmark_previous}'}" {xen:if $thread.hasPreview, "class='RightPreviewTooltip' data-previewUrl='{xen:link posts/threadmarkpreview, $post.threadmark_previous}'"}>
-    <xen:else/>
-    <a href="{xen:link posts/PreviousThreadmark, $post}">
-    </xen:if>
-      {xen:phrase threadmark_previous}</a>
-  </span>
-</xen:if>
-<span class="index"><a href="{xen:link 'threads/threadmarks', $thread}" rel="nofollow" class="OverlayTrigger">{xen:phrase threadmark_index}</a></span>
-<xen:if is="{$threadmark.position} != {$thread.lastThreadmarkId}">
-  <span class="next">
-    <xen:if is="{$post.threadmark_next}">
-    <a href="{xen:link threads/post-permalink, $thread, 'post={$post.threadmark_next}'}" {xen:if $thread.hasPreview, "class='RightPreviewTooltip' data-previewUrl='{xen:link posts/threadmarkpreview, $post.threadmark_next}'"}>
-    <xen:else/>
-    <a href="{xen:link posts/NextThreadmark, $post}">
-    </xen:if>
-      {xen:phrase threadmark_next}</a>
-  </span>
-</xen:if>
+.primaryContent .jstree-anchor:active
+{
+	{xen:property ThreadmarkJSTree}
+}]]></template>
+    <template title="threadmarks_nav" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
+	<xen:if is="{$threadmark.position} != 1">
+		<span class="previous">
+			<xen:if is="{$post.threadmark_previous}">
+				<a
+					href="{xen:link threads/post-permalink, $thread, 'post={$post.threadmark_previous}'}"
+					{xen:if $thread.hasPreview, "class='RightPreviewTooltip' data-previewUrl='{xen:link posts/threadmarkpreview, $post.threadmark_previous}'"}
+				>
+					{xen:phrase threadmark_previous}
+				</a>
+			<xen:else/>
+				<a href="{xen:link posts/PreviousThreadmark, $post}">{xen:phrase threadmark_previous}</a>
+			</xen:if>
+		</span>
+	</xen:if>
+
+	<span class="index"><a href="{xen:link 'threads/threadmarks', $thread, 'category_id={$threadmark.threadmark_category_id}'}" rel="nofollow" class="OverlayTrigger">{xen:phrase threadmark_index}</a></span>
+
+	<xen:if is="{$threadmark.position} != {$threadmarkCategoryPositions.{$threadmark.threadmark_category_id}}">
+		<span class="next">
+			<xen:if is="{$post.threadmark_next}">
+				<a
+					href="{xen:link threads/post-permalink, $thread, 'post={$post.threadmark_next}'}"
+					{xen:if $thread.hasPreview, "class='RightPreviewTooltip' data-previewUrl='{xen:link posts/threadmarkpreview, $post.threadmark_next}'"}
+				>
+					{xen:phrase threadmark_next}
+				</a>
+			<xen:else/>
+				<a href="{xen:link posts/NextThreadmark, $post}">{xen:phrase threadmark_next}</a>
+			</xen:if>
+		</span>
+	</xen:if>
 </xen:if>]]></template>
     <template title="threadmarks_nav_bottom" version_id="10" version_string="1.1.7c"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
   <div class="threadmarker_nav_bottom">
@@ -1893,20 +1946,20 @@
     <xen:include template="threadmarks_nav" />
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks_render_flag" version_id="11" version_string="1.1.8"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
-  <div class="threadmarker ToggleTriggerAnchor">
-    <span class="label" title="{xen:phrase threadmark_created_by_x_on_y,
-                                           'name={$threadmark.username}',
-                                           'date={xen:datetime $threadmark.threadmark_date}'}">
-      <strong>{xen:phrase threadmark}:</strong> {$threadmark.label}
-    </span>
-    <xen:if is="{$threadmark.edit_count} && {$post.canEditThreadmarks}">
-      <span class="history">
-        <a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false">{xen:phrase threadmark_history}</a>
-      </span>
-    </xen:if>
-    <xen:include template="threadmarks_nav_top"/>
-  </div>
+    <template title="threadmarks_render_flag" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+	<div class="threadmarker ToggleTriggerAnchor">
+		<span class="label" title="{xen:phrase threadmark_created_by_x_on_y, 'name={$threadmark.username}', 'date={xen:datetime $threadmark.threadmark_date}'}">
+			<strong>{$threadmarkCategories.{$threadmark.threadmark_category_id}.title}:</strong> {$threadmark.label}
+		</span>
+
+		<xen:if is="{$threadmark.edit_count} && {$post.canEditThreadmarks}">
+			<span class="history">
+				<a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false">{xen:phrase threadmark_history}</a>
+			</span>
+		</xen:if>
+
+		<xen:include template="threadmarks_nav_top"/>
+	</div>
 </xen:if>]]></template>
     <template title="threadmark_preview" version_id="10" version_string="1.1.7"><![CDATA[<div class="previewTooltip">
 	<xen:avatar user="$post" size="s" />

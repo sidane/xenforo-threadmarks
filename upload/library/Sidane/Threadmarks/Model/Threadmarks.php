@@ -518,6 +518,30 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ", 'post_id', $threadId);
   }
 
+  public function getThreadmarksByThreadAndCategory(
+    $threadId,
+    $threadmarkCategoryId,
+    array $fetchOptions = array()
+  ) {
+    $joinOptions = $this->prepareThreadmarkJoinOptions($fetchOptions);
+
+    return $this->fetchAllKeyed(
+      "SELECT threadmarks.*
+          {$joinOptions['selectFields']}
+        FROM threadmarks
+          {$joinOptions['joinTables']}
+        WHERE threadmarks.thread_id = ?
+          AND threadmarks.threadmark_category_id = ?
+          AND threadmarks.message_state = 'visible'
+        ORDER BY threadmarks.position ASC",
+      'post_id',
+      array(
+        $threadId,
+        $threadmarkCategoryId
+      )
+    );
+  }
+
   public function prepareThreadmarkJoinOptions(array $fetchOptions)
   {
     $selectFields = '';
@@ -552,7 +576,6 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   {
     $prefix = 'threadmark';
     $remap = array(
-      'threadmark_category_id',
       'user_id',
       'username',
       'threadmark_date',
@@ -572,6 +595,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         $dest[$remapItem] = $source[$key];
         unset($source[$key]);
       }
+    }
+
+    if (isset($source['threadmark_category_id']))
+    {
+      $dest['threadmark_category_id'] = $source['threadmark_category_id'];
     }
   }
 
@@ -731,45 +759,6 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     return $branch;
   }
-
-  public function preparelistToTree($threadmarks)
-  {
-    $lastThreadmark = null;
-    foreach($threadmarks as &$threadmark)
-    {
-      if ($lastThreadmark && $threadmark['depth'] != $lastThreadmark['depth'])
-      {
-        if ($threadmark['depth'] > $lastThreadmark['depth'])
-        {
-          $lastThreadmark['extraCss'] = 'parent';
-          $lastThreadmark['templateHelperChild'] = '<ul>';
-        }
-        else
-        {
-          $lastThreadmark['templateHelperEnd'] = '</li>' . str_repeat('</ul></li>', $lastThreadmark['depth'] - $threadmark['depth']);
-        }
-      }
-      else
-      {
-        $lastThreadmark['templateHelperEnd'] = '</li>';
-      }
-      $lastThreadmark = &$threadmark;
-    }
-    if ($lastThreadmark)
-    {
-      if (!isset($lastThreadmark['templateHelperEnd']))
-      {
-        $lastThreadmark['templateHelperEnd'] = '</li>';
-      }
-      if ($lastThreadmark['depth'] > 1)
-      {
-        $lastThreadmark['templateHelperEnd'] .= str_repeat('</ul></li>', $lastThreadmark['depth'] - 1);
-      }
-    }
-
-    return $threadmarks;
-  }
-
 
   public function flattenThreadmarkTree(array $threadmarkTree)
   {

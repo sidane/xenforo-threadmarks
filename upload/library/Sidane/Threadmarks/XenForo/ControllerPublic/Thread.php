@@ -42,10 +42,17 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
 
     $thread = $viewParams['thread'];
     $forum = $viewParams['forum'];
+    $canQuickReply = $viewParams['canQuickReply'];
 
     $threadmarksModel = $this->_getThreadmarksModel();
 
-    $canQuickReply = $viewParams['canQuickReply'];
+    $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+    $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+      $threadmarkCategories
+    );
+    $threadmarkCategoryPositions = $threadmarksModel
+        ->getThreadmarkCategoryPositionsByThread($thread);
+
     if ($canQuickReply)
     {
       $canAddThreadmark = $threadmarksModel->canAddThreadmark(
@@ -54,28 +61,25 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
         $forum,
         $null
       );
+      $threadmarkCategoryOptions = array();
 
-      $threadmarkCategories = array();
       if ($canAddThreadmark)
       {
-        $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
-        $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
-          $threadmarkCategories
-        );
-        $threadmarkCategories = $threadmarksModel->getThreadmarkCategoryOptions(
-          $threadmarkCategories,
-          true
-        );
+        $threadmarkCategoryOptions = $threadmarksModel
+          ->getThreadmarkCategoryOptions($threadmarkCategories, true);
 
-        if (empty($threadmarkCategories))
+        if (empty($threadmarkCategoryOptions))
         {
           $canAddThreadmark = false;
         }
       }
 
       $viewParams['canAddThreadmark'] = $canAddThreadmark;
-      $viewParams['threadmarkCategories'] = $threadmarkCategories;
+      $viewParams['threadmarkCategoryOptions'] = $threadmarkCategoryOptions;
     }
+
+    $viewParams['threadmarkCategories'] = $threadmarkCategories;
+    $viewParams['threadmarkCategoryPositions'] = $threadmarkCategoryPositions;
 
     // draft support for threadmark fields
     if (!empty($thread['draft_extra']))
@@ -217,27 +221,25 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       $forum,
       $null
     );
+    $threadmarkCategoryOptions = array();
 
-    $threadmarkCategories = array();
     if ($canAddThreadmark)
     {
       $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
       $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
         $threadmarkCategories
       );
-      $threadmarkCategories = $threadmarksModel->getThreadmarkCategoryOptions(
-        $threadmarkCategories,
-        true
-      );
+      $threadmarkCategoryOptions = $threadmarksModel
+        ->getThreadmarkCategoryOptions($threadmarkCategories, true);
 
-      if (empty($threadmarkCategories))
+      if (empty($threadmarkCategoryOptions))
       {
         $canAddThreadmark = false;
       }
     }
 
     $viewParams['canAddThreadmark'] = $canAddThreadmark;
-    $viewParams['threadmarkCategories'] = $threadmarkCategories;
+    $viewParams['threadmarkCategoryOptions'] = $threadmarkCategoryOptions;
 
     // draft support for threadmark fields
     if ($this->_input->inRequest('more_options'))
@@ -335,51 +337,89 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     );
 
     $threadmarksModel = $this->_getThreadmarksModel();
-    if (
-      !empty($thread['threadmark_count']) &&
-      $threadmarksModel->canViewThreadmark($thread, $forum)
-    )
-    {
-      $fetchOptions = $this->_getThreadmarkFetchOptions();
 
-      $threadmarks = $threadmarksModel->getThreadmarksByThread(
-        $thread['thread_id'],
-        $fetchOptions
-      );
-      $threadmarks = $threadmarksModel->prepareThreadmarks(
-        $threadmarks,
-        $thread,
-        $forum
-      );
-      $threadmarks = $threadmarksModel->preparelistToTree($threadmarks);
+    $threadmarkCategoryPositions = $threadmarksModel
+      ->getThreadmarkCategoryPositionsByThread($thread);
 
-      $canEditThreadMarks = false;
-      foreach($threadmarks as &$threadmark)
-      {
-        if (!empty($threadmark['canEdit']))
-        {
-          $canEditThreadMarks = true;
-          break;
-        }
-      }
-
-      $viewParams = array(
-        'forum'              => $forum,
-        'thread'             => $thread,
-        'threadmarks'        => $threadmarks,
-        'canEditThreadMarks' => $canEditThreadMarks,
-      );
-
-      return $this->responseView(
-        'Sidane_Threadmarks_ViewPublic_Thread_View',
-        'threadmarks',
-        $viewParams
-      );
-    }
-    else
+    if (empty($threadmarkCategoryPositions))
     {
       return $this->getNotFoundResponse();
     }
+
+    $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+    foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
+    {
+      if (empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+      {
+        unset($threadmarkCategories[$threadmarkCategoryId]);
+      }
+    }
+
+    if (empty($threadmarkCategories))
+    {
+      return $this->getNotFoundResponse();
+    }
+
+    $threadmarkCategoryId = $this->_input->filterSingle(
+      'category_id',
+      XenForo_Input::STRING
+    );
+    if (!$threadmarkCategoryId)
+    {
+      $threadmarkCategoryId = reset($threadmarkCategories)['threadmark_category_id'];
+    }
+
+    if (empty($threadmarkCategories[$threadmarkCategoryId]))
+    {
+      return $this->getNotFoundResponse();
+    }
+
+    if (!$threadmarksModel->canViewThreadmark($thread, $forum))
+    {
+      return $this->responseNoPermission();
+    }
+
+    $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+      $threadmarkCategories
+    );
+    $activeThreadmarkCategory = $threadmarkCategories[$threadmarkCategoryId];
+
+    $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
+      $thread['thread_id'],
+      $threadmarkCategoryId,
+      $this->_getThreadmarkFetchOptions()
+    );
+    $threadmarks = $threadmarksModel->prepareThreadmarks(
+      $threadmarks,
+      $thread,
+      $forum
+    );
+
+    $canEditThreadMarks = false;
+    foreach($threadmarks as $threadmark)
+    {
+      if (!empty($threadmark['canEdit']))
+      {
+        $canEditThreadMarks = true;
+        break;
+      }
+    }
+
+    $viewParams = array(
+      'threadmarkCategories'     => $threadmarkCategories,
+      'threadmarkCategoryCount'  => count($threadmarkCategories),
+      'activeThreadmarkCategory' => $activeThreadmarkCategory,
+      'threadmarks'              => $threadmarks,
+      'canEditThreadMarks'       => $canEditThreadMarks,
+      'forum'                    => $forum,
+      'thread'                   => $thread
+    );
+
+    return $this->responseView(
+      'Sidane_Threadmarks_ViewPublic_Thread_View',
+      'threadmarks',
+      $viewParams
+    );
   }
 
   protected function _getThreadmarkFetchOptions()
