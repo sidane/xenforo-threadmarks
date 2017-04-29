@@ -348,7 +348,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
 
     $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
       $thread['thread_id'],
-      $threadmarkCategoryId,
+      $activeThreadmarkCategory['threadmark_category_id'],
       $this->_getThreadmarkFetchOptions()
     );
     $threadmarks = $threadmarksModel->prepareThreadmarks(
@@ -369,7 +369,6 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
 
     $viewParams = array(
       'threadmarkCategories'     => $threadmarkCategories,
-      'threadmarkCategoryCount'  => count($threadmarkCategories),
       'activeThreadmarkCategory' => $activeThreadmarkCategory,
       'threadmarks'              => $threadmarks,
       'canEditThreadMarks'       => $canEditThreadMarks,
@@ -378,9 +377,213 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     );
 
     return $this->responseView(
-      'Sidane_Threadmarks_ViewPublic_Thread_View',
+      'XenForo_ViewPublic_Thread_Threadmarks',
       'threadmarks',
       $viewParams
+    );
+  }
+
+  public function actionThreadmarksLoadTree()
+  {
+    $this->_assertPostOnly();
+
+    $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
+
+    $visitor = XenForo_Visitor::getInstance();
+
+    $threadFetchOptions = array('readUserId' => $visitor['user_id']);
+    $forumFetchOptions = array('readUserId' => $visitor['user_id']);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable(
+      $threadId,
+      $threadFetchOptions,
+      $forumFetchOptions
+    );
+
+    $threadmarksModel = $this->_getThreadmarksModel();
+
+    $threadmarkCategoryPositions = $threadmarksModel
+      ->getThreadmarkCategoryPositionsByThread($thread);
+
+    $threadmarkCategoryId = $this->_input->filterSingle(
+      'category_id',
+      XenForo_Input::STRING
+    );
+
+    if (empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+    {
+      return $this->getNotFoundResponse();
+    }
+
+    $threadmarkCategory = $threadmarksModel->getThreadmarkCategoryById(
+      $threadmarkCategoryId
+    );
+
+    if (empty($threadmarkCategory))
+    {
+      return $this->getNotFoundResponse();
+    }
+
+    $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
+      $thread['thread_id'],
+      $threadmarkCategory['threadmark_category_id'],
+      $this->_getThreadmarkFetchOptions()
+    );
+
+    $canEditThreadMarks = false;
+    foreach ($threadmarks as $threadmark)
+    {
+      if ($threadmarksModel->canEditThreadmark(
+        $threadmark,
+        $threadmark,
+        $thread,
+        $forum
+      ))
+      {
+        $canEditThreadMarks = true;
+        break;
+      }
+    }
+
+    if (!$canEditThreadMarks)
+    {
+      return $this->responseNoPermission();
+    }
+
+    $treeItems = array();
+    foreach ($threadmarks as $threadmarkId => $threadmark)
+    {
+      $treeItem = array();
+
+      $parent = $threadmark['parent_threadmark_id'];
+      if ($parent === 0)
+      {
+        $parent = '#';
+      }
+
+      $treeItem['id'] = $threadmark['threadmark_id'];
+      $treeItem['text'] = $threadmark['label'];
+      $treeItem['parent'] = $parent;
+
+      $treeItems[] = $treeItem;
+    }
+
+    $this->_routeMatch->setResponseType('json');
+
+    $viewParams = array(
+      'tree' => $treeItems
+    );
+
+    return $this->responseView(
+      'XenForo_ViewPublic_Thread_ThreadmarksLoadTree',
+      '',
+      $viewParams
+    );
+  }
+
+  public function actionThreadmarksSyncTree()
+  {
+    $this->_assertPostOnly();
+
+    $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
+
+    $visitor = XenForo_Visitor::getInstance();
+
+    $threadFetchOptions = array('readUserId' => $visitor['user_id']);
+    $forumFetchOptions = array('readUserId' => $visitor['user_id']);
+
+    $ftpHelper = $this->getHelper('ForumThreadPost');
+    list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable(
+      $threadId,
+      $threadFetchOptions,
+      $forumFetchOptions
+    );
+
+    $threadmarksModel = $this->_getThreadmarksModel();
+
+    $threadmarkCategoryPositions = $threadmarksModel
+      ->getThreadmarkCategoryPositionsByThread($thread);
+
+    $threadmarkCategoryId = $this->_input->filterSingle(
+      'category_id',
+      XenForo_Input::STRING
+    );
+
+    if (empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+    {
+      return $this->getNotFoundResponse();
+    }
+
+    $threadmarkCategory = $threadmarksModel->getThreadmarkCategoryById(
+      $threadmarkCategoryId
+    );
+
+    if (empty($threadmarkCategory))
+    {
+      return $this->getNotFoundResponse();
+    }
+
+    $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
+      $thread['thread_id'],
+      $threadmarkCategory['threadmark_category_id'],
+      $this->_getThreadmarkFetchOptions()
+    );
+
+    $canEditThreadMarks = false;
+    foreach ($threadmarks as $threadmark)
+    {
+      if ($threadmarksModel->canEditThreadmark(
+        $threadmark,
+        $threadmark,
+        $thread,
+        $forum
+      ))
+      {
+        $canEditThreadMarks = true;
+        break;
+      }
+    }
+
+    if (!$canEditThreadMarks)
+    {
+      return $this->responseNoPermission();
+    }
+
+    $treeItems = $this->_input->filterSingle(
+      'tree',
+      XenForo_Input::JSON_ARRAY
+    );
+
+    $threadmarks = array();
+    foreach ($treeItems as $treeItem)
+    {
+      $threadmark = array();
+
+      $threadmarkId = $treeItem['id'];
+      $parentThreadmarkId = $treeItem['parent'];
+      if ($parentThreadmarkId == '#')
+      {
+        $parentThreadmarkId = 0;
+      }
+
+      $threadmark['threadmark_id'] = $threadmarkId;
+      $threadmark['parent_threadmark_id'] = $parentThreadmarkId;
+
+      $threadmarks[$threadmarkId] = $threadmark;
+    }
+
+    $tree = $threadmarksModel->buildThreadmarkTree($threadmarks);
+    $threadmarks = $threadmarksModel->flattenThreadmarkTree($tree);
+    $threadmarksModel->massUpdateDisplayOrder(
+      $thread['thread_id'],
+      $threadmarkCategory['threadmark_category_id'],
+      $threadmarks
+    );
+
+    return $this->responseRedirect(
+      XenForo_ControllerResponse_Redirect::RESOURCE_UPDATED,
+      XenForo_Link::buildPublicLink('threads/threadmarks', $thread)
     );
   }
 

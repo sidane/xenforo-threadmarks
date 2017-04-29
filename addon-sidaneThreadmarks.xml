@@ -109,6 +109,7 @@
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Post" description="XenForo_Model_Post"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Draft" description="XenForo_Model_Draft"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenES_Model_Elasticsearch" description="XenES_Model_Elasticsearch"/>
+    <listener event_id="load_class_view" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ViewPublic_Thread_ThreadmarksLoadTree" description="XenForo_ViewPublic_Thread_ThreadmarksLoadTree"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -173,10 +174,12 @@
     <phrase title="sidane_confirm_deletion_of_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Confirm Deletion of Threadmark Category]]></phrase>
     <phrase title="sidane_create_new_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Create New Threadmark Category]]></phrase>
     <phrase title="sidane_delete_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Delete Threadmark Category]]></phrase>
+    <phrase title="sidane_edit_display_order" version_id="1040006" version_string="1.4.0"><![CDATA[Edit Display Order]]></phrase>
     <phrase title="sidane_edit_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Edit Threadmark Category]]></phrase>
     <phrase title="sidane_please_confirm_that_you_want_to_delete_following_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Please confirm that you want to delete the following threadmark category]]></phrase>
     <phrase title="sidane_please_enter_valid_threadmark_category_id" version_id="1040000" version_string="1.4.0"><![CDATA[Please enter a valid threadmark category ID.]]></phrase>
     <phrase title="sidane_requested_threadmark_category_not_found" version_id="1040000" version_string="1.4.0"><![CDATA[The requested threadmark categorycould not be found.]]></phrase>
+    <phrase title="sidane_save_display_order" version_id="1040006" version_string="1.4.0"><![CDATA[Save Display Order]]></phrase>
     <phrase title="sidane_save_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Save Threadmark Category]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
     <phrase title="sidane_threadmark_categories" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Categories]]></phrase>
@@ -1485,7 +1488,7 @@
     <template title="new_threadmark_control" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
-    <template title="page_nav_threadmarks" version_id="13" version_string="1.1.9"><![CDATA[<xen:if is="{$threadmarks}">
+    <template title="page_nav_threadmarks" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$threadmarks}">
   <xen:if is="{$threadmarks.logged_in} OR {$threadmarks.hide_menu_from_guests} != '1'">
     <div class="Popup threadmarks JsOnly">
       <a href="{xen:link 'threads/threadmarks', $linkData}" rel="Menu" class="OverlayTrigger threadmarksTrigger">{xen:phrase threadmarks}</a>
@@ -1522,15 +1525,15 @@
   </xen:if>
   <xen:include template="preview_tooltip" />
 <xen:if is="{$debugMode}">
-<xen:require js="js/sidane/threadmarks/threadmarks.js" />
+	<xen:require js="js/sidane/threadmarks/full/threadmarks.js" />
 <xen:else />
-<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
+	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
 </xen:if>
 </xen:if>]]></template>
     <template title="quick_reply_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$debugMode}">
-	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
+	<xen:require js="js/sidane/threadmarks/full/threadmarks.js" />
 <xen:else />
-	<xen:require js="js/sidane/threadmarks/threadmarks.min.js" />
+	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
 </xen:if>
 
 <dl class="ctrlUnit">
@@ -1640,29 +1643,35 @@
 </xen:if>
 
 <div class="threadmarks section">
-	<xen:if is="{$threadmarkCategoryCount} > 1">
-		<ol class="tabs">
-			<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
-				<li class="{xen:if '{$threadmarkCategoryId} == {$activeThreadmarkCategory.threadmark_category_id}', 'active'}">
-					<h4>
-						<a
-							href="{xen:link threads/threadmarks, $thread, 'category_id={$threadmarkCategoryId}'}"
-							class="OverlayTrigger"
-							data-cacheOverlay="true"
-						>
-							{$threadmarkCategory.title}
-						</a>
-					</h4>
-				</li>
-			</xen:foreach>
-		</ol>
-	<xen:else />
-		<h2 class="textHeading">{$activeThreadmarkCategory.title}</h2>
-	</xen:if>
+	<ol class="tabs">
+		<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
+			<li class="{xen:if '{$threadmarkCategoryId} == {$activeThreadmarkCategory.threadmark_category_id}', 'active'}">
+				<h4>
+					<a
+						href="{xen:link threads/threadmarks, $thread, 'category_id={$threadmarkCategoryId}'}"
+						class="OverlayTrigger"
+						data-cacheOverlay="true"
+					>
+						{$threadmarkCategory.title}
+					</a>
+				</h4>
+			</li>
+		</xen:foreach>
 
-	<ol class="overlayScroll">
+		<xen:if is="{$canEditThreadMarks}">
+			<li class="sortTreeButton EditSortTree">
+				<a href="#">{xen:phrase sidane_edit_display_order}</a>
+			</li>
+
+			<li class="sortTreeButton SaveSortTree">
+				<a href="#">{xen:phrase sidane_save_display_order}</a>
+			</li>
+		</xen:if>
+	</ol>
+
+	<ol class="threadmarkList overlayScroll">
 		<xen:foreach loop="$threadmarks" value="$threadmark">
-			<li class="primaryContent threadmarkItem _depth{$threadmark.depth}">
+			<li class="primaryContent threadmarkListItem _depth{$threadmark.depth}">
 				<xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
 				<a
 					href="{xen:link threads/post-permalink, $thread, 'post={$threadmark.post}'}"
@@ -1678,6 +1687,17 @@
 			</li>
 		</xen:foreach>
 	</ol>
+
+	<xen:if is="{$canEditThreadMarks}">
+		<div class="ThreadmarkSortTree"
+			data-threadmarklist=".threadmarkList"
+			data-editbutton=".EditSortTree"
+			data-savebutton=".SaveSortTree"
+			data-loadurl="{xen:link threads/threadmarks-load-tree, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
+			data-syncurl="{xen:link threads/threadmarks-sync-tree, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
+			data-indexurl="{xen:link threads/threadmarks, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
+		></div>
+	</xen:if>
 
 	<xen:include template="preview_tooltip" />
 
@@ -1860,10 +1880,6 @@
   }
 </xen:if>
 
-.ThreadmarkSortable
-{
-	{xen:property ThreadmarkSortable}
-}
 
 .threadmarks .primaryContent { padding: 10px 0; }
 
@@ -1878,28 +1894,45 @@
 .threadmarks ._depth8 { padding-left: 266px; }
 .threadmarks ._depth9 { padding-left: 298px; }
 
-li.threadmarkItem .extra
+li.threadmarkListItem .extra
 {
 	float: right;
 	font-size: 11px;
 	padding-right: 10px;
 }
 
-li.threadmarkItem .newIndicator
+li.threadmarkListItem .newIndicator
 {
 		{xen:property messageNewIndicatorThreadmarks}
 }
 
-li.threadmarkItem .newIndicator span
+li.threadmarkListItem .newIndicator span
 {
 		{xen:property messageNewIndicatorInnerThreadmarks}
 }
 
-.primaryContent .jstree-anchor,
-.primaryContent .jstree-anchor:link,
-.primaryContent .jstree-anchor:visited,
-.primaryContent .jstree-anchor:hover,
-.primaryContent .jstree-anchor:active
+.threadmarks .tabs li.sortTreeButton
+{
+	float: right;
+}
+
+.threadmarks .tabs li.sortTreeButton a
+{
+	background: transparent;
+	border-color: transparent;
+	color: {xen:property primaryMedium};
+}
+
+.ThreadmarkSortTree
+{
+	{xen:property ThreadmarkSortable}
+}
+
+.ThreadmarkSortTree .jstree-anchor,
+.ThreadmarkSortTree .jstree-anchor:link,
+.ThreadmarkSortTree .jstree-anchor:visited,
+.ThreadmarkSortTree .jstree-anchor:hover,
+.ThreadmarkSortTree .jstree-anchor:active
 {
 	{xen:property ThreadmarkJSTree}
 }]]></template>

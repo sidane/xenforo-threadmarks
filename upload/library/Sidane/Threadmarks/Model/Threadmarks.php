@@ -421,7 +421,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     // update display ordering
     $threadmarks = $this->recomputeDisplayOrder($threadId);
-    $this->massUpdateDisplayOrder($threadId, $threadmarks);
+    $this->massUpdateDisplayOrder($threadId, null, $threadmarks);
 
     XenForo_Db::commit($db);
   }
@@ -680,7 +680,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
   }
 
-  public function massUpdateDisplayOrder($threadId, array $threadmarks)
+  public function massUpdateDisplayOrder(
+    $threadId,
+    $threadmarkCategoryId,
+    array $threadmarks
+  )
   {
     if (empty($threadmarks))
     {
@@ -710,14 +714,31 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       array($threadId)
     );
 
-    $this->_getDb()->query(
-      "UPDATE threadmarks
-        SET position = CASE threadmark_id {$conditions} ELSE 0 END,
-          depth = CASE threadmark_id {$conditions} ELSE 0 END,
-          parent_threadmark_id = CASE threadmark_id {$conditions} ELSE 0 END
-        WHERE thread_id = ?",
-      $parameters
-    );
+    if ($threadmarkCategoryId === null)
+    {
+      $this->_getDb()->query(
+        "UPDATE threadmarks
+          SET position = CASE threadmark_id {$conditions} ELSE 0 END,
+            depth = CASE threadmark_id {$conditions} ELSE 0 END,
+            parent_threadmark_id = CASE threadmark_id {$conditions} ELSE 0 END
+          WHERE thread_id = ?",
+        $parameters
+      );
+    }
+    else
+    {
+      $parameters[] = $threadmarkCategoryId;
+
+      $this->_getDb()->query(
+        "UPDATE threadmarks
+          SET position = CASE threadmark_id {$conditions} ELSE 0 END,
+            depth = CASE threadmark_id {$conditions} ELSE 0 END,
+            parent_threadmark_id = CASE threadmark_id {$conditions} ELSE 0 END
+          WHERE thread_id = ?
+            AND threadmark_category_id = ?",
+        $parameters
+      );
+    }
 
     $this->updateThreadmarkDataForThread($threadId);
   }
