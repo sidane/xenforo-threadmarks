@@ -211,6 +211,7 @@
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
+    <phrase title="threadmark_after_this_post" version_id="1040006" version_string="1.4.0"><![CDATA[After this post]]></phrase>
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
     <phrase title="threadmark_created_by_x_on_y" version_id="9" version_string="1.1.6"><![CDATA[Threadmark created by {name} on {date}]]></phrase>
     <phrase title="threadmark_deleted" version_id="1" version_string="1.0"><![CDATA[Threadmark deleted]]></phrase>
@@ -222,6 +223,7 @@
     <phrase title="threadmark_next" version_id="9" version_string="1.1.6"><![CDATA[&gt;&gt;]]></phrase>
     <phrase title="threadmark_position_after" version_id="1040004" version_string="1.4.0 rc4"><![CDATA[Add threadmark after]]></phrase>
     <phrase title="threadmark_previous" version_id="9" version_string="1.1.6"><![CDATA[&lt;&lt;]]></phrase>
+    <phrase title="threadmark_reset_nesting" version_id="1040006" version_string="1.4.0"><![CDATA[Reset Nesting]]></phrase>
     <phrase title="threadmark_updated" version_id="1" version_string="1.0"><![CDATA[Threadmark updated]]></phrase>
     <phrase title="update_threadmark" version_id="1" version_string="1.0"><![CDATA[Update Threadmark]]></phrase>
     <phrase title="view_all_threadmarks" version_id="1" version_string="1.0"><![CDATA[View all {count} threadmarks]]></phrase>
@@ -1464,24 +1466,29 @@
 		</dd>
 	</dl>
 
-<xen:if is="{$previousThreadmark} || {$lastThreadmark}">
-		<dt>&nbsp;</dt>
-		<dd><label><input type="checkbox" name="reset_nesting" value="1"/> {xen:phrase threadmark_reset_nesting}</label></dd>
-		<dt>{xen:phrase threadmark_position_after}:</dt>
-	        <dd>
-			<ol>
-			<xen:if is="{$previousThreadmark}">
-				<li><input type="radio" name="position" checked value="{xen:calc '{$previousThreadmark.threadmark_position}+1'}"> <a href="{xen:link 'threads/post-permalink', $thread, 'post={$previousThreadmark}'}" title="{xen:phrase threadmark_before_this_post}">{$previousThreadmark.label}</a></li>
-			<xen:else />
-				<li><input type="radio" name="position" checked value="0">&nbsp;{xen:phrase threadmark_insert_before_existing}</li>
-			</xen:if>
-			<xen:if is="{$lastThreadmark} && {$previousThreadmark.position} != {$lastThreadmark.position}">
-				<li><input type="radio" name="position" value="{xen:calc '{$lastThreadmark.threadmark_position}+1'}"> <a href="{xen:link 'threads/post-permalink', $thread, 'post={$lastThreadmark}'}" title="{xen:phrase threadmark_end_of_index}">{$lastThreadmark.label}</a></li>
-			</xen:if>
-			</ol>
-		</dd>
-</xen:if>
-	</dl>
+	<xen:if is="{$previousThreadmark} || {$lastThreadmark}">
+		<dl class="ctrlUnit">
+			<dt>{xen:phrase threadmark_position_after}:</dt>
+			<dd>
+				<ol>
+					<xen:if is="{$previousThreadmark}">
+						<li><input type="radio" name="position" checked value="{xen:calc '{$previousThreadmark.threadmark_position} + 1'}">&nbsp;<a href="{xen:link 'threads/post-permalink', $thread, 'post={$previousThreadmark}'}" title="{xen:phrase threadmark_after_this_post}">{$previousThreadmark.label}</a></li>
+					<xen:else />
+						<li><input type="radio" name="position" checked value="1">&nbsp;{xen:phrase threadmark_insert_before_existing}</li>
+					</xen:if>
+			
+					<xen:if is="{$lastThreadmark} && {$previousThreadmark.position} != {$lastThreadmark.position}">
+						<li><input type="radio" name="position" value="{xen:calc '{$lastThreadmark.threadmark_position} + 1'}">&nbsp;<a href="{xen:link 'threads/post-permalink', $thread, 'post={$lastThreadmark}'}" title="{xen:phrase threadmark_end_of_index}">{$lastThreadmark.label}</a></li>
+					</xen:if>
+				</ol>
+			</dd>
+			
+			<dt></dt>
+			<dd>
+				<label><input type="checkbox" name="reset_nesting" value="1"/> {xen:phrase threadmark_reset_nesting}</label>
+			</dd>
+		</dl>
+	</xen:if>
 
 	<dl class="ctrlUnit submitUnit">
 		<dt></dt>
