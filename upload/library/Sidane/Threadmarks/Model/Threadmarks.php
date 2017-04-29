@@ -548,7 +548,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     return $this->fetchAllKeyed("
       SELECT threadmarks.*
-	    " . $joinOptions['selectFields'] . "
+        " . $joinOptions['selectFields'] . "
       FROM threadmarks
         " . $joinOptions['joinTables'] . "
       WHERE threadmarks.thread_id = ?
@@ -599,9 +599,9 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     }
 
     return array(
-	  'selectFields' => $selectFields,
-	  'joinTables'   => $joinTables
-	);
+      'selectFields' => $selectFields,
+      'joinTables'   => $joinTables
+    );
   }
 
   /**
