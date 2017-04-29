@@ -1633,8 +1633,7 @@
 
 <xen:navigation>
 	<xen:breadcrumb source="$nodeBreadCrumbs" />
-	<xen:breadcrumb href="{xen:link full:forums, $forum}">{$forum.title}</xen:breadcrumb>
-	<xen:breadcrumb href="{xen:link full:threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
+	<xen:breadcrumb href="{xen:link threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
 </xen:navigation>
 
 <xen:container var="$head.noindex">

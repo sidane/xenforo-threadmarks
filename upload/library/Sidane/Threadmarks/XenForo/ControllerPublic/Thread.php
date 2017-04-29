@@ -370,10 +370,14 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $viewParams = array(
       'threadmarkCategories'     => $threadmarkCategories,
       'activeThreadmarkCategory' => $activeThreadmarkCategory,
-      'threadmarks'              => $threadmarks,
-      'canEditThreadMarks'       => $canEditThreadMarks,
-      'forum'                    => $forum,
-      'thread'                   => $thread
+
+      'threadmarks'        => $threadmarks,
+      'canEditThreadMarks' => $canEditThreadMarks,
+
+      'forum'  => $forum,
+      'thread' => $thread,
+
+      'nodeBreadCrumbs' => $ftpHelper->getNodeBreadCrumbs($forum)
     );
 
     return $this->responseView(
