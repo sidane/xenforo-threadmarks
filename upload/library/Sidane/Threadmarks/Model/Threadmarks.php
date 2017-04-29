@@ -333,7 +333,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
       if ($position === false)
       {
-        $position = 0;
+        $position = 1;
       }
       $dw->set('user_id', XenForo_Visitor::getUserId());
       $dw->set('post_id', $post['post_id']);
