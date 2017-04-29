@@ -520,15 +520,17 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
           AND {$clauses}
           AND threadmarks.message_state = 'visible'
         ORDER BY threadmarks.position",
-      'threadmark_category_id',
+      'threadmark_id',
       $threadId
     );
 
     $groupedThreadmarks = array();
-    foreach ($threadmarks as $threadmarkCategoryId => $threadmark)
+    foreach ($threadmarks as $threadmark)
     {
+      $threadmarkCategoryId = $threadmark['threadmark_category_id'];
       $threadmarkPosition = $threadmark['threadmark_position'];
-      $threadmarks[$threadmarkCategoryId][$threadmarkPosition] = $threadmark;
+
+      $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition] = $threadmark;
     }
 
     return $groupedThreadmarks;
