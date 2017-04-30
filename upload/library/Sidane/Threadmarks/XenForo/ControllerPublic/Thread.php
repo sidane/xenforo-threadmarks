@@ -349,7 +349,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
       $thread['thread_id'],
       $activeThreadmarkCategory['threadmark_category_id'],
-      $this->_getThreadmarkFetchOptions()
+      $this->_getThreadmarkFetchOptions($thread, $forum)
     );
     $threadmarks = $threadmarksModel->prepareThreadmarks(
       $threadmarks,
@@ -432,7 +432,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
       $thread['thread_id'],
       $threadmarkCategory['threadmark_category_id'],
-      $this->_getThreadmarkFetchOptions()
+      $this->_getThreadmarkFetchOptions($thread, $forum)
     );
 
     $canEditThreadMarks = false;
@@ -531,7 +531,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $threadmarks = $threadmarksModel->getThreadmarksByThreadAndCategory(
       $thread['thread_id'],
       $threadmarkCategory['threadmark_category_id'],
-      $this->_getThreadmarkFetchOptions()
+      $this->_getThreadmarkFetchOptions($thread, $forum)
     );
 
     $canEditThreadMarks = false;
@@ -591,7 +591,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     );
   }
 
-  protected function _getThreadmarkFetchOptions()
+  protected function _getThreadmarkFetchOptions(array $thread = null, array $forum = null)
   {
     return array(
       'join' => Sidane_Threadmarks_Model_Threadmarks::FETCH_POSTS_MINIMAL
