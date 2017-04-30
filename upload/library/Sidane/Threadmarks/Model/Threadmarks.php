@@ -962,11 +962,6 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     array $threadmarkCategories,
     $filterUsable = false
   ) {
-    $threadmarkCategories = $this->getAllThreadmarkCategories();
-    $threadmarkCategories = $this->prepareThreadmarkCategories(
-      $threadmarkCategories
-    );
-
     if ($filterUsable)
     {
       $threadmarkCategories = $this->filterUsableThreadmarkCategories(
