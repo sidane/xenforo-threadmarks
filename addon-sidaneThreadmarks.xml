@@ -285,7 +285,7 @@
 		</dd>
 	</dl>
 
-	<xen:if is="{$post.canDeleteThreadmarks}">
+	<xen:if is="{$threadmark.canDelete}">
 		<dl class="ctrlUnit">
 			<dt></dt>
 			<dd>

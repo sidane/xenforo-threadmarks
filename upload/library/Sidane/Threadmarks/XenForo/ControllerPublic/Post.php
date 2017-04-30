@@ -13,6 +13,14 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
     $threadmarksModel = $this->_getThreadmarksModel();
     $existingThreadmark = $threadmarksModel->getByPostId($post['post_id']);
+    if ($existingThreadmark)
+    {
+      $existingThreadmark = $threadmarksModel->prepareThreadmark(
+        $existingThreadmark,
+        $thread,
+        $forum
+      );
+    }
 
     if ($this->_request->isPost())
     {
@@ -32,12 +40,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       {
         if ($this->isConfirmedPost())
         {
-          if (!$threadmarksModel->canDeleteThreadmark(
-            $existingThreadmark,
-            $post,
-            $thread,
-            $forum
-          ))
+          if (!$existingThreadmark['canDelete'])
           {
             throw $this->getErrorOrNoPermissionResponseException(
               'you_do_not_have_permission_to_delete_threadmark'
@@ -61,12 +64,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
         }
         else
         {
-          if (!$threadmarksModel->canEditThreadmark(
-            $existingThreadmark,
-            $post,
-            $thread,
-            $forum
-          ))
+          if (!$existingThreadmark['canEdit'])
           {
             throw $this->getErrorOrNoPermissionResponseException(
               'you_do_not_have_permission_to_edit_threadmark'
@@ -157,20 +155,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
       if ($existingThreadmark)
       {
-        $canEditThreadmark = $threadmarksModel->canEditThreadmark(
-          $existingThreadmark,
-          $post,
-          $thread,
-          $forum
-        );
-        $canDeleteThreadmark = $threadmarksModel->canDeleteThreadmark(
-          $existingThreadmark,
-          $post,
-          $thread,
-          $forum
-        );
-
-        if (!$canEditThreadmark && !$canDeleteThreadmark)
+        if (!$existingThreadmark['canEdit'] && !$existingThreadmark['canDelete'])
         {
           throw $this->getErrorOrNoPermissionResponseException(
             'you_do_not_have_permission_to_edit_threadmark'
