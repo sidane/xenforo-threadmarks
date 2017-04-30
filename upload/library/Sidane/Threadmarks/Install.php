@@ -211,6 +211,11 @@ class Sidane_Threadmarks_Install
       SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
     }
 
+    if ($version < 1040007)
+    {
+      $requireIndexing['threadmark'] = true;
+    }
+
     // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
     // requires overriding XenES_Model_Elasticsearch
     SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);

@@ -21,6 +21,7 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
   {
     $mapping['properties']['node'] = array("type" => "long");
     $mapping['properties']['thread'] = array("type" => "long");
+    $mapping['properties']['threadmark_category'] = array("type" => "long");
     return $mapping;
   }
 
@@ -50,6 +51,11 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
       }
 
       $metadata['node'] = $thread['node_id'];
+    }
+
+    if (!empty($data['threadmark_category_id']))
+    {
+      $metadata['threadmark_category'] = $data['threadmark_category_id'];
     }
 
     $metadata['thread'] = $data['thread_id'];

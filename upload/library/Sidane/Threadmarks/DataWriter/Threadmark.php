@@ -189,7 +189,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
   {
     if ($this->get('message_state') == 'visible')
     {
-      if ($this->getExisting('message_state') != 'visible' || $this->isChanged('message'))
+      if ($this->getExisting('message_state') != 'visible' || $this->isChanged('message') || $this->isChanged('threadmark_category_id'))
       {
         $this->_insertOrUpdateSearchIndex();
       }
