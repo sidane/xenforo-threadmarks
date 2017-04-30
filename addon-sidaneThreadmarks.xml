@@ -109,7 +109,7 @@
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Post" description="XenForo_Model_Post"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Draft" description="XenForo_Model_Draft"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenES_Model_Elasticsearch" description="XenES_Model_Elasticsearch"/>
-    <listener event_id="load_class_view" execute_order="10" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ViewPublic_Thread_ThreadmarksLoadTree" description="XenForo_ViewPublic_Thread_ThreadmarksLoadTree"/>
+    <listener event_id="load_class_view" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ViewPublic_Thread_ThreadmarksLoadTree" description="XenForo_ViewPublic_Thread_ThreadmarksLoadTree"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
