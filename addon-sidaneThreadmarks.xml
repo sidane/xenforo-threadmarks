@@ -1833,7 +1833,30 @@
 }
 
 <xen:if is="{xen:property enableResponsive}">
-  @media (max-width:{xen:property maxResponsiveWideWidth})
+@media (max-width:{xen:property maxResponsiveWideWidth})
+{
+  .Responsive .PageNav a.threadmarksTrigger {
+    clear: left;
+    margin-top: 7px;
+  }
+  .Responsive .PageNav a.readerToggle {
+    margin-top: 7px;
+  }
+}
+@media (max-width:{xen:property maxResponsiveMediumWidth}) {
+}
+@media (max-width:{xen:property maxResponsiveNarrowWidth})
+{
+  .threadmarker {
+    flex-wrap: wrap;
+  }
+  .threadmarker .label
+  {
+    display: block;
+    max-width: 100% ;
+    width:100%;
+  }
+  .threadmarker .history a
   {
     .Responsive .PageNav a.threadmarksTrigger
     {
