@@ -1624,12 +1624,7 @@
 </xen:if>]]></template>
     <template title="threadmarks" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
-<xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}
-	<xen:if is="{$canEditThreadMarks}">
-		<i class="fa fa-unlock Tooltip" style="display:none" title="{xen:phrase click_to_lock}"></i>
-		<i class="fa fa-lock Tooltip" style="display:none" title="{xen:phrase click_to_unlock}"></i>
-	</xen:if>
-</xen:h1>
+<xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
 
 <xen:navigation>
 	<xen:breadcrumb source="$nodeBreadCrumbs" />
