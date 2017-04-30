@@ -40,7 +40,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           ))
           {
             throw $this->getErrorOrNoPermissionResponseException(
-              'you_do_not_have_permission_to_delete_threadmarks'
+              'you_do_not_have_permission_to_delete_threadmark'
             );
           }
 
@@ -69,7 +69,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           ))
           {
             throw $this->getErrorOrNoPermissionResponseException(
-              'you_do_not_have_permission_to_edit_threadmarks'
+              'you_do_not_have_permission_to_edit_threadmark'
             );
           }
 
@@ -172,7 +172,9 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
         if (!$canEditThreadmark && !$canDeleteThreadmark)
         {
-          throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_edit_threadmarks');
+          throw $this->getErrorOrNoPermissionResponseException(
+            'you_do_not_have_permission_to_edit_threadmark'
+          );
         }
         $viewParams['threadmark'] = $existingThreadmark;
         $templateName = 'edit_threadmark';

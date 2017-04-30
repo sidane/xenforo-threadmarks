@@ -230,8 +230,8 @@
     <phrase title="x_created_threadmark_in_thread_z" version_id="9" version_string="1.1.6"><![CDATA[{name} created the threadmark {threadmark} in thread {title}]]></phrase>
     <phrase title="x_created_threadmark_on_ys_post_in_thread_z" version_id="9" version_string="1.1.6"><![CDATA[{name} created the threadmark {threadmark} on {poster}'s post in thread {title}]]></phrase>
     <phrase title="you_do_not_have_permission_to_add_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to add threadmarks.]]></phrase>
-    <phrase title="you_do_not_have_permission_to_delete_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to delete threadmarks.]]></phrase>
-    <phrase title="you_do_not_have_permission_to_edit_threadmarks" version_id="2" version_string="1.0"><![CDATA[You do not have permission to edit threadmarks.]]></phrase>
+    <phrase title="you_do_not_have_permission_to_delete_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[You do not have permission to delete this threadmark.]]></phrase>
+    <phrase title="you_do_not_have_permission_to_edit_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[You do not have permission to edit this threadmark.]]></phrase>
   </phrases>
   <route_prefixes>
     <route_type type="admin">
@@ -1497,7 +1497,7 @@
 
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 </form>]]></template>
-    <template title="new_threadmark_control" version_id="2" version_string="1.0"><![CDATA[<xen:if is="{$post.canAddThreadmarks} OR {$post.canEditThreadmarks} OR {$post.canDeleteThreadmarks}">
+    <template title="new_threadmark_control" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="(!{$post.threadmark} and {$post.canAddThreadmarks}) or ({$post.threadmark} and ({$post.canEditThreadmarks} or {$post.canDeleteThreadmarks}))">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
     <template title="page_nav_threadmarks" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$threadmarks}">

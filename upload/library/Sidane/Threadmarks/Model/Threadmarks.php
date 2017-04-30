@@ -76,20 +76,18 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       return false;
     }
 
-    if (XenForo_Permission::hasContentPermission(
-      $nodePermissions,
-      'sidane_tm_manage'
-    ))
-    {
-      return true;
-    }
-
     if (
-      ($thread['user_id'] == $viewingUser['user_id']) &&
-      XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_delete')
+      XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage') ||
+      (
+        ($thread['user_id'] == $viewingUser['user_id']) &&
+        XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_delete')
+      )
     )
     {
-      return true;
+      $threadmarkCategories = $this->getAllThreadmarkCategories();
+      $threadmarkCategory = $threadmarkCategories[$threadmark['threadmark_category_id']];
+
+      return $this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser);
     }
 
     return false;
@@ -115,17 +113,18 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       return false;
     }
 
-    if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
-    {
-      return true;
-    }
-
     if (
-      ($thread['user_id'] == $viewingUser['user_id']) &&
-      XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_edit')
+      XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage') ||
+      (
+        ($thread['user_id'] == $viewingUser['user_id']) &&
+        XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_edit')
+      )
     )
     {
-      return true;
+      $threadmarkCategories = $this->getAllThreadmarkCategories();
+      $threadmarkCategory = $threadmarkCategories[$threadmark['threadmark_category_id']];
+
+      return $this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser);
     }
 
     return false;
@@ -840,14 +839,23 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $threadmarks;
   }
 
-  public function getAllThreadmarkCategories()
+  public function getAllThreadmarkCategories($fromCache = true)
   {
-    return $this->fetchAllKeyed(
+    if ($fromCache && (Sidane_Threadmarks_Globals::$threadmarkCategories !== null))
+    {
+      return Sidane_Threadmarks_Globals::$threadmarkCategories;
+    }
+
+    $threadmarkCategories = $this->fetchAllKeyed(
       'SELECT *
         FROM threadmark_category
         ORDER BY display_order',
       'threadmark_category_id'
     );
+
+    Sidane_Threadmarks_Globals::$threadmarkCategories = $threadmarkCategories;
+
+    return $threadmarkCategories;
   }
 
   public function getThreadmarkCategoryById($threadmarkCategoryId)
