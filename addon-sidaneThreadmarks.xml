@@ -1554,7 +1554,7 @@
 	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
 </xen:if>
 </xen:if>]]></template>
-    <template title="quick_reply_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$debugMode}">
+    <template title="quick_reply_threadmark" version_id="1040008" version_string="1.4.0"><![CDATA[<xen:if is="{$debugMode}">
 	<xen:require js="js/sidane/threadmarks/full/threadmarks.js" />
 <xen:else />
 	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
@@ -1569,7 +1569,6 @@
 	<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 	<dd>
 		<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
-			<option value="0"></option>
 			<xen:foreach loop="$threadmarkCategoryOptions" key="$threadmarkCategoryId" value="$threadmarkCategoryOption">
 				<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$draftThreadmarkCategoryId}'}>{$threadmarkCategoryOption}</option>
 			</xen:foreach>
