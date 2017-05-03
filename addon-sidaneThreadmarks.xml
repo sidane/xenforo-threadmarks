@@ -1718,7 +1718,7 @@
 
 	<div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
-    <template title="threadmarks.css" version_id="1040006" version_string="1.4.0"><![CDATA[.PageNav.threadmarksSinglePage
+    <template title="threadmarks.css" version_id="1050008" version_string="1.5.0"><![CDATA[.PageNav.threadmarksSinglePage
 {
 	float: left;
 	min-width: 0;
@@ -1867,55 +1867,29 @@
   }
   .threadmarker .history a
   {
-    .Responsive .PageNav a.threadmarksTrigger
-    {
-      clear: left;
-      margin-top: 7px;
-    }
+    margin:0 0 0 0 ;
   }
-
-  @media (max-width:{xen:property maxResponsiveNarrowWidth})
+  .threadmarker .history a:hover
   {
-    .threadmarker
-    {
-      flex-wrap: wrap;
-    }
-
-    .threadmarker .label
-    {
-      display: block;
-      max-width: 100% ;
-      width:100%;
-    }
-
-    .threadmarker .history a
-    {
-      margin:0 0 0 0 ;
-    }
-
-    .threadmarker .history a:hover
-    {
-      margin:0 0 0 0 ;
-    }
-
-    .threadmarker_nav_top .previous a,
-    .threadmarker_nav_top .index a,
-    .threadmarker_nav_top .next a,
-    .threadmarker .history a
-    {
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
-    }
-
-    .threadmarker_nav_top .previous a:hover,
-    .threadmarker_nav_top .index a:hover,
-    .threadmarker_nav_top .next a:hover,
-    .threadmarker .history a:hover
-    {
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
-    }
+    margin:0 0 0 0 ;
   }
+  .threadmarker_nav_top .previous a,
+  .threadmarker_nav_top .index a,
+  .threadmarker_nav_top .next a,
+  .threadmarker .history a
+  {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  .threadmarker_nav_top .previous a:hover,
+  .threadmarker_nav_top .index a:hover,
+  .threadmarker_nav_top .next a:hover,
+  .threadmarker .history a:hover
+  {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+}
 </xen:if>
 
 
