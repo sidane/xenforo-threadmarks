@@ -200,17 +200,17 @@ var Sidane = Sidane || {};
     {
       this.$tree = $tree;
 
-      this.$threadmarkList = $tree.parent().find($tree.data('threadmarklist'));
+      this.$threadmarkList = $tree.parent().find($tree.data('threadmark-list'));
 
       this.buttons = {
-        '$edit': $tree.parent().find($tree.data('editbutton')),
-        '$save': $tree.parent().find($tree.data('savebutton'))
+        '$edit': $tree.parent().find('.EditSortTree'),
+        '$save': $tree.parent().find('.SaveSortTree')
       };
 
       this.urls = {
-        'load': $tree.data('loadurl'),
-        'sync': $tree.data('syncurl'),
-        'index': $tree.data('indexurl')
+        'load': $tree.data('load-url'),
+        'sync': $tree.data('sync-url'),
+        'index': $tree.data('index-url')
       };
 
       this.buttons.$edit.on('click', $.context(this, 'eEditButtonClick'));
@@ -293,6 +293,148 @@ var Sidane = Sidane || {};
     }
   };
 
+  Sidane.ThreadmarkPositionFiller = function($form) { this.__construct($form); };
+  Sidane.ThreadmarkPositionFiller.prototype =
+  {
+    __construct: function($form)
+    {
+      this.$form = $form;
+
+      this.positionFillerUrl = $form.data('position-filler-url');
+
+      this.phrases = {
+        'threadmark_insert_before_existing': $form.data('threadmark-insert-before-existing-phrase'),
+        'threadmark_after_this_post': $form.data('threadmark-after-this-post-phrase'),
+        'threadmark_end_of_index': $form.data('threadmark-end-of-index-phrase'),
+      };
+
+      this.$threadmarkCategoryIdInput = $form.find(
+        ':input[name="threadmark_category_id"]'
+      );
+      this.$positionContainer = $form.find('.PositionContainer');
+
+      this.threadmarkCategoryId = 0;
+      this.previousThreadmark = false;
+      this.lastThreadmark = false;
+
+      this.init();
+
+      this.$threadmarkCategoryIdInput.on(
+        'change',
+        $.context(this, 'eThreadmarkCategoryIdChange')
+      );
+    },
+
+    init: function()
+    {
+      this.update();
+    },
+
+    update: function()
+    {
+      this.threadmarkCategoryId = this.$threadmarkCategoryIdInput.val();
+
+      XenForo.ajax(
+        this.positionFillerUrl,
+        {'category_id': this.threadmarkCategoryId},
+        $.context(function(ajaxData)
+        {
+          this.previousThreadmark = ajaxData['previousThreadmark'];
+          this.lastThreadmark = ajaxData['lastThreadmark'];
+
+          if (!this.previousThreadmark && this.lastThreadmark)
+          {
+            this.previousThreadmark = {
+              'position': 0,
+              'label': this.phrases['threadmark_insert_before_existing'],
+              'link': false
+            };
+          }
+
+          this.updatePositionInputs();
+        }, this)
+      );
+    },
+
+    updatePositionInputs: function()
+    {
+      this.updatePositionInput(
+        this.$positionContainer.find('.PreviousThreadmark'),
+        this.previousThreadmark,
+        this.phrases['threadmark_after_this_post']
+      );
+
+      this.updatePositionInput(
+        this.$positionContainer.find('.LastThreadmark'),
+        this.lastThreadmark,
+        this.phrases['threadmark_end_of_index']
+      );
+
+      this.updatePositionInputVisibility();
+    },
+
+    updatePositionInput: function($input, threadmark, linkTitle)
+    {
+      if (!threadmark)
+      {
+        threadmark = {
+          'position': 0,
+          'label': '',
+          'link': false
+        };
+      }
+
+      var $positionInput = $input.find(':input');
+      $positionInput.val((threadmark['position'] + 1));
+
+      var $positionText = $input.find('.text');
+      $positionText.text(threadmark['label']);
+
+      if (threadmark['link'])
+      {
+        var $threadmarkLink = $('<a></a>');
+
+        $threadmarkLink.attr('href', threadmark['link']);
+        $threadmarkLink.attr('title', linkTitle);
+        $threadmarkLink.attr('target', '_blank');
+
+        $positionText.wrapInner($threadmarkLink);
+      }
+    },
+
+    updatePositionInputVisibility: function()
+    {
+      // reset visibility and 'checked' status
+      this.$positionContainer.show();
+      this.$positionContainer.find('.PreviousThreadmark').show();
+      this.$positionContainer.find(':input[name="position"]').attr(
+        'checked',
+        false
+      );
+
+      // hide irrelevant inputs
+      if (!this.previousThreadmark && !this.lastThreadmark)
+      {
+        this.$positionContainer.hide();
+      }
+      else if (this.previousThreadmark['position'] === this.lastThreadmark['position'])
+      {
+        this.$positionContainer.find('.PreviousThreadmark').hide();
+      }
+
+      // check first visible input, if any
+      this.$positionContainer.find(':input[name="position"]:visible:first').attr(
+        'checked',
+        true
+      );
+    },
+
+    eThreadmarkCategoryIdChange: function()
+    {
+      this.update();
+    }
+  };
+
   Sidane.ThreadmarkQuickReply = function($form)
   {
     $form.on('QuickReplyComplete', function() {
@@ -303,8 +445,9 @@ var Sidane = Sidane || {};
 
   // *********************************************************************
 
-  XenForo.register('.ThreadmarkSortTree', 'Sidane.ThreadmarkSortTree');
-  XenForo.register('#QuickReply',         'Sidane.ThreadmarkQuickReply');
+  XenForo.register('.ThreadmarkSortTree',       'Sidane.ThreadmarkSortTree');
+  XenForo.register('.ThreadmarkPositionFiller', 'Sidane.ThreadmarkPositionFiller');
+  XenForo.register('#QuickReply',               'Sidane.ThreadmarkQuickReply');
 
   if (!XenForo.isTouchBrowser())
   {

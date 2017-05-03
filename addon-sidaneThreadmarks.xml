@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.4.0" version_id="1040007" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.4.0" version_id="1040008" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="sidane_tm_categories" parent_navigation_id="threadsPosts" display_order="5" link="threadmark-categories" admin_permission_id="sidane_threadmarks" debug_only="0" hide_no_children="0"/>
   </admin_navigation>
@@ -110,6 +110,7 @@
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Draft" description="XenForo_Model_Draft"/>
     <listener event_id="load_class_model" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenES_Model_Elasticsearch" description="XenES_Model_Elasticsearch"/>
     <listener event_id="load_class_view" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ViewPublic_Thread_ThreadmarksLoadTree" description="XenForo_ViewPublic_Thread_ThreadmarksLoadTree"/>
+    <listener event_id="load_class_view" execute_order="3939" callback_class="Sidane_Threadmarks_Listener" callback_method="load_class" active="1" hint="XenForo_ViewPublic_Post_ThreadmarkPositionFill" description="XenForo_ViewPublic_Post_ThreadmarkPositionFill"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -1436,7 +1437,7 @@
 <p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
 
 <xen:include template="news_feed_attached_images" />]]></template>
-    <template title="new_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
+    <template title="new_threadmark" version_id="1040008" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -1448,7 +1449,22 @@
 <xen:container var="$searchBar.thread"><xen:include template="search_bar_thread_only" /></xen:container>
 <xen:container var="$searchBar.forum"><xen:include template="search_bar_forum_only" /></xen:container>
 
-<form action="{xen:link 'posts/threadmark', $post}" method="post" class="xenForm formOverlay AutoValidator" data-redirect="on">
+<xen:if is="{$debugMode}">
+	<xen:require js="js/sidane/threadmarks/full/threadmarks.js" />
+<xen:else />
+	<xen:require js="js/sidane/threadmarks/threadmarks.js" />
+</xen:if>
+
+<form
+	action="{xen:link 'posts/threadmark', $post}"
+	method="post"
+	class="xenForm formOverlay ThreadmarkPositionFiller AutoValidator"
+	data-position-filler-url="{xen:link posts/threadmark-position-fill, $post}"
+	data-threadmark-insert-before-existing-phrase="{xen:phrase threadmark_insert_before_existing}"
+	data-threadmark-after-this-post-phrase="{xen:phrase threadmark_after_this_post}"
+	data-threadmark-end-of-index-phrase="{xen:phrase threadmark_end_of_index}"
+	data-redirect="on"
+>
 
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_label">{xen:phrase threadmark_label}:</label></dt>
@@ -1460,35 +1476,31 @@
 		<dd>
 			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
 				<xen:foreach loop="$threadmarkCategoryOptions" key="$threadmarkCategoryId" value="$threadmarkCategoryOption">
-					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark_category_id}'}>{$threadmarkCategoryOption}</option>
+					<option value="{$threadmarkCategoryId}">{$threadmarkCategoryOption}</option>
 				</xen:foreach>
 			</select>
 		</dd>
 	</dl>
 
-	<xen:if is="{$previousThreadmark} || {$lastThreadmark}">
-		<dl class="ctrlUnit">
-			<dt>{xen:phrase threadmark_position_after}:</dt>
-			<dd>
-				<ol>
-					<xen:if is="{$previousThreadmark}">
-						<li><input type="radio" name="position" checked value="{xen:calc '{$previousThreadmark.threadmark_position} + 1'}">&nbsp;<a href="{xen:link 'threads/post-permalink', $thread, 'post={$previousThreadmark}'}" title="{xen:phrase threadmark_after_this_post}">{$previousThreadmark.label}</a></li>
-					<xen:else />
-						<li><input type="radio" name="position" checked value="1">&nbsp;{xen:phrase threadmark_insert_before_existing}</li>
-					</xen:if>
-			
-					<xen:if is="{$lastThreadmark} && {$previousThreadmark.position} != {$lastThreadmark.position}">
-						<li><input type="radio" name="position" value="{xen:calc '{$lastThreadmark.threadmark_position} + 1'}">&nbsp;<a href="{xen:link 'threads/post-permalink', $thread, 'post={$lastThreadmark}'}" title="{xen:phrase threadmark_end_of_index}">{$lastThreadmark.label}</a></li>
-					</xen:if>
-				</ol>
-			</dd>
-			
-			<dt></dt>
-			<dd>
-				<label><input type="checkbox" name="reset_nesting" value="1"/> {xen:phrase threadmark_reset_nesting}</label>
-			</dd>
-		</dl>
-	</xen:if>
+	<dl class="ctrlUnit PositionContainer">
+		<dt>{xen:phrase threadmark_position_after}:</dt>
+		<dd>
+			<ol>
+				<li class="PreviousThreadmark">
+					<label><input type="radio" name="position" value="">&nbsp;<span class="text"></span></label>
+				</li>
+
+				<li class="LastThreadmark">
+					<label><input type="radio" name="position" value="">&nbsp;<span class="text"></span></label>
+				</li>
+			</ol>
+		</dd>
+
+		<dt></dt>
+		<dd>
+			<label><input type="checkbox" name="reset_nesting" value="1" /> {xen:phrase threadmark_reset_nesting}</label>
+		</dd>
+	</dl>
 
 	<dl class="ctrlUnit submitUnit">
 		<dt></dt>
@@ -1622,7 +1634,7 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+    <template title="threadmarks" version_id="1040008" version_string="1.4.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
 
@@ -1696,12 +1708,10 @@
 
 	<xen:if is="{$canEditThreadMarks}">
 		<div class="ThreadmarkSortTree"
-			data-threadmarklist=".threadmarkList"
-			data-editbutton=".EditSortTree"
-			data-savebutton=".SaveSortTree"
-			data-loadurl="{xen:link threads/threadmarks-load-tree, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
-			data-syncurl="{xen:link threads/threadmarks-sync-tree, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
-			data-indexurl="{xen:link threads/threadmarks, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
+			data-threadmark-list=".threadmarkList"
+			data-load-url="{xen:link threads/threadmarks-load-tree, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
+			data-sync-url="{xen:link threads/threadmarks-sync-tree, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
+			data-index-url="{xen:link threads/threadmarks, $thread, 'category_id={$activeThreadmarkCategory.threadmark_category_id}'}"
 		></div>
 	</xen:if>
 

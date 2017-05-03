@@ -330,7 +330,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         }
       }
 
-      if ($position === false)
+      if ($position === false || $position <= 0)
       {
         $position = 1;
       }

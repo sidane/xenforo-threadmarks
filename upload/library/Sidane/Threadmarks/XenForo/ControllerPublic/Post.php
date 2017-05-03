@@ -166,16 +166,13 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       }
       else
       {
-        $category = $threadmarksModel->getDefaultThreadmarkCategory();
-        if (empty($category) || !$threadmarksModel->canAddThreadmark($post, $thread, $forum))
+        if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum))
         {
-          throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_add_threadmarks');
+          throw $this->getErrorOrNoPermissionResponseException(
+            'you_do_not_have_permission_to_add_threadmarks'
+          );
         }
         $templateName = 'new_threadmark';
-
-        $viewParams['threadmark_category_id'] = $category['threadmark_category_id'];
-        $viewParams['previousThreadmark'] = $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']);
-        $viewParams['lastThreadmark'] = $threadmarksModel->getPreviousThreadmarkByLocation($category['threadmark_category_id'], $post['thread_id']);
       }
 
       return $this->responseView(
@@ -200,15 +197,15 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     );
   }
 
-  public function actionAddThreadmarkPosition()
+  public function actionThreadmarkPositionFill()
   {
     $postId = $this->_input->filterSingle(
-        'post_id',
-        XenForo_Input::UINT
+      'post_id',
+      XenForo_Input::UINT
     );
-    $categoryId = $this->_input->filterSingle(
-        'position',
-        XenForo_Input::UINT
+    $threadmarkCategoryId = $this->_input->filterSingle(
+      'category_id',
+      XenForo_Input::UINT
     );
 
     $ftpHelper = $this->getHelper('ForumThreadPost');
@@ -217,18 +214,60 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     );
 
     $threadmarksModel = $this->_getThreadmarksModel();
-    $category = $threadmarksModel->getThreadmarkCategoryById($categoryId);
-    if (empty($category) || !$threadmarksModel->canAddThreadmark($post, $thread, $forum))
+
+    $threadmarkCategory = $threadmarksModel->getThreadmarkCategoryById(
+      $threadmarkCategoryId
+    );
+
+    if (empty($threadmarkCategory))
     {
-      throw $this->getErrorOrNoPermissionResponseException('you_do_not_have_permission_to_add_threadmarks');
+      return $this->getNotFoundResponse();
     }
 
-    $view = $this->responseView();
-    $view->jsonParams = array(
-        'previousThreadmark' => $threadmarksModel->getPreviousThreadmarkByPost($category['threadmark_category_id'], $post['thread_id'], $post['position']),
-        'lastThreadmark' => $threadmarksModel->getPreviousThreadmarkByLocation($category['threadmark_category_id'], $post['thread_id']),
+    if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum))
+    {
+      return $this->responseNoPermission();
+    }
+
+    $previousThreadmark = $threadmarksModel->getPreviousThreadmarkByPost(
+      $threadmarkCategory['threadmark_category_id'],
+      $thread['thread_id'],
+      $post['position']
     );
-    return $view;
+    if (!empty($previousThreadmark))
+    {
+      $previousThreadmark['link'] = XenForo_Link::buildPublicLink(
+        'threads/post-permalink',
+        $thread,
+        array('post' => $previousThreadmark)
+      );
+    }
+
+    $lastThreadmark = $threadmarksModel->getPreviousThreadmarkByLocation(
+      $threadmarkCategory['threadmark_category_id'],
+      $thread['thread_id']
+    );
+    if (!empty($lastThreadmark))
+    {
+      $lastThreadmark['link'] = XenForo_Link::buildPublicLink(
+        'threads/post-permalink',
+        $thread,
+        array('post' => $lastThreadmark)
+      );
+    }
+
+    $this->_routeMatch->setResponseType('json');
+
+    $viewParams = array(
+      'previousThreadmark' => $previousThreadmark,
+      'lastThreadmark'     => $lastThreadmark
+    );
+
+    return $this->responseView(
+      'XenForo_ViewPublic_Post_ThreadmarkPositionFill',
+      '',
+      $viewParams
+    );
   }
 
   public function actionThreadmarkPreview()
