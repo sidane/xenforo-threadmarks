@@ -257,7 +257,7 @@
     </group>
   </style_properties>
   <templates>
-    <template title="edit_threadmark" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
+    <template title="edit_threadmark" version_id="1050008" version_string="1.5.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase edit_threadmark}</xen:title>
 <xen:h1>{xen:phrase edit_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -272,13 +272,13 @@
 <form action="{xen:link 'posts/threadmark', $post}" method="post" class="xenForm formOverlay AutoValidator" data-redirect="on">
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_message">{xen:phrase threadmark_label}:</label></dt>
-		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="255" <xen:if is="!{$post.canEditThreadmarks}">readonly</xen:if> /></dd>
+		<dd><input type="text" name="label" id="ctrl_message" class="textCtrl" value="{$threadmark.label}" maxlength="255" <xen:if is="!{$threadmark.canEdit}">readonly</xen:if> /></dd>
 	</dl>
 
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_threadmark_category_id">{xen:phrase sidane_threadmark_category}:</label></dt>
 		<dd>
-			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id">
+			<select name="threadmark_category_id" class="textCtrl OptOut" id="ctrl_threadmark_category_id <xen:if is="!{$threadmark.canEdit}">readonly</xen:if>">
 				<xen:foreach loop="$threadmarkCategoryOptions" key="$threadmarkCategoryId" value="$threadmarkCategoryOption">
 					<option value="{$threadmarkCategoryId}" {xen:selected '{$threadmarkCategoryId} == {$threadmark.threadmark_category_id}'}>{$threadmarkCategoryOption}</option>
 				</xen:foreach>
@@ -1991,13 +1991,13 @@ li.threadmarkListItem .newIndicator span
     <xen:include template="threadmarks_nav" />
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks_render_flag" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+    <template title="threadmarks_render_flag" version_id="1050008" version_string="1.5.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
 	<div class="threadmarker ToggleTriggerAnchor">
 		<span class="label" title="{xen:phrase threadmark_created_by_x_on_y, 'name={$threadmark.username}', 'date={xen:datetime $threadmark.threadmark_date}'}">
 			<strong>{$threadmarkCategories.{$threadmark.threadmark_category_id}.title}:</strong> {$threadmark.label}
 		</span>
 
-		<xen:if is="{$threadmark.edit_count} && {$post.canEditThreadmarks}">
+		<xen:if is="{$threadmark.edit_count} && {$threadmark.canEdit}">
 			<span class="history">
 				<a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false">{xen:phrase threadmark_history}</a>
 			</span>
