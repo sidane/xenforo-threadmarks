@@ -187,7 +187,7 @@ class Sidane_Threadmarks_Install
       'INT UNSIGNED NOT NULL'
     );
 
-    if ($version < 1040000)
+    if ($version < 1050000)
     {
       // ensure model is loaded before accessing static properties
       XenForo_Model::create('XenForo_Model_User');
@@ -217,7 +217,7 @@ class Sidane_Threadmarks_Install
       );
     }
 
-    // $version < 1040005
+    // $version < 1050005
     SV_Utils_Install::addColumn(
       'xf_thread',
       'threadmark_category_positions',
@@ -227,7 +227,7 @@ class Sidane_Threadmarks_Install
     SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
     SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
 
-    if ($version < 1040007)
+    if ($version < 1050007)
     {
       $requireIndexing['threadmark'] = true;
     }
