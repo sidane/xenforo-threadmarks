@@ -6,13 +6,28 @@ class Sidane_Threadmarks_Install
 
   public static function install($existingAddOn, $addOnData)
   {
+    $required = '5.4.0';
+    $phpversion = phpversion();
+    if (version_compare($phpversion, $required, '<'))
+    {
+      throw new XenForo_Exception("PHP {$required} or newer is required. {$phpversion} does not meet this requirement. Please ask your host to upgrade PHP", true);
+    }
+    if (XenForo_Application::$versionId < 1030070)
+    {
+      throw new XenForo_Exception('XenForo 1.3.0+ is Required!', true); // Make this show nicely.
+    }
+    if (SV_Utils_AddOn::addOnIsActive('SV_WordCountSearch') &&
+        !SV_Utils_AddOn::addOnIsActive('SV_WordCountSearch', 1010500))
+    {
+      throw new XenForo_Exception("Word Count Search support requires v1.1.5 or newer", true);
+    }
     $version = isset($existingAddOn['version_id']) ? $existingAddOn['version_id'] : 0;
 
     $db = XenForo_Application::get('db');
     $tables_created = false;
     $requireIndexing = array();
 
-    if ($version == 0)
+    if (!$db->fetchRow("SHOW TABLES LIKE 'threadmarks'"))
     {
       $requireIndexing['threadmark'] = true;
       $db->query("
@@ -98,24 +113,23 @@ class Sidane_Threadmarks_Install
       SV_Utils_Install::addIndex('threadmarks', 'post_id', array('post_id'));
     }
 
+    $db->query("
+      INSERT IGNORE INTO xf_content_type
+          (content_type, addon_id, fields)
+      VALUES
+          ('threadmark', 'sidaneThreadmarks', '')
+    ");
+
+    $db->query("
+      INSERT IGNORE INTO xf_content_type_field
+          (content_type, field_name, field_value)
+      VALUES
+          ('threadmark', 'edit_history_handler_class', 'Sidane_Threadmarks_EditHistoryHandler_Threadmark')
+         ,('threadmark', 'search_handler_class', 'Sidane_Threadmarks_Search_DataHandler_Threadmark')
+         ,('threadmark', 'news_feed_handler_class', 'Sidane_Threadmarks_NewsFeedHandler_Threadmark')
+    ");
     if ($version <= 9)
     {
-      $db->query("
-        INSERT IGNORE INTO xf_content_type
-            (content_type, addon_id, fields)
-        VALUES
-            ('threadmark', 'sidaneThreadmarks', '')
-      ");
-
-      $db->query("
-        INSERT IGNORE INTO xf_content_type_field
-            (content_type, field_name, field_value)
-        VALUES
-            ('threadmark', 'edit_history_handler_class', 'Sidane_Threadmarks_EditHistoryHandler_Threadmark')
-           ,('threadmark', 'search_handler_class', 'Sidane_Threadmarks_Search_DataHandler_Threadmark')
-           ,('threadmark', 'news_feed_handler_class', 'Sidane_Threadmarks_NewsFeedHandler_Threadmark')
-      ");
-
       SV_Utils_Install::addColumn('threadmarks', 'position', 'int not null default 0');
       SV_Utils_Install::addIndex('threadmarks', 'thread_position', array('thread_id', 'position'));
 
@@ -152,7 +166,8 @@ class Sidane_Threadmarks_Install
       XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
     }
 
-    if ($version < 1040000)
+
+    if (!$db->fetchRow("SHOW TABLES LIKE 'threadmark_category'"))
     {
       // create threadmark category table
       $db->query(
@@ -163,14 +178,17 @@ class Sidane_Threadmarks_Install
           PRIMARY KEY (threadmark_category_id)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci"
       );
+    }
 
-      // add column to threadmarks table if it is non-existent
-      SV_Utils_Install::addColumn(
-        'threadmarks',
-        'threadmark_category_id',
-        'INT UNSIGNED NOT NULL'
-      );
+    // add column to threadmarks table if it is non-existent
+    SV_Utils_Install::addColumn(
+      'threadmarks',
+      'threadmark_category_id',
+      'INT UNSIGNED NOT NULL'
+    );
 
+    if ($version < 1040000)
+    {
       // ensure model is loaded before accessing static properties
       XenForo_Model::create('XenForo_Model_User');
       $defaultUserGroupId = XenForo_Model_User::$defaultRegisteredGroupId;
@@ -199,17 +217,15 @@ class Sidane_Threadmarks_Install
       );
     }
 
-    if ($version < 1040005)
-    {
-      SV_Utils_Install::addColumn(
-        'xf_thread',
-        'threadmark_category_positions',
-        'TEXT'
-      );
+    // $version < 1040005
+    SV_Utils_Install::addColumn(
+      'xf_thread',
+      'threadmark_category_positions',
+      'TEXT'
+    );
 
-      SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
-      SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
-    }
+    SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
+    SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
 
     if ($version < 1040007)
     {
