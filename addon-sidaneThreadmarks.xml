@@ -1438,7 +1438,7 @@
 <p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
 
 <xen:include template="news_feed_attached_images" />]]></template>
-    <template title="new_threadmark" version_id="1040008" version_string="1.4.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
+    <template title="new_threadmark" version_id="1050009" version_string="1.5.0"><![CDATA[<xen:title>{xen:helper threadPrefix, $thread, escaped}{$thread.title} - {xen:phrase add_threadmark}</xen:title>
 <xen:h1>{xen:phrase add_threadmark}</xen:h1>
 
 <xen:navigation>
@@ -1483,7 +1483,7 @@
 		</dd>
 	</dl>
 
-	<dl class="ctrlUnit PositionContainer">
+	<dl class="ctrlUnit PositionContainer JsOnly">
 		<dt>{xen:phrase threadmark_position_after}:</dt>
 		<dd>
 			<ol>
