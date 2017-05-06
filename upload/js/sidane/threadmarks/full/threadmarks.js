@@ -439,7 +439,7 @@ var Sidane = Sidane || {};
   {
     if ($container.closest('.xenOverlay').length > 0)
     {
-      var $tabLinks = $container.find('.tabs li a');
+      var $tabLinks = $container.find('.tabs li:not(.sortTreeButton) a');
 
       $tabLinks.addClass('OverlayTrigger');
       $tabLinks.data('cacheoverlay', true);
