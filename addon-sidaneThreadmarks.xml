@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.5.0" version_id="1050008" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.5.0" version_id="1050009" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="sidane_tm_categories" parent_navigation_id="threadsPosts" display_order="5" link="threadmark-categories" admin_permission_id="sidane_threadmarks" debug_only="0" hide_no_children="0"/>
   </admin_navigation>
@@ -1633,7 +1633,7 @@
     </xen:include>
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="1040008" version_string="1.4.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+    <template title="threadmarks" version_id="1050009" version_string="1.5.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
 
@@ -1659,16 +1659,12 @@
 	</xen:if>
 </xen:if>
 
-<div class="threadmarks section">
+<div class="threadmarks section ThreadmarkIndex">
 	<ol class="tabs">
 		<xen:foreach loop="$threadmarkCategories" key="$threadmarkCategoryId" value="$threadmarkCategory">
 			<li class="{xen:if '{$threadmarkCategoryId} == {$activeThreadmarkCategory.threadmark_category_id}', 'active'}">
 				<h4>
-					<a
-						href="{xen:link threads/threadmarks, $thread, 'category_id={$threadmarkCategoryId}'}"
-						class="OverlayTrigger"
-						data-cacheOverlay="true"
-					>
+					<a href="{xen:link threads/threadmarks, $thread, 'category_id={$threadmarkCategoryId}'}">
 						{$threadmarkCategory.title}
 					</a>
 				</h4>

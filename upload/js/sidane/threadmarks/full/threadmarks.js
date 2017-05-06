@@ -435,6 +435,19 @@ var Sidane = Sidane || {};
     }
   };
 
+  Sidane.ThreadmarkIndex = function($container)
+  {
+    if ($container.closest('.xenOverlay').length > 0)
+    {
+      var $tabLinks = $container.find('.tabs li a');
+
+      $tabLinks.addClass('OverlayTrigger');
+      $tabLinks.data('cacheoverlay', true);
+
+      $container.xfActivate();
+    }
+  };
+
   Sidane.ThreadmarkQuickReply = function($form)
   {
     $form.on('QuickReplyComplete', function() {
@@ -447,6 +460,7 @@ var Sidane = Sidane || {};
 
   XenForo.register('.ThreadmarkSortTree',       'Sidane.ThreadmarkSortTree');
   XenForo.register('.ThreadmarkPositionFiller', 'Sidane.ThreadmarkPositionFiller');
+  XenForo.register('.ThreadmarkIndex',          'Sidane.ThreadmarkIndex');
   XenForo.register('#QuickReply',               'Sidane.ThreadmarkQuickReply');
 
   if (!XenForo.isTouchBrowser())
