@@ -141,6 +141,17 @@ class Sidane_Threadmarks_ControllerAdmin_ThreadmarkCategory extends XenForo_Cont
       $threadmarkCategoryId
     );
 
+    $threadmarkCategoryDw = XenForo_DataWriter::create(
+      'Sidane_Threadmarks_DataWriter_ThreadmarkCategory'
+    );
+    $threadmarkCategoryDw->setExistingData($threadmarkCategory, true);
+    $threadmarkCategoryDw->preDelete();
+
+    if ($errors = $threadmarkCategoryDw->getErrors())
+    {
+      return $this->responseError($errors);
+    }
+
     $viewParams = array(
       'threadmarkCategory' => $threadmarkCategory
     );

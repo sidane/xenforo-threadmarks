@@ -74,6 +74,16 @@ class Sidane_Threadmarks_DataWriter_ThreadmarkCategory extends XenForo_DataWrite
     }
   }
 
+  protected function _preDelete()
+  {
+    if ($this->get('threadmark_category_id') === 1)
+    {
+      $this->error(new XenForo_Phrase(
+        'sidane_you_may_not_delete_default_threadmark_category'
+      ));
+    }
+  }
+
   protected function _postDelete()
   {
     $threadmarkCategoryId = $this->get('threadmark_category_id');
