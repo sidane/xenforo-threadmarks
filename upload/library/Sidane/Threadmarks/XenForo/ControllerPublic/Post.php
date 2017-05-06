@@ -214,6 +214,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
   public function actionThreadmarkPositionFill()
   {
+    $this->_assertPostOnly();
+
     $postId = $this->_input->filterSingle(
       'post_id',
       XenForo_Input::UINT
@@ -244,6 +246,9 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       return $this->responseNoPermission();
     }
 
+    $previousThreadmarkData = false;
+    $lastThreadmarkData = false;
+
     $previousThreadmark = $threadmarksModel->getPreviousThreadmarkByPost(
       $threadmarkCategory['threadmark_category_id'],
       $thread['thread_id'],
@@ -251,10 +256,16 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     );
     if (!empty($previousThreadmark))
     {
-      $previousThreadmark['link'] = XenForo_Link::buildPublicLink(
+      $link = XenForo_Link::buildPublicLink(
         'threads/post-permalink',
         $thread,
         array('post' => $previousThreadmark)
+      );
+
+      $previousThreadmarkData = array(
+        'position' => $previousThreadmark['threadmark_position'],
+        'label'    => $previousThreadmark['label'],
+        'link'     => $link
       );
     }
 
@@ -264,18 +275,24 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     );
     if (!empty($lastThreadmark))
     {
-      $lastThreadmark['link'] = XenForo_Link::buildPublicLink(
+      $link = XenForo_Link::buildPublicLink(
         'threads/post-permalink',
         $thread,
         array('post' => $lastThreadmark)
+      );
+
+      $lastThreadmarkData = array(
+        'position' => $lastThreadmark['threadmark_position'],
+        'label'    => $lastThreadmark['label'],
+        'link'     => $link
       );
     }
 
     $this->_routeMatch->setResponseType('json');
 
     $viewParams = array(
-      'previousThreadmark' => $previousThreadmark,
-      'lastThreadmark'     => $lastThreadmark
+      'previousThreadmark' => $previousThreadmarkData,
+      'lastThreadmark'     => $lastThreadmarkData
     );
 
     return $this->responseView(
