@@ -454,6 +454,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     $threadmarkCategoryPositions = $this->getThreadmarkCategoryPositionsByThread(
       $thread
     );
+    if (empty($threadmarkCategoryPositions))
+    {
+        return array();
+    }
 
     $selects = array();
     $threadId = $db->quote($thread['thread_id']);
@@ -474,6 +478,11 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         $limit,
         $offset
       );
+    }
+
+    if (empty($selects))
+    {
+        return array();
     }
     $query = '('.implode(') UNION (', $selects).')';
 
