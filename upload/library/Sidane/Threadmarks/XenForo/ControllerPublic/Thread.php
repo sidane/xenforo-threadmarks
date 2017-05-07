@@ -85,7 +85,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       $thread,
       $forum
     );
-    if (!empty($recentThreadmarks)) {
+    if (!empty($recentThreadmarks))
+    {
       $totalPosts = $viewParams['totalPosts'];
       $postsPerPage = $viewParams['postsPerPage'];
 

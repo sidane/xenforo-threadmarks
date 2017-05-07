@@ -436,14 +436,66 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     ",$limit, 0), $thread_id);
   }
 
-  public function getRecentByThreadId($threadId, $limit = 0, $offset = 0) {
-    return $this->fetchAllKeyed($this->limitQueryResults("
-      SELECT threadmarks.*, post.post_date, post.position as post_position
-      FROM threadmarks
-      JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-      WHERE threadmarks.thread_id = ? and threadmarks.message_state = 'visible'
-      ORDER BY threadmarks.position DESC
-    ",$limit, $offset), 'post_id', $threadId);
+  public function getRecentThreadmarksByThread(
+    array $thread,
+    array $forum,
+    $limit = 0,
+    $offset = 0
+  ) {
+    $db = $this->_getDb();
+
+    $threadmarkCategories = $this->getAllThreadmarkCategories();
+    $threadmarkCategories = $this->prepareThreadmarkCategories(
+      $threadmarkCategories
+    );
+
+    $threadmarkCategoryPositions = $this->getThreadmarkCategoryPositionsByThread(
+      $thread
+    );
+
+    $selects = array();
+    foreach ($threadmarkCategoryPositions as $threadmarkCategoryId => $position)
+    {
+      $threadId = $db->quote($thread['thread_id']);
+      $threadmarkCategoryId = $db->quote($threadmarkCategoryId);
+
+      $selects[] = $this->limitQueryResults(
+        "SELECT threadmarks.*, post.post_date, post.position AS post_position
+          FROM threadmarks
+          JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+          WHERE threadmarks.thread_id = {$threadId}
+            AND threadmark_category_id = {$threadmarkCategoryId}
+            AND threadmarks.message_state = 'visible'
+          ORDER BY threadmarks.position DESC",
+        $limit,
+        $offset
+      );
+    }
+    $query = '('.implode(') UNION (', $selects).')';
+
+    $threadmarks = $this->fetchAllKeyed($query, 'threadmark_id');
+    $threadmarks = array_reverse($threadmarks, true);
+    $threadmarks = $this->prepareThreadmarks($threadmarks, $thread, $forum);
+
+    foreach ($threadmarks as $threadmarkId => $threadmark)
+    {
+      $threadmarkCategoryId = $threadmark['threadmark_category_id'];
+
+      if (!empty($threadmarkCategories[$threadmarkCategoryId]))
+      {
+        $threadmarkCategories[$threadmarkCategoryId]['children'][$threadmarkId] = $threadmark;
+      }
+    }
+
+    foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
+    {
+      if (empty($threadmarkCategory['children']))
+      {
+        unset($threadmarkCategories[$threadmarkCategoryId]);
+      }
+    }
+
+    return $threadmarkCategories;
   }
 
   public function getByPostId($postId) {
