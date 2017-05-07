@@ -161,12 +161,6 @@ class Sidane_Threadmarks_Install
       SV_Utils_Install::addColumn('threadmarks', 'depth', 'INT UNSIGNED DEFAULT 0 NOT NULL');
     }
 
-    if ($version < 1020002)
-    {
-      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
-    }
-
-
     if (!$db->fetchRow("SHOW TABLES LIKE 'threadmark_category'"))
     {
       // create threadmark category table
@@ -226,6 +220,11 @@ class Sidane_Threadmarks_Install
 
     SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
     SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
+
+    if ($version && $version < 1050011)
+    {
+      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
+    }
 
     if ($version < 1050007)
     {
