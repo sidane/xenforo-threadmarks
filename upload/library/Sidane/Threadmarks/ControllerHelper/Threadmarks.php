@@ -18,12 +18,15 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       return null;
     }
 
+    $fetchOptions = array();
     $menuLimit = $threadmarksModel->getMenuLimit($thread);
 
     $threadmarkCategories = $threadmarksModel->getRecentThreadmarksByThread(
       $thread,
       $forum,
-      $menuLimit
+      $menuLimit,
+      0,
+      $fetchOptions
     );
 
     if (empty($threadmarkCategories))

@@ -440,8 +440,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     array $thread,
     array $forum,
     $limit = 0,
-    $offset = 0
+    $offset = 0,
+    array $fetchOptions = array()
   ) {
+    $joinOptions = $this->prepareThreadmarkJoinOptions($fetchOptions);
     $db = $this->_getDb();
 
     $threadmarkCategories = $this->getAllThreadmarkCategories();
@@ -454,15 +456,17 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
 
     $selects = array();
+    $threadId = $db->quote($thread['thread_id']);
     foreach ($threadmarkCategoryPositions as $threadmarkCategoryId => $position)
     {
-      $threadId = $db->quote($thread['thread_id']);
       $threadmarkCategoryId = $db->quote($threadmarkCategoryId);
 
       $selects[] = $this->limitQueryResults(
         "SELECT threadmarks.*, post.post_date, post.position AS post_position
+        " . $joinOptions['selectFields'] . "
           FROM threadmarks
           JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+          " . $joinOptions['joinTables'] . "
           WHERE threadmarks.thread_id = {$threadId}
             AND threadmark_category_id = {$threadmarkCategoryId}
             AND threadmarks.message_state = 'visible'
