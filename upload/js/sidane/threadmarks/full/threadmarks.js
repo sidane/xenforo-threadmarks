@@ -266,12 +266,19 @@ var Sidane = Sidane || {};
       {
         console.log('Tree synchronized');
 
-        var overlay = new XenForo.OverlayLoader(
-          $({'href': this.urls.index}),
-          false,
-          {'speed': XenForo.speed.fast}
-        );
-        overlay.load();
+        if (this.$tree.closest('.xenOverlay').length > 0)
+        {
+          var overlay = new XenForo.OverlayLoader(
+            $({'href': this.urls.index}),
+            false,
+            {'speed': XenForo.speed.fast}
+          );
+          overlay.load();
+        }
+        else
+        {
+          window.location = this.urls.index;
+        }
       }, this));
     },
 
