@@ -17,6 +17,45 @@ class Sidane_Threadmarks_XenForo_DataWriter_DiscussionMessage_Post extends XFCP_
     return $threadmark;
   }
 
+  protected function _messagePreSave()
+  {
+    if (
+      $this->isInsert() &&
+      Sidane_Threadmarks_Globals::$threadmarkLabel &&
+      Sidane_Threadmarks_Globals::$threadmarkCategoryId
+    )
+    {
+      $post = $this->getMergedData();
+      $thread = $this->getDiscussionData();
+      $forum = $this->_getForumInfo();
+
+      $threadmarksModel = $this->_getThreadmarksModel();
+
+      $canAddThreadmark = $threadmarksModel->canAddThreadmark(
+        $post,
+        $thread,
+        $forum,
+        $null
+      );
+      if (!$canAddThreadmark)
+      {
+        $this->error(new XenForo_Phrase(
+          'you_do_not_have_permission_to_add_threadmarks'
+        ));
+      }
+
+      $threadmarkCategory = $threadmarksModel->getThreadmarkCategoryById(
+        Sidane_Threadmarks_Globals::$threadmarkCategoryId
+      );
+      if (!$threadmarksModel->canUseThreadmarkCategory($threadmarkCategory))
+      {
+        $this->error(new XenForo_Phrase(
+          'you_do_not_have_permission_to_use_threadmark_category'
+        ));
+      }
+    }
+  }
+
   protected function _messagePostSave()
   {
     parent::_messagePostSave();

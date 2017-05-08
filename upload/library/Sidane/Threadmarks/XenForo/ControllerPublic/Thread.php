@@ -209,65 +209,14 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
 
   public function actionAddReply()
   {
-    $this->_assertPostOnly();
-
-    if ($this->_input->inRequest('more_options'))
-    {
-      return $this->responseReroute(__CLASS__, 'reply');
-    }
-
-    $threadmarkLabel = $this->_input->filterSingle(
+    Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle(
       'threadmark',
       XenForo_Input::STRING
     );
-    $threadmarkCategoryId = $this->_input->filterSingle(
+    Sidane_Threadmarks_Globals::$threadmarkCategoryId = $this->_input->filterSingle(
       'threadmark_category_id',
       XenForo_Input::UINT
     );
-
-    if (!empty($threadmarkLabel) && !empty($threadmarkCategoryId))
-    {
-      $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
-
-      $visitor = XenForo_Visitor::getInstance();
-
-      $ftpHelper = $this->getHelper('ForumThreadPost');
-      list($thread, $forum) = $ftpHelper->assertThreadValidAndViewable(
-        $threadId
-      );
-
-      $threadmarksModel = $this->_getThreadmarksModel();
-
-      $canAddThreadmark = $threadmarksModel->canAddThreadmark(
-        null,
-        $thread,
-        $forum,
-        $null,
-        $visitor
-      );
-      if (!$canAddThreadmark)
-      {
-        throw $this->getErrorOrNoPermissionResponseException(
-          'you_do_not_have_permission_to_add_threadmarks'
-        );
-      }
-
-      $threadmarkCategory = $threadmarksModel->getThreadmarkCategoryById(
-        $threadmarkCategoryId
-      );
-      if (!$threadmarksModel->canUseThreadmarkCategory(
-        $threadmarkCategory,
-        $visitor
-      ))
-      {
-        throw $this->getErrorOrNoPermissionResponseException(
-          'you_do_not_have_permission_to_use_threadmark_category'
-        );
-      }
-
-      Sidane_Threadmarks_Globals::$threadmarkLabel = $threadmarkLabel;
-      Sidane_Threadmarks_Globals::$threadmarkCategoryId = $threadmarkCategoryId;
-    }
 
     return parent::actionAddReply();
   }
@@ -677,7 +626,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $threadmarksModel = $this->_getThreadmarksModel();
 
     if (
-        !$threadmarksModel->canViewThreadmark($thread, $forum) || 
+        !$threadmarksModel->canViewThreadmark($thread, $forum) ||
         (isset($viewParams['firstPost']) && empty($thread['canQuickReply']) && empty($thread['threadmark_count'])
     )
     {
