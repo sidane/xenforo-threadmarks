@@ -20,13 +20,10 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $thread = $viewParams['thread'];
     $forum = $viewParams['forum'];
     $canQuickReply = $viewParams['canQuickReply'];
+    $threadmarkCategories = $viewParams['threadmarkCategories'];
 
     $threadmarksModel = $this->_getThreadmarksModel();
 
-    $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
-    $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
-      $threadmarkCategories
-    );
     $threadmarkCategoryPositions = $threadmarksModel
         ->getThreadmarkCategoryPositionsByThread($thread);
 
@@ -118,32 +115,6 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     }
 
     return $postFetchOptions;
-  }
-
-  public function actionShowPosts()
-  {
-    $response = parent::actionShowPosts();
-
-    if ($response instanceof XenForo_ControllerResponse_View)
-    {
-      $viewParams = &$response->params;
-      $thread = $viewParams['thread'];
-
-      $threadmarkCategories = false;
-      if (!empty($thread['threadmark_count']))
-      {
-        $threadmarksModel = $this->_getThreadmarksModel();
-
-        $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
-        $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
-          $threadmarkCategories
-        );
-      }
-
-      $viewParams['threadmarkCategories'] = $threadmarkCategories;
-    }
-
-    return $response;
   }
 
   public function actionReply()
@@ -261,17 +232,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       $thread['threadmark_count'] = 1;
     }
 
-    $viewParams = parent::_getNewPosts($thread, $forum, $lastDate, $limit);
-
-    $threadmarksModel = $this->_getThreadmarksModel();
-    $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
-    $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
-      $threadmarkCategories
-    );
-
-    $viewParams['threadmarkCategories'] = $threadmarkCategories;
-
-    return $viewParams;
+    return parent::_getNewPosts($thread, $forum, $lastDate, $limit);
   }
 
   public function actionSaveDraft()
@@ -616,6 +577,33 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       XenForo_ControllerResponse_Redirect::RESOURCE_UPDATED,
       XenForo_Link::buildPublicLink('threads/threadmarks', $thread)
     );
+  }
+
+  protected function _getDefaultViewParams(
+    array $forum,
+    array $thread,
+    array $posts,
+    $page = 1,
+    array $viewParams = array()
+  ) {
+    $defaultViewParams = parent::_getDefaultViewParams(
+      $forum,
+      $thread,
+      $posts,
+      $page,
+      $viewParams
+    );
+
+    $threadmarksModel = $this->_getThreadmarksModel();
+
+    $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+    $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+      $threadmarkCategories
+    );
+
+    $defaultViewParams['threadmarkCategories'] = $threadmarkCategories;
+
+    return $defaultViewParams;
   }
 
   protected function _getThreadmarkFetchOptions(array $thread = null, array $forum = null)
