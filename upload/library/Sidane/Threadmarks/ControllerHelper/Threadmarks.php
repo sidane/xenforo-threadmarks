@@ -56,6 +56,14 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       }
     }
 
-    return $threadmarkCategories;
+    $loggedIn = (XenForo_Visitor::getUserId() !== 0);
+    $hideMenuFromGuests = XenForo_Application::getOptions()
+      ->sidaneThreadmarksHideMenuFromGuests;
+
+    return array(
+      'threadmark_categories' => $threadmarkCategories,
+      'logged_in'             => $loggedIn,
+      'hide_menu_from_guests' => $hideMenuFromGuests
+    );
   }
 }
