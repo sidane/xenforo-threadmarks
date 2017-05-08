@@ -238,12 +238,17 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
     if (empty($threadmarkCategory))
     {
-      return $this->getNotFoundResponse();
+      return $this->responseError(
+        new XenForo_Phrase('requested_page_not_found'),
+        404
+      );
     }
 
     if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum))
     {
-      return $this->responseNoPermission();
+      throw $this->getErrorOrNoPermissionResponseException(
+        'you_do_not_have_permission_to_add_threadmarks'
+      );
     }
 
     $previousThreadmarkData = false;
