@@ -50,6 +50,11 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
         continue;
       }
 
+      if ($post['message_state'] != 'visible')
+      {
+        continue;
+      }
+
       $threadmarkedPostIds[] = $postId;
       $groupedThreadmarks[$post['threadmark_category_id']][$post['threadmark_position']] = array(
         'post_id'                => $post['post_id'],

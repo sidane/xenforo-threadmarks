@@ -120,6 +120,32 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     return $postFetchOptions;
   }
 
+  public function actionShowPosts()
+  {
+    $response = parent::actionShowPosts();
+
+    if ($response instanceof XenForo_ControllerResponse_View)
+    {
+      $viewParams = &$response->params;
+      $thread = $viewParams['thread'];
+
+      $threadmarkCategories = false;
+      if (!empty($thread['threadmark_count']))
+      {
+        $threadmarksModel = $this->_getThreadmarksModel();
+
+        $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+        $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+          $threadmarkCategories
+        );
+      }
+
+      $viewParams['threadmarkCategories'] = $threadmarkCategories;
+    }
+
+    return $response;
+  }
+
   public function actionReply()
   {
     Sidane_Threadmarks_Globals::$threadmarkLabel = $this->_input->filterSingle(
