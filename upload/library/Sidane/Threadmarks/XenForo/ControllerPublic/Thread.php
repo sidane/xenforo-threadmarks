@@ -15,14 +15,18 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       return $response;
     }
 
+    $threadmarksModel = $this->_getThreadmarksModel();
+    if (!$threadmarksModel->canViewThreadmark($thread, $forum))
+    {
+      return $response;
+    }
+
     $viewParams = &$response->params;
 
     $thread = $viewParams['thread'];
     $forum = $viewParams['forum'];
     $canQuickReply = $viewParams['canQuickReply'];
     $threadmarkCategories = $viewParams['threadmarkCategories'];
-
-    $threadmarksModel = $this->_getThreadmarksModel();
 
     $threadmarkCategoryPositions = $threadmarksModel
         ->getThreadmarkCategoryPositionsByThread($thread);
@@ -595,6 +599,14 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     );
 
     $threadmarksModel = $this->_getThreadmarksModel();
+
+    if (
+        !$threadmarksModel->canViewThreadmark($thread, $forum) || 
+        (isset($viewParams['firstPost']) && empty($thread['canQuickReply']) && empty($thread['threadmark_count'])
+    )
+    {
+      return $defaultViewParams;
+    }
 
     $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
     $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
