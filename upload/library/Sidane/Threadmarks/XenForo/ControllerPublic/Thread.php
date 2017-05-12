@@ -627,9 +627,10 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
 
     if (
         !$threadmarksModel->canViewThreadmark($thread, $forum) ||
-        (isset($viewParams['firstPost']) && empty($thread['canQuickReply']) && empty($thread['threadmark_count']))
+        (isset($viewParams['firstPost']) && empty($defaultViewParams['canQuickReply']) && empty($thread['threadmark_count']))
     )
     {
+      $defaultViewParams['threadmarkCategories'] = array();
       return $defaultViewParams;
     }
 
