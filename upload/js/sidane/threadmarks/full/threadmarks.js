@@ -259,7 +259,7 @@ var Sidane = Sidane || {};
     sync: function()
     {
       var requestData = {
-        'tree': this.$tree.jstree(true).get_json('#', {'flat': true})
+        'tree': JSON.stringify(this.$tree.jstree(true).get_json('#', {'flat': true}))
       };
 
       XenForo.ajax(this.urls.sync, requestData, $.context(function()
