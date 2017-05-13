@@ -420,7 +420,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     // update display ordering
     $threadmarks = $this->recomputeDisplayOrder($threadId);
-    $this->massUpdateDisplayOrder($threadId, null, $threadmarks);
+    if ($threadmarks)
+    {
+        $this->massUpdateDisplayOrder($threadId, null, $threadmarks);
+    }
 
     XenForo_Db::commit($db);
   }
@@ -749,7 +752,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   public function massUpdateDisplayOrder(
     $threadId,
     $threadmarkCategoryId,
-    array $threadmarks
+    array $threadmarks = null
   )
   {
     if (empty($threadmarks))
