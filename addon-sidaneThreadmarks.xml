@@ -177,6 +177,7 @@
     <phrase title="sidane_delete_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Delete Threadmark Category]]></phrase>
     <phrase title="sidane_edit_display_order" version_id="1040006" version_string="1.4.0"><![CDATA[Edit Display Order]]></phrase>
     <phrase title="sidane_edit_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Edit Threadmark Category]]></phrase>
+    <phrase title="sidane_no_threadmark_categories_have_been_defined" version_id="1040000" version_string="1.5.0"><![CDATA[No threadmark categories are defined]]></phrase>
     <phrase title="sidane_please_confirm_that_you_want_to_delete_following_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Please confirm that you want to delete the following threadmark category]]></phrase>
     <phrase title="sidane_please_enter_valid_threadmark_category_id" version_id="1040000" version_string="1.4.0"><![CDATA[Please enter a valid threadmark category ID.]]></phrase>
     <phrase title="sidane_requested_threadmark_category_not_found" version_id="1040000" version_string="1.4.0"><![CDATA[The requested threadmark categorycould not be found.]]></phrase>
