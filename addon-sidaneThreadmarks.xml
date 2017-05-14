@@ -1729,6 +1729,11 @@
 	min-width: 0;
 }
 
+.PageNav.threadmarksSinglePage .threadmarks
+{
+	display: inline-block;
+}
+
 .PageNav a.threadmarksTrigger
 {
 	width: auto !important;
