@@ -926,14 +926,23 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return $threadmarkCategories;
   }
 
-  public function getThreadmarkCategoryById($threadmarkCategoryId)
+  public function getThreadmarkCategoryById($threadmarkCategoryId, $fromCache = true)
   {
-    return $this->_getDb()->fetchRow(
+    if ($fromCache && isset(Sidane_Threadmarks_Globals::$threadmarkCategories[$threadmarkCategoryId]))
+    {
+      return Sidane_Threadmarks_Globals::$threadmarkCategories[$threadmarkCategoryId];
+    }
+    $threadmarkCategory = $this->_getDb()->fetchRow(
       'SELECT *
         FROM threadmark_category
         WHERE threadmark_category_id = ?',
       $threadmarkCategoryId
     );
+    if ($fromCache)
+    {
+        Sidane_Threadmarks_Globals::$threadmarkCategories[$threadmarkCategoryId] = $threadmarkCategory;
+    }
+    return $threadmarkCategory;
   }
 
   public function getDefaultThreadmarkCategory(array $viewingUser = null)
