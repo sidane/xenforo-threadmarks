@@ -19,6 +19,7 @@ class Sidane_Threadmarks_XenForo_DataWriter_DiscussionMessage_Post extends XFCP_
 
   protected function _messagePreSave()
   {
+    parent::_messagePreSave();
     if (
       $this->isInsert() &&
       Sidane_Threadmarks_Globals::$threadmarkLabel &&
