@@ -935,17 +935,12 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     {
       return Sidane_Threadmarks_Globals::$threadmarkCategories[$threadmarkCategoryId];
     }
-    $threadmarkCategory = $this->_getDb()->fetchRow(
+    return $this->_getDb()->fetchRow(
       'SELECT *
         FROM threadmark_category
         WHERE threadmark_category_id = ?',
       $threadmarkCategoryId
     );
-    if ($fromCache)
-    {
-        Sidane_Threadmarks_Globals::$threadmarkCategories[$threadmarkCategoryId] = $threadmarkCategory;
-    }
-    return $threadmarkCategory;
   }
 
   public function getDefaultThreadmarkCategory(array $viewingUser = null)
