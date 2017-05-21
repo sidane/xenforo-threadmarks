@@ -221,19 +221,14 @@ class Sidane_Threadmarks_Install
     SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
     SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
 
-    if ($version && $version < 1050011)
-    {
-      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array(), null, true);
-    }
-
     if ($version < 1050007)
     {
       $requireIndexing['threadmark'] = true;
     }
 
-    if ($version < 1050015)
+    if ($version && $version < 1050015)
     {
-      XenForo_Application::defer('Sidane_Threadmarks_Deferred_MigrateReadData', array('resync' => false), null, true);
+      XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array('resync' => false), null, true);
     }
 
     // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
