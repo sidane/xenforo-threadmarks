@@ -85,6 +85,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     )
     {
       $threadmarkCategories = $this->getAllThreadmarkCategories();
+      if (empty($threadmarkCategories[$threadmark['threadmark_category_id']]))
+      {
+        return false;
+      }
       $threadmarkCategory = $threadmarkCategories[$threadmark['threadmark_category_id']];
 
       return $this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser);
@@ -122,6 +126,10 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     )
     {
       $threadmarkCategories = $this->getAllThreadmarkCategories();
+      if (empty($threadmarkCategories[$threadmark['threadmark_category_id']]))
+      {
+        return false;
+      }
       $threadmarkCategory = $threadmarkCategories[$threadmark['threadmark_category_id']];
 
       return $this->canUseThreadmarkCategory($threadmarkCategory, $viewingUser);
