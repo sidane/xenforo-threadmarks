@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.5.0 (2017-05-21)
+
+- Threadmark categories.
+
 ## v1.3.1 (2016-11-24)
 
 - Fix compatibility with pre-XF 1.5 versions
