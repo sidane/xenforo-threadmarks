@@ -231,6 +231,11 @@ class Sidane_Threadmarks_Install
       $requireIndexing['threadmark'] = true;
     }
 
+    if ($version < 1050015)
+    {
+      XenForo_Application::defer('Sidane_Threadmarks_Deferred_MigrateReadData', array('resync' => false), null, true);
+    }
+
     // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
     // requires overriding XenES_Model_Elasticsearch
     SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);

@@ -374,47 +374,50 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     return true;
   }
 
-  public function rebuildThreadmarkCache($threadId)
+  public function rebuildThreadmarkCache($threadId, $resync = true)
   {
     $db = $this->_getDb();
 
-    // remove orphaned threadmarks (by post)
-    $db->query(
-      'DELETE threadmarks
-        FROM threadmarks
-        LEFT JOIN xf_post AS post ON (post.post_id = threadmarks.post_id)
-        WHERE threadmarks.thread_id = ?
-          AND post.post_id IS NULL',
-      $threadId
-    );
+    if ($resync)
+    {
+        // remove orphaned threadmarks (by post)
+        $db->query(
+          'DELETE threadmarks
+            FROM threadmarks
+            LEFT JOIN xf_post AS post ON (post.post_id = threadmarks.post_id)
+            WHERE threadmarks.thread_id = ?
+              AND post.post_id IS NULL',
+          $threadId
+        );
 
-    // push threadmarks onto the correct thread (aka potentially not this one)
-    $db->query(
-      'UPDATE threadmarks
-        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-        SET threadmarks.thread_id = post.thread_id
-        WHERE threadmarks.thread_id = ?',
-      $threadId
-    );
+        // push threadmarks onto the correct thread (aka potentially not this one)
+        $db->query(
+          'UPDATE threadmarks
+            JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+            SET threadmarks.thread_id = post.thread_id
+            WHERE threadmarks.thread_id = ?',
+          $threadId
+        );
 
-    // pull threadmarks onto the correct thread (aka potentially this one)
-    // this can be fairly slow depending on the thread length
-    $db->query(
-      'UPDATE threadmarks
-        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-        SET threadmarks.thread_id = post.thread_id
-        WHERE post.thread_id = ?',
-      $threadId
-    );
+        // pull threadmarks onto the correct thread (aka potentially this one)
+        // this can be fairly slow depending on the thread length
+        $db->query(
+          'UPDATE threadmarks
+            JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+            SET threadmarks.thread_id = post.thread_id
+            WHERE post.thread_id = ?',
+          $threadId
+        );
 
-    // ensure resync attributes off the xf_post table
-    $db->query(
-      'UPDATE threadmarks
-        JOIN xf_post AS post ON post.post_id = threadmarks.post_id
-        SET threadmarks.message_state = post.message_state
-        WHERE threadmarks.thread_id = ?',
-      $threadId
-    );
+        // ensure resync attributes off the xf_post table
+        $db->query(
+          'UPDATE threadmarks
+            JOIN xf_post AS post ON post.post_id = threadmarks.post_id
+            SET threadmarks.message_state = post.message_state
+            WHERE threadmarks.thread_id = ?',
+          $threadId
+        );
+    }
 
     XenForo_Db::beginTransaction($db);
 

@@ -8,11 +8,13 @@ class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
       array(
         'batch'    => 100,
         'position' => 0,
-        'count'    => 0
+        'count'    => 0,
+        'resync'   => true,
       ),
       $data
     );
     $startTime = microtime(true);
+    $resync = !empty($data['resync']);
 
     /** @var Sidane_Threadmarks_Model_Threadmarks */
     $threadmarksModel = XenForo_Model::create(
@@ -31,7 +33,7 @@ class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
 
     foreach ($threadIds as $threadId)
     {
-      $threadmarksModel->rebuildThreadmarkCache($threadId);
+      $threadmarksModel->rebuildThreadmarkCache($threadId, $resync);
 
       $data['position'] = $threadId;
       $data['count']++;
