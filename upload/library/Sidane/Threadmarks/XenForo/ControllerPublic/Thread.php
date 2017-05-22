@@ -253,27 +253,6 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     return parent::actionSaveDraft();
   }
 
-  protected function _assertCanReplyToThread(array $thread, array $forum)
-  {
-    parent::_assertCanReplyToThread($thread, $forum);
-
-    if (
-      Sidane_Threadmarks_Globals::$threadmarkLabel &&
-      Sidane_Threadmarks_Globals::$threadmarkCategoryId
-    )
-    {
-      if (!$this->_getThreadmarksModel()->canAddThreadmark(
-        null,
-        $thread,
-        $forum,
-        $errorPhraseKey
-      ))
-      {
-        throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
-      }
-    }
-  }
-
   public function actionThreadmarks()
   {
     $threadId = $this->_input->filterSingle('thread_id', XenForo_Input::UINT);
