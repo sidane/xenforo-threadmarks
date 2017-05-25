@@ -22,8 +22,8 @@ class Sidane_Threadmarks_XenForo_DataWriter_DiscussionMessage_Post extends XFCP_
     parent::_messagePreSave();
     if (
       $this->isInsert() &&
-      Sidane_Threadmarks_Globals::$threadmarkLabel &&
-      Sidane_Threadmarks_Globals::$threadmarkCategoryId
+      !empty(Sidane_Threadmarks_Globals::$threadmarkLabel) &&
+      !empty(Sidane_Threadmarks_Globals::$threadmarkCategoryId)
     )
     {
       $post = $this->getMergedData();

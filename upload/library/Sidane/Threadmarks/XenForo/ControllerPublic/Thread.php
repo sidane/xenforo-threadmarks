@@ -228,8 +228,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $limit = 3
   ) {
     if (
-      Sidane_Threadmarks_Globals::$threadmarkLabel &&
-      Sidane_Threadmarks_Globals::$threadmarkCategoryId &&
+      !empty(Sidane_Threadmarks_Globals::$threadmarkLabel) &&
+      !empty(Sidane_Threadmarks_Globals::$threadmarkCategoryId) &&
       empty($thread['threadmark_count'])
     )
     {
