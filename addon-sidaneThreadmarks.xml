@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.5.0" version_id="1050016" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
+<addon addon_id="sidaneThreadmarks" title="Threadmarks" version_string="1.5.0" version_id="1050017" url="https://xenforo.com/community/resources/threadmarks.3939/" install_callback_class="Sidane_Threadmarks_Install" install_callback_method="install" uninstall_callback_class="Sidane_Threadmarks_Install" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="sidane_tm_categories" parent_navigation_id="threadsPosts" display_order="5" link="threadmark-categories" admin_permission_id="sidane_threadmarks" debug_only="0" hide_no_children="0"/>
   </admin_navigation>
@@ -1515,7 +1515,8 @@
     <template title="new_threadmark_control" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="(!{$post.threadmark} and {$post.canAddThreadmarks}) or ({$post.threadmark} and ({$post.canEditThreadmarks} or {$post.canDeleteThreadmarks}))">
   <a href="{xen:link posts/threadmark, $post}" class="OverlayTrigger item control threadmark" data-cacheOverlay="false"><span></span>{xen:phrase threadmark}</a>
 </xen:if>]]></template>
-    <template title="page_nav_threadmarks" version_id="1050016" version_string="1.5.0"><![CDATA[<xen:if is="{$recentThreadmarks}">
+    <template title="page_nav_threadmarks" version_id="1050017" version_string="1.5.0"><![CDATA[<xen:require css="threadmark_nav.css" />
+<xen:if is="{$recentThreadmarks}">
 	<xen:if is="{$recentThreadmarks.logged_in} or !{$recentThreadmarks.hide_menu_from_guests}">
 		<xen:foreach loop="{$recentThreadmarks.threadmark_categories}" key="{$threadmarkCategoryId}" value="{$threadmarkCategory}">
 			<div class="Popup threadmarks ThreadmarkCategory_{$threadmarkCategory.threadmark_category_id} JsOnly">
@@ -2016,6 +2017,39 @@ li.threadmarkListItem .newIndicator span
 
 		<xen:include template="threadmarks_nav_top"/>
 	</div>
+</xen:if>]]></template>
+    <template title="threadmark_nav.css" version_id="1050017" version_string="1.5.0"><![CDATA[div.Popup.threadmarks {
+   display: inline-block;
+   padding: 0 4px;
+}
+
+<xen:if is="{xen:property enableResponsive}">
+.PageNav
+{
+	word-wrap: normal;
+}
+
+.Responsive .PageNav .unreadLink
+{
+	display: inline-block;
+	margin-top: 7px;
+	float: none;
+}
+
+.readerToggle {
+    display: inline-block;
+    float: none;
+}
+
+nav {
+    display: inline-block;
+    float: none;
+}
+
+.PageNav .pageNavHeader, .PageNav a, .PageNav .scrollable {
+    display: inline-block;
+    float: none;
+}
 </xen:if>]]></template>
     <template title="threadmark_preview" version_id="10" version_string="1.1.7"><![CDATA[<div class="previewTooltip">
 	<xen:avatar user="$post" size="s" />
