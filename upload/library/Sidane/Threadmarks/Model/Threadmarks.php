@@ -338,9 +338,9 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
         }
       }
 
-      if ($position === false || $position <= 0)
+      if ($position === false || $position < 0)
       {
-        $position = 1;
+        $position = 0;
       }
       $dw->set('user_id', XenForo_Visitor::getUserId());
       $dw->set('post_id', $post['post_id']);
@@ -867,7 +867,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     array &$threadmarks,
     $parentThreadmarkId = 0,
     $depth = 0,
-    &$position = 1
+    &$position = 0
   ) {
     $branch = array();
 
