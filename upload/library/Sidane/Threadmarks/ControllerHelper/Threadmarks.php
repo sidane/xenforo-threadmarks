@@ -45,7 +45,9 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       }
       else
       {
-        $threamdarkCategory['count'] = count($threadmarks['children']);
+        // rebuilding, skip while the data doesn't make sense
+        unset($threadmarkCategories[$threadmarkCategoryId]);
+        continue;
       }
 
       // $menuLimit: 0 = unlimited
@@ -54,6 +56,11 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       {
         $threadmarkCategory['more_threadmarks'] = true;
       }
+    }
+
+    if (empty($threadmarkCategories))
+    {
+      return null;
     }
 
     $loggedIn = (XenForo_Visitor::getUserId() !== 0);
