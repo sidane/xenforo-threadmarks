@@ -2018,7 +2018,7 @@ li.threadmarkListItem .newIndicator span
 		<xen:include template="threadmarks_nav_top"/>
 	</div>
 </xen:if>]]></template>
-    <template title="threadmark_nav.css" version_id="1050017" version_string="1.5.0"><![CDATA[div.Popup.threadmarks {
+    <template title="threadmark_nav.css" version_id="1050018" version_string="1.5.0"><![CDATA[<xen:comment>div.Popup.threadmarks {
    display: inline-block;
    padding: 0 4px;
 }
@@ -2050,7 +2050,7 @@ nav {
     display: inline-block;
     float: none;
 }
-</xen:if>]]></template>
+</xen:if></xen:comment>]]></template>
     <template title="threadmark_preview" version_id="10" version_string="1.1.7"><![CDATA[<div class="previewTooltip">
 	<xen:avatar user="$post" size="s" />
 
