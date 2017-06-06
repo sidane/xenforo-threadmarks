@@ -1960,8 +1960,8 @@ li.threadmarkListItem .newIndicator span
 {
 	{xen:property ThreadmarkJSTree}
 }]]></template>
-    <template title="threadmarks_nav" version_id="1040006" version_string="1.4.0"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
-	<xen:if is="{$threadmark.position} != 1">
+    <template title="threadmarks_nav" version_id="1050018" version_string="1.5.0"><![CDATA[<xen:if is="{$xenOptions.sidaneThreadmarksNavLinks}">
+	<xen:if is="{$threadmark.position} > 0">
 		<span class="previous">
 			<xen:if is="{$post.threadmark_previous}">
 				<a
@@ -1978,7 +1978,7 @@ li.threadmarkListItem .newIndicator span
 
 	<span class="index"><a href="{xen:link 'threads/threadmarks', $thread, 'category_id={$threadmark.threadmark_category_id}'}" rel="nofollow" class="OverlayTrigger">{xen:phrase threadmark_index}</a></span>
 
-	<xen:if is="{$threadmark.position} != {$threadmarkCategoryPositions.{$threadmark.threadmark_category_id}}">
+	<xen:if is="{$threadmark.position} < {$threadmarkCategoryPositions.{$threadmark.threadmark_category_id}}">
 		<span class="next">
 			<xen:if is="{$post.threadmark_next}">
 				<a
