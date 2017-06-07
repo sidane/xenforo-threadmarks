@@ -2003,13 +2003,13 @@ li.threadmarkListItem .newIndicator span
     <xen:include template="threadmarks_nav" />
   </div>
 </xen:if>]]></template>
-    <template title="threadmarks_render_flag" version_id="1050016" version_string="1.5.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
+    <template title="threadmarks_render_flag" version_id="1050020" version_string="1.5.0"><![CDATA[<xen:if is="{$threadmark} and {$post.canViewThreadmarks}">
 	<div class="threadmarker ThreadmarkCategory_{$threadmark.threadmark_category_id} ToggleTriggerAnchor">
 		<span class="label" title="{xen:phrase threadmark_created_by_x_on_y, 'name={$threadmark.username}', 'date={xen:datetime $threadmark.threadmark_date}'}">
 			<strong>{$threadmarkCategories.{$threadmark.threadmark_category_id}.title}:</strong> {$threadmark.label}
 		</span>
 
-		<xen:if is="{$threadmark.edit_count} && {$threadmark.canEdit}">
+		<xen:if is="{$threadmark.edit_count} && {$post.canViewHistory}">
 			<span class="history">
 				<a href="{xen:link posts/threadmarkHistory, $post}" class="item control ToggleTrigger history" data-cacheOverlay="false">{xen:phrase threadmark_history}</a>
 			</span>
