@@ -285,7 +285,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
     $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
     foreach ($threadmarkCategories as $threadmarkCategoryId => $threadmarkCategory)
     {
-      if (empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+      if (!isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
       {
         unset($threadmarkCategories[$threadmarkCategoryId]);
       }
@@ -395,7 +395,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       XenForo_Input::STRING
     );
 
-    if (empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+    if (!isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
     {
       return $this->responseError(
         new XenForo_Phrase('requested_page_not_found'),
@@ -502,7 +502,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       XenForo_Input::STRING
     );
 
-    if (empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+    if (!isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
     {
       return $this->responseError(
         new XenForo_Phrase('requested_page_not_found'),

@@ -226,7 +226,7 @@ class Sidane_Threadmarks_Install
       $requireIndexing['threadmark'] = true;
     }
 
-    if ($version && ($version < 1050018 || $version < 1060012))
+    if ($version && ($version < 1050019 || $version < 1060013))
     {
       XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array('resync' => false), null, true);
     }

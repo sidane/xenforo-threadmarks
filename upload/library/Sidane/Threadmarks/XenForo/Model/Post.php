@@ -72,7 +72,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     {
       $firstCategoryPosition = 1;
       $lastCategoryPosition = 0;
-      if (!empty($threadmarkCategoryPositions[$threadmarkCategoryId]))
+      if (isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
       {
         $lastCategoryPosition = $threadmarkCategoryPositions[$threadmarkCategoryId];
       }

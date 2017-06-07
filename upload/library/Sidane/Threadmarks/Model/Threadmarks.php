@@ -1094,15 +1094,16 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       $threadId
     );
 
+    $threadmarkCount = 0;
     $threadmarkCategoryPositions = array_map(
-      function ($threadmarkCategory)
+      function ($threadmarkCategory) use (&$threadmarkCount)
       {
+        $threadmarkCount += $threadmarkCategory['position'] + 1; // position is 0 based
         return $threadmarkCategory['position'];
       },
       $threadmarkCategoryPositions
     );
 
-    $threadmarkCount = array_sum($threadmarkCategoryPositions);
     $threadmarkCategoryPositions = json_encode($threadmarkCategoryPositions);
 
     $this->_getDb()->query(
