@@ -111,18 +111,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
         $position = $this->_input->filterSingle('position', XenForo_Input::UINT);
         if ($position === 0)
         {
-          $position = 1;
-
-          $previousThreadmark = $threadmarksModel->getPreviousThreadmarkByPost(
-            $input['threadmark_category_id'],
-            $thread['thread_id'],
-            $post['position']
-          );
-
-          if (!empty($previousThreadmark))
-          {
-            $position = ($previousThreadmark['threadmark_position'] + 1);
-          }
+          $position = false;
         }
 
         $threadmarksModel->setThreadMark(
