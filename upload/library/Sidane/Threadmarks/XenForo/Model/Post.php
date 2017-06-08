@@ -137,10 +137,18 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       {
         $posts[$postId]['threadmark_next'] = $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition + 1];
       }
+      else
+      {
+        $posts[$postId]['threadmark_next'] = false;
+      }
 
       if (isset($groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition - 1]))
       {
         $posts[$postId]['threadmark_previous'] = $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition - 1];
+      }
+      else
+      {
+        $posts[$postId]['threadmark_previous'] = false;
       }
     }
 
