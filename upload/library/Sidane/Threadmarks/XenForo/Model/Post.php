@@ -39,6 +39,22 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       return $posts;
     }
 
+    return $this->resolveNextPreviousThreadmarks($posts, $threadId, $fetchOptions);
+  }
+
+  public function getNewestPostsInThreadAfterDate($threadId, $postDate, array $fetchOptions = array())
+  {
+    $posts = parent::getNewestPostsInThreadAfterDate($threadId, $postDate, $fetchOptions);
+    if (empty($fetchOptions['threadmarks']))
+    {
+      return $posts;
+    }
+
+    return $this->resolveNextPreviousThreadmarks($posts, $threadId, $fetchOptions);
+  }
+
+  protected function resolveNextPreviousThreadmarks(array $posts, $threadId, array $fetchOptions = array())
+  {
     // build an array of threadmarked post IDs, and an array of threadmarks
     // indexed by threadmark category and position
     $threadmarkedPostIds = array();
