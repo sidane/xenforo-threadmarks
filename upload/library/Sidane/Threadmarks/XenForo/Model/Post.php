@@ -86,8 +86,8 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     $missingThreadmarks = array();
     foreach ($groupedThreadmarks as $threadmarkCategoryId => $threadmarks)
     {
-      $firstCategoryPosition = 1;
-      $lastCategoryPosition = 0;
+      $firstCategoryPosition = 0;
+      $lastCategoryPosition = -1;
       if (isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
       {
         $lastCategoryPosition = $threadmarkCategoryPositions[$threadmarkCategoryId];
