@@ -828,7 +828,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     $threadmarks = $this->fetchAllKeyed(
       'SELECT threadmark_id, threadmark_category_id, parent_threadmark_id
         FROM threadmarks
-        WHERE thread_id = ?
+        WHERE thread_id = ? AND message_state = \'visible\'
         ORDER BY position',
       'threadmark_id',
       $threadId
