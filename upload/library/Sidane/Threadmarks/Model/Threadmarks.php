@@ -1121,6 +1121,16 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
   public function getThreadmarkCategoryPositionsByThread(array $thread)
   {
+    if (!isset($thread['threadmark_category_positions']))
+    {
+      return array();
+    }
+
+    if (is_array($thread['threadmark_category_positions']))
+    {
+      return $thread['threadmark_category_positions'];
+    }
+
     $threadmarkCategoryPositions = @json_decode(
       $thread['threadmark_category_positions'],
       true
