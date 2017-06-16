@@ -274,6 +274,8 @@ var Sidane = Sidane || {};
             {'speed': XenForo.speed.fast}
           );
           overlay.load();
+
+          this.$tree.closest('.xenOverlay').remove();
         }
         else
         {
