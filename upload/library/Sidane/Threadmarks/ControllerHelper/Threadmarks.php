@@ -39,7 +39,7 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
 
     foreach ($threadmarkCategories as $threadmarkCategoryId => &$threadmarkCategory)
     {
-      if (!isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
+      if (isset($threadmarkCategoryPositions[$threadmarkCategoryId]))
       {
         $threadmarkCategory['count'] = $threadmarkCategoryPositions[$threadmarkCategoryId] + 1;
       }
