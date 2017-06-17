@@ -22,6 +22,11 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       );
     }
 
+    $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
+    $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
+      $threadmarkCategories
+    );
+
     if ($this->_request->isPost())
     {
       $input = $this->_input->filter(array(
@@ -51,13 +56,19 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
           $phrase = 'threadmark_deleted';
 
+          $existingCategoryId = $existingThreadmark['threadmark_category_id'];
+          $existingCategory = 'Unknown Category';
+          if (!empty($threadmarkCategories[$existingCategoryId])) {
+            $existingCategory = $threadmarkCategories[$existingCategoryId];
+          }
+
           XenForo_Model_Log::logModeratorAction(
             'post',
             $post,
-            'delete_threadmark',
+            'delete_threadmark_2',
             array(
-              'label'                  => $existingThreadmark['label'],
-              'threadmark_category_id' => $existingThreadmark['threadmark_category_id']
+              'category' => (string) $existingCategory['title'],
+              'label'    => $existingThreadmark['label']
             ),
             $thread
           );
@@ -80,15 +91,27 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
           $phrase = 'threadmark_updated';
 
+          $existingCategoryId = $existingThreadmark['threadmark_category_id'];
+          $existingCategory = 'Unknown Category';
+          if (!empty($threadmarkCategories[$existingCategoryId])) {
+            $existingCategory = $threadmarkCategories[$existingCategoryId];
+          }
+
+          $newCategoryId = $input['threadmark_category_id'];
+          $newCategory = 'Unknown Category';
+          if (!empty($threadmarkCategories[$newCategoryId])) {
+            $newCategory = $threadmarkCategories[$newCategoryId];
+          }
+
           XenForo_Model_Log::logModeratorAction(
             'post',
             $post,
-            'update_threadmark',
+            'update_threadmark_2',
             array(
-              'old_label'                  => $existingThreadmark['label'],
-              'new_label'                  => $input['label'],
-              'old_threadmark_category_id' => $existingThreadmark['threadmark_category_id'],
-              'new_threadmark_category_id' => $input['threadmark_category_id']
+              'old_category' => (string) $existingCategory['title'],
+              'old_label'    => $existingThreadmark['label'],
+              'new_category' => (string) $newCategory['title'],
+              'new_label'    => $input['label']
             ),
             $thread
           );
@@ -122,14 +145,22 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           $position,
           $resetNesting
         );
+
         $phrase = 'threadmark_created';
+
+        $categoryId = $input['threadmark_category_id'];
+        $category = 'Unknown Category';
+        if (!empty($threadmarkCategories[$categoryId])) {
+          $category = $threadmarkCategories[$categoryId];
+        }
+
         XenForo_Model_Log::logModeratorAction(
           'post',
           $post,
-          'create_threadmark',
+          'create_threadmark_2',
           array(
-            'label'                  => $input['label'],
-            'threadmark_category_id' => $input['threadmark_category_id']
+            'category' => (string) $category['title'],
+            'label'    => $input['label']
           ),
           $thread
         );
@@ -142,10 +173,6 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     }
     else
     {
-      $threadmarkCategories = $threadmarksModel->getAllThreadmarkCategories();
-      $threadmarkCategories = $threadmarksModel->prepareThreadmarkCategories(
-        $threadmarkCategories
-      );
       $threadmarkCategoryOptions = $threadmarksModel
         ->getThreadmarkCategoryOptions($threadmarkCategories, true);
 
