@@ -214,12 +214,13 @@ class Sidane_Threadmarks_Install
     // $version < 1050005
     SV_Utils_Install::addColumn(
       'xf_thread',
-      'threadmark_category_positions',
+      'threadmark_category_data',
       'TEXT'
     );
 
     SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
     SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
+    SV_Utils_Install::dropColumn('xf_thread', 'threadmark_category_positions');
 
     if ($version < 1050007)
     {
@@ -242,7 +243,7 @@ class Sidane_Threadmarks_Install
     SV_Utils_Install::dropColumn('xf_thread', 'threadmark_count');
     SV_Utils_Install::dropColumn('xf_thread', 'firstThreadmarkId');
     SV_Utils_Install::dropColumn('xf_thread', 'lastThreadmarkId');
-    SV_Utils_Install::dropColumn('xf_thread', 'threadmark_category_positions');
+    SV_Utils_Install::dropColumn('xf_thread', 'threadmark_category_data');
 
     $db = XenForo_Application::get('db');
     $db->query("DROP TABLE IF EXISTS threadmarks");

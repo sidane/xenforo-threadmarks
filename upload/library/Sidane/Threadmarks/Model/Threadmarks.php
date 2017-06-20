@@ -1077,14 +1077,24 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   }
 
   /**
-   * Updates the 'threadmark_category_positions' column of a thread to the
-   * current maximum position of each threadmark category. This should be called
-   * inside of a transaction to avoid race conditions and inconsistencies.
+   * Updates the threadmark category data of a thread with the current maximum
+   * position of each threadmark category. This should be called inside of a
+   * transaction to avoid race conditions and inconsistencies.
    *
    * @param $threadId
    */
   public function updateThreadmarkDataForThread($threadId)
   {
+    $threadmarkCategoryData = $this->_getDb()->fetchCol(
+      'SELECT threadmark_category_data
+        FROM xf_thread
+        WHERE thread_id = ?',
+      $threadId
+    );
+    $threadmarkCategoryData = $this->decodeThreadmarkCategoryData(
+      $threadmarkCategoryData
+    );
+
     $threadmarkCategoryPositions = $this->fetchAllKeyed(
       'SELECT threadmark_category_id, MAX(position) AS position
         FROM threadmarks
@@ -1095,25 +1105,22 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
     );
 
     $threadmarkCount = 0;
-    $threadmarkCategoryPositions = array_map(
-      function ($threadmarkCategory) use (&$threadmarkCount)
-      {
-        $threadmarkCount += $threadmarkCategory['position'] + 1; // position is 0 based
-        return $threadmarkCategory['position'];
-      },
-      $threadmarkCategoryPositions
+    foreach ($threadmarkCategoryPositions as $threadmarkCategoryId => $threadmarkCategory) {
+      $threadmarkCount += ($threadmarkCategory['position'] + 1); // position is 0 based
+      $threadmarkCategoryData[$threadmarkCategoryId]['position'] = $threadmarkCategory['position'];
+    }
+
+    $threadmarkCategoryData = $this->encodeThreadmarkCategoryData(
+      $threadmarkCategoryData
     );
-
-    $threadmarkCategoryPositions = json_encode($threadmarkCategoryPositions);
-
     $this->_getDb()->query(
       'UPDATE xf_thread
         SET threadmark_count = ?,
-          threadmark_category_positions = ?
+          threadmark_category_data = ?
         WHERE thread_id = ?',
       array(
         $threadmarkCount,
-        $threadmarkCategoryPositions,
+        $threadmarkCategoryData,
         $threadId
       )
     );
@@ -1121,27 +1128,43 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
   public function getThreadmarkCategoryPositionsByThread(array $thread)
   {
-    if (!isset($thread['threadmark_category_positions']))
+    if (!isset($thread['threadmark_category_data']))
     {
       return array();
     }
 
-    if (is_array($thread['threadmark_category_positions']))
+    if (!is_array($thread['threadmark_category_data']))
     {
-      return $thread['threadmark_category_positions'];
+      $thread['threadmark_category_data'] = $this->decodeThreadmarkCategoryData(
+        $thread['threadmark_category_data']
+      );
     }
 
-    $threadmarkCategoryPositions = @json_decode(
-      $thread['threadmark_category_positions'],
-      true
-    );
-
-    if (empty($threadmarkCategoryPositions))
+    if (empty($thread['threadmark_category_data']))
     {
-      $threadmarkCategoryPositions = array();
+      return array();
     }
 
-    return $threadmarkCategoryPositions;
+    return array_map(function ($threadmarkCategory) {
+      return $threadmarkCategory['position'];
+    }, $thread['threadmark_category_data']);
+  }
+
+  public function encodeThreadmarkCategoryData(array $data)
+  {
+    return json_encode($data);
+  }
+
+  public function decodeThreadmarkCategoryData($threadmarkCategoryData)
+  {
+    $threadmarkCategoryData = @json_decode($threadmarkCategoryData, true);
+
+    if (empty($threadmarkCategoryData))
+    {
+      return array();
+    }
+
+    return $threadmarkCategoryData;
   }
 
   /**

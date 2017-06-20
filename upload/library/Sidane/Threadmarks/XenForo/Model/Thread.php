@@ -5,10 +5,14 @@ class Sidane_Threadmarks_XenForo_Model_Thread extends XFCP_Sidane_Threadmarks_Xe
   public function prepareThread(array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
   {
     $thread = parent::prepareThread($thread, $forum, $nodePermissions, $viewingUser);
-    if (isset($thread['threadmark_category_positions']))
+
+    if (isset($thread['threadmark_category_data']))
     {
-      $thread['threadmark_category_positions'] = $this->_getThreadmarksModel()->getThreadmarkCategoryPositionsByThread($thread);
+      $thread['threadmark_category_data'] = $this
+        ->_getThreadmarksModel()
+        ->decodeThreadmarkCategoryData($thread['threadmark_category_data']);
     }
+
     return $thread;
   }
 

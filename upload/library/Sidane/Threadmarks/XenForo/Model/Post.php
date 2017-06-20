@@ -245,7 +245,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     );
 
     $threadmarkCategoryPositions = array();
-    if (!empty($thread['threadmark_category_positions']))
+    if (!empty($thread['threadmark_category_data']))
     {
       $threadmarkCategoryPositions = $this
         ->_getThreadmarksModel()
