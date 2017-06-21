@@ -337,6 +337,33 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       $forum
     );
 
+    $threadmarkAuthors = [];
+    foreach ($threadmarks as $threadmark)
+    {
+      $authorUserId = $threadmark['post']['user_id'];
+
+      if (!isset($threadmarkAuthors[$authorUserId]))
+      {
+        $threadmarkAuthors[$authorUserId] = ['threadmark_count' => 0];
+      }
+      $threadmarkAuthors[$authorUserId]['threadmark_count']++;
+    }
+
+    /** @var XenForo_Model_User $userModel */
+    $userModel = $this->getModelFromCache('XenForo_Model_User');
+    $threadmarkAuthorData = $userModel->getUsersByIds(array_keys(
+      $threadmarkAuthors
+    ));
+    $threadmarkAuthors = array_replace_recursive(
+      $threadmarkAuthorData,
+      $threadmarkAuthors
+    );
+
+    // sort the author array by username alphabetically
+    uasort($threadmarkAuthors, function ($firstAuthor, $secondAuthor){
+      return strcmp($firstAuthor['username'], $secondAuthor['username']);
+    });
+
     $canEditThreadMarks = false;
     foreach($threadmarks as $threadmark)
     {
@@ -352,6 +379,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Thread extends XFCP_Sidane_Thr
       'activeThreadmarkCategory' => $activeThreadmarkCategory,
 
       'threadmarks'        => $threadmarks,
+      'threadmarkAuthors'  => $threadmarkAuthors,
       'canEditThreadMarks' => $canEditThreadMarks,
 
       'forum'  => $forum,
