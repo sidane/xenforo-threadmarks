@@ -1705,7 +1705,7 @@
 		<ol class="threadmarkAuthorList">
 			<xen:foreach loop="$threadmarkAuthors" value="$threadmarkAuthor">
 				<li class="primaryContent threadmarkAuthorListItem">
-					<a href="{xen:link members, $threadmarkAuthor}" class="username">{$threadmarkAuthor.username}</a> ({$threadmarkAuthor.threadmark_count} {xen:phrase sidane_threadmarks_lcase})
+					<a href="{xen:link members, $threadmarkAuthor}" class="username">{$threadmarkAuthor.username}</a> ({xen:phrase sidane_x_threadmarks, 'count={$threadmarkAuthor.threadmark_count}'})
 				</li>
 			</xen:foreach>
 		</ol>
