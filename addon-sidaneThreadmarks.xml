@@ -188,10 +188,10 @@
     <phrase title="sidane_save_display_order" version_id="1040006" version_string="1.4.0"><![CDATA[Save Display Order]]></phrase>
     <phrase title="sidane_save_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Save Threadmark Category]]></phrase>
     <phrase title="sidane_threadmarks_cache" version_id="2" version_string="2.0"><![CDATA[Threadmark cache]]></phrase>
-    <phrase title="sidane_threadmarks_lcase" version_id="1050025" version_string="1.5.0"><![CDATA[threadmarks]]></phrase>
     <phrase title="sidane_threadmark_categories" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Categories]]></phrase>
     <phrase title="sidane_threadmark_category" version_id="1040000" version_string="1.4.0"><![CDATA[Threadmark Category]]></phrase>
     <phrase title="sidane_threadmark_statistics" version_id="1050025" version_string="1.5.0"><![CDATA[Threadmark Statistics]]></phrase>
+    <phrase title="sidane_x_threadmarks" version_id="1060020" version_string="1.6.0rc20"><![CDATA[{count} threadmarks]]></phrase>
     <phrase title="sidane_you_may_not_delete_default_threadmark_category" version_id="1050009" version_string="1.5.0"><![CDATA[You may not delete the default threadmark category.]]></phrase>
     <phrase title="style_property_group_Threadmarks_master" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarks]]></phrase>
     <phrase title="style_property_group_Threadmarks_master_desc" version_id="17" version_string="1.1.11b"><![CDATA[Threadmarks and Threadmark Byproducts]]></phrase>
@@ -1699,7 +1699,7 @@
 		<div class="subHeading">
 			{xen:phrase sidane_threadmark_statistics}
 
-			<span class="statsSecondary">{xen:count $threadmarks} {xen:phrase sidane_threadmarks_lcase}</span>
+			<span class="statsSecondary">{xen:phrase sidane_x_threadmarks, 'count={xen:count $threadmarks}'}</span>
 		</div>
 
 		<ol class="threadmarkAuthorList">
