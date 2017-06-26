@@ -2132,7 +2132,7 @@ $0]]></replace>
 $0]]></replace>
     </modification>
     <modification template="thread_view" modification_key="sidaneThreadmarksThreadMenus" description="Display threadmarks menus on threads" execution_order="10" enabled="1" action="str_replace">
-      <find><![CDATA[<xen:include template="ad_thread_view_above_messages" />]]></find>
+      <find><![CDATA[<xen:include template="ad_thread_view_]]></find>
       <replace><![CDATA[<xen:include template="sidane_threadmarks_thread_menus">
 	<xen:map from="$thread.recentThreadmarks" to="$recentThreadmarks" />
 </xen:include>
