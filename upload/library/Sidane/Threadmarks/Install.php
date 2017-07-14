@@ -232,6 +232,15 @@ class Sidane_Threadmarks_Install
       XenForo_Application::defer('Sidane_Threadmarks_Deferred_Cache', array('resync' => false), null, true);
     }
 
+    if ($version && ($version < 1050100 || ($version >= 1060000 && $version < 1060300)))
+    {
+      $db->query(
+        'update threadmarks a
+        join threadmarks b on (a.parent_threadmark_id = b.threadmark_id and a.threadmark_category_id <> b.threadmark_category_id)
+        set a.parent_threadmark_id = 0, a.depth = 0'
+      );
+    }
+
     // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
     // requires overriding XenES_Model_Elasticsearch
     SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);
