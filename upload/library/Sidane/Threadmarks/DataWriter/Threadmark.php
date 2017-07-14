@@ -113,6 +113,13 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
       }
     }
 
+    // ensure the positional information is valid
+    if ($this->isUpdate() && $this->isChanged('threadmark_category_id'))
+    {
+      $this->set('depth', 0);
+      $this->set('parent_threadmark_id', 0);
+    }
+
     if ($this->isUpdate() && $this->isChanged('label'))
     {
       $this->set('last_edit_date', XenForo_Application::$time);
