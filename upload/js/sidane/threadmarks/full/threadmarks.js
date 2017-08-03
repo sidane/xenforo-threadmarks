@@ -62,7 +62,7 @@ var Sidane = Sidane || {};
       this.getTip().xfFadeOut(XenForo.speed.fast);
     });
 
-  XenForo.RightPreviewTooltip = function($el)
+  Sidane.RightPreviewTooltip = function($el)
   {
     var hasTooltip, previewUrl, setupTimer;
 
@@ -471,10 +471,5 @@ var Sidane = Sidane || {};
   XenForo.register('.ThreadmarkPositionFiller', 'Sidane.ThreadmarkPositionFiller');
   XenForo.register('.ThreadmarkIndex',          'Sidane.ThreadmarkIndex');
   XenForo.register('#QuickReply',               'Sidane.ThreadmarkQuickReply');
-
-  if (!XenForo.isTouchBrowser())
-  {
-    // register tooltip elements for desktop browsers
-    XenForo.register('.RightPreviewTooltip', 'XenForo.RightPreviewTooltip');
-  }
+  XenForo.register('.RightPreviewTooltip',      'Sidane.RightPreviewTooltip');
 }(jQuery, this, document);
