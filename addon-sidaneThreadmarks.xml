@@ -1592,7 +1592,7 @@
 		</div>
 	</div>
 </li>]]></template>
-    <template title="sidane_threadmarks_thread_menus" version_id="1050026" version_string="1.5.0"><![CDATA[<xen:if is="{$recentThreadmarks}">
+    <template title="sidane_threadmarks_thread_menus" version_id="1050200" version_string="1.5.2"><![CDATA[<xen:if is="{$recentThreadmarks}">
 	<xen:require css="threadmark_nav.css" />
 	<xen:if is="{$debugMode}">
 		<xen:require js="js/sidane/threadmarks/full/threadmarks.js" />
@@ -1604,9 +1604,12 @@
 		<xen:if is="{$recentThreadmarks.logged_in} or !{$recentThreadmarks.hide_menu_from_guests}">
 			<xen:foreach loop="{$recentThreadmarks.threadmark_categories}" key="{$threadmarkCategoryId}" value="{$threadmarkCategory}">
 				<div class="threadmarksMenuContainer Popup ThreadmarkCategory_{$threadmarkCategory.threadmark_category_id} JsOnly">
-					<a href="{xen:link 'threads/threadmarks', $thread, 'category_id={$threadmarkCategoryId}'}" rel="Menu" class="threadmarksTrigger OverlayTrigger">{$threadmarkCategory.title}</a>
+					<a rel="Menu" class="threadmarksTrigger">{$threadmarkCategory.title}</a>
 
 					<div class="threadmarksMenu Menu">
+						<div class="primaryContent menuHeader blockLinksList">
+							<a href="{xen:link 'threads/threadmarks', $thread, 'category_id={$threadmarkCategoryId}'}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$threadmarkCategory.count}'}</a>
+						</div>
 						<xen:if is="{$threadmarkCategory.more_threadmarks}">
 							<div class="primaryContent menuHeader">
 								<h4>{xen:phrase most_recent_threadmarks}:</h4>
@@ -1624,12 +1627,6 @@
 								</li>
 							</xen:foreach>
 						</ul>
-
-						<xen:if is="{$threadmarkCategory.more_threadmarks}">
-							<div class="primaryContent menuHeader">
-								<a href="{xen:link 'threads/threadmarks', $thread, 'category_id={$threadmarkCategoryId}'}" rel="nofollow" class="OverlayTrigger">{xen:phrase view_all_threadmarks, 'count={$threadmarkCategory.count}'}</a>
-							</div>
-						</xen:if>
 					</div>
 				</div>
 
@@ -1695,7 +1692,7 @@
 		</xen:if>
 	</ol>
 
-	<div class="threadmarkCategoryStats">
+	<div class="threadmarkCategoryStats" data-location="{$thread.thread_id}.{$activeThreadmarkCategory.threadmark_category_id}">
 		<div class="subHeading">
 			{xen:phrase sidane_threadmark_statistics}
 
