@@ -1078,6 +1078,18 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       ->getMasterPhraseValue($phraseName);
   }
 
+  protected function getPerTheadmarkCategoryData($threadId)
+  {
+    return $this->fetchAllKeyed(
+      'SELECT threadmark_category_id, MAX(position) AS position
+        FROM threadmarks
+        WHERE thread_id = ?
+        GROUP BY threadmark_category_id',
+      'threadmark_category_id',
+      $threadId
+    );
+  }
+
   /**
    * Updates the threadmark category data of a thread with the current maximum
    * position of each threadmark category. This should be called inside of a
@@ -1097,19 +1109,13 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       $threadmarkCategoryData
     );
 
-    $threadmarkCategoryPositions = $this->fetchAllKeyed(
-      'SELECT threadmark_category_id, MAX(position) AS position
-        FROM threadmarks
-        WHERE thread_id = ?
-        GROUP BY threadmark_category_id',
-      'threadmark_category_id',
-      $threadId
-    );
+    $threadmarkCategoryPositions = $this->getPerTheadmarkCategoryData($threadId);
 
     $threadmarkCount = 0;
     foreach ($threadmarkCategoryPositions as $threadmarkCategoryId => $threadmarkCategory) {
       $threadmarkCount += ($threadmarkCategory['position'] + 1); // position is 0 based
-      $threadmarkCategoryData[$threadmarkCategoryId]['position'] = $threadmarkCategory['position'];
+      unset($threadmarkCategory['threadmark_category_id']);
+      $threadmarkCategoryData[$threadmarkCategoryId] = $threadmarkCategory;
     }
 
     $threadmarkCategoryData = $this->encodeThreadmarkCategoryData(
