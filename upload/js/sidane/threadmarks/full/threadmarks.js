@@ -465,11 +465,59 @@ var Sidane = Sidane || {};
     });
   };
 
+   Sidane.ThreadmarkCategoryStats = function($container)
+   {
+       var location = $container.data('location');
+       if (!location)
+       {
+         return;
+       }
+       var storage = window.localStorage; 
+       if (typeof storage === 'undefined') {
+         storage = window.sessionStorage;
+         if (typeof storage === 'undefined') {
+           storage  = { 
+              getItem: function () { }, 
+              setItem: function () { }, 
+              removeItem: function () { } 
+           }; 
+         } 
+       }
+       var $list = $container.find('.threadmarkAuthorList');
+       $container.find('.showHideControls').show();
+       var $hideLink = $container.find('.showHideControls .hide');
+       var $showLink = $container.find('.showHideControls .show');       
+       $container.click(function() {           
+           var val = storage.getItem(location + '_tm');
+           if (val) {
+             storage.removeItem(location + '_tm');
+             $hideLink.show();
+             $showLink.hide();
+           } else {
+             storage.setItem(location + '_tm', '1');
+             $hideLink.hide();
+             $showLink.show();
+           }
+           $list.slideToggle("fast");
+       });
+
+       var val = storage.getItem(location + '_tm');
+       if (val) {
+         $hideLink.hide();
+         $showLink.show();
+         $list.hide();
+       } else {
+         $hideLink.show();
+         $showLink.hide();
+       }
+   }
+
   // *********************************************************************
 
   XenForo.register('.ThreadmarkSortTree',       'Sidane.ThreadmarkSortTree');
   XenForo.register('.ThreadmarkPositionFiller', 'Sidane.ThreadmarkPositionFiller');
   XenForo.register('.ThreadmarkIndex',          'Sidane.ThreadmarkIndex');
   XenForo.register('#QuickReply',               'Sidane.ThreadmarkQuickReply');
+  XenForo.register('.threadmarkCategoryStats',  'Sidane.ThreadmarkCategoryStats');
   XenForo.register('.RightPreviewTooltip',      'Sidane.RightPreviewTooltip');
 }(jQuery, this, document);

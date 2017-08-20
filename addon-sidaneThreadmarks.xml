@@ -220,6 +220,8 @@
     <phrase title="threadmark" global_cache="1" version_id="1" version_string="1.0"><![CDATA[Threadmark]]></phrase>
     <phrase title="threadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
     <phrase title="threadmarks_for" version_id="1" version_string="1.0"><![CDATA[Threadmarks for]]></phrase>
+    <phrase title="threadmarks_stats_hide" version_id="1050200" version_string="1.5.2"><![CDATA[&uArr;]]></phrase>
+    <phrase title="threadmarks_stats_show" version_id="1050200" version_string="1.5.2"><![CDATA[&dArr;]]></phrase>
     <phrase title="threadmark_after_this_post" version_id="1040006" version_string="1.4.0"><![CDATA[After this post]]></phrase>
     <phrase title="threadmark_created" version_id="1" version_string="1.0"><![CDATA[Threadmark created]]></phrase>
     <phrase title="threadmark_created_by_x_on_y" version_id="9" version_string="1.1.6"><![CDATA[Threadmark created by {name} on {date}]]></phrase>
@@ -1643,7 +1645,7 @@
 
 	<xen:include template="preview_tooltip" />
 </xen:if>]]></template>
-    <template title="threadmarks" version_id="1050025" version_string="1.5.0"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+    <template title="threadmarks" version_id="1050200" version_string="1.5.2"><![CDATA[<xen:title>{xen:phrase threadmarks_for}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
 
 <xen:h1>{xen:helper threadPrefix, $thread} {xen:phrase threadmarks_for}: {$thread.title}</xen:h1>
 
@@ -1694,6 +1696,7 @@
 
 	<div class="threadmarkCategoryStats" data-location="{$thread.thread_id}.{$activeThreadmarkCategory.threadmark_category_id}">
 		<div class="subHeading">
+			<span class="showHideControls" style="display:none"><span class="hide">{xen:phrase threadmarks_stats_hide}</span><span class="show">{xen:phrase threadmarks_stats_show}</span></span>
 			{xen:phrase sidane_threadmark_statistics}
 
 			<span class="statsSecondary">{xen:phrase sidane_x_threadmarks, 'count={xen:count $threadmarks}'}</span>
