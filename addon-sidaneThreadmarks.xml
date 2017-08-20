@@ -130,6 +130,12 @@
       <sub_options></sub_options>
       <relation group_id="sidaneThreadmarks" display_order="10"/>
     </option>
+    <option option_id="threadmarks_stats" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="sidaneThreadmarks" display_order="30"/>
+    </option>
   </optiongroups>
   <permissions>
     <permission_groups/>
@@ -152,10 +158,10 @@
     <phrase title="delete_threadmark" version_id="1" version_string="1.0"><![CDATA[Delete this threadmark]]></phrase>
     <phrase title="edit_threadmark" version_id="1" version_string="1.0"><![CDATA[Edit Threadmark]]></phrase>
     <phrase title="moderator_log_post_create_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' created]]></phrase>
-    <phrase title="moderator_log_post_delete_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' deleted]]></phrase>
-    <phrase title="moderator_log_post_update_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark changed from '{old_label}' to '{new_label}']]></phrase>
     <phrase title="moderator_log_post_create_threadmark_2" version_id="1050023" version_string="1.5.0"><![CDATA[Threadmark '{category}: {label}' created]]></phrase>
+    <phrase title="moderator_log_post_delete_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark '{label}' deleted]]></phrase>
     <phrase title="moderator_log_post_delete_threadmark_2" version_id="1050023" version_string="1.5.0"><![CDATA[Threadmark '{category}: {label}' deleted]]></phrase>
+    <phrase title="moderator_log_post_update_threadmark" version_id="3" version_string="1.1"><![CDATA[Threadmark changed from '{old_label}' to '{new_label}']]></phrase>
     <phrase title="moderator_log_post_update_threadmark_2" version_id="1050023" version_string="1.5.0"><![CDATA[Threadmark changed from '{old_category}: {old_label}' to '{new_category}: {new_label}']]></phrase>
     <phrase title="most_recent_threadmarks" version_id="1" version_string="1.0"><![CDATA[Most recent threadmarks]]></phrase>
     <phrase title="option_group_sidaneThreadmarks" version_id="1" version_string="1.0"><![CDATA[Threadmarks]]></phrase>
@@ -164,6 +170,8 @@
     <phrase title="option_sidaneThreadmarksHideMenuFromGuests_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, guests will have to click the threadmarks link to see the list of threadmarks.]]></phrase>
     <phrase title="option_sidaneThreadmarksNavLinks" version_id="1" version_string="1.0"><![CDATA[Threadmark Nav links]]></phrase>
     <phrase title="option_sidaneThreadmarksNavLinks_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, automatically generate index/next/previous threadmark links.]]></phrase>
+    <phrase title="option_threadmarks_stats" version_id="1050200" version_string="1.5.2"><![CDATA[Threadmarks stats]]></phrase>
+    <phrase title="option_threadmarks_stats_explain" version_id="1050200" version_string="1.5.2"><![CDATA[Show a summary of threadmark statistics at the top of each threadmark index for each category.]]></phrase>
     <phrase title="permission_forum_sidane_tm_add" version_id="2" version_string="1.0"><![CDATA[Add Threadmarks to Own Thread]]></phrase>
     <phrase title="permission_forum_sidane_tm_delete" version_id="2" version_string="1.0"><![CDATA[Delete Threadmarks in Own Thread]]></phrase>
     <phrase title="permission_forum_sidane_tm_edit" version_id="2" version_string="1.0"><![CDATA[Edit Threadmarks in Own Thread]]></phrase>
@@ -1695,12 +1703,14 @@
 	</ol>
 
 	<div class="threadmarkCategoryStats" data-location="{$thread.thread_id}.{$activeThreadmarkCategory.threadmark_category_id}">
+		<xen:if is="{$xenOptions.threadmarks_stats}">
 		<div class="subHeading">
 			<span class="showHideControls" style="display:none"><span class="hide">{xen:phrase threadmarks_stats_hide}</span><span class="show">{xen:phrase threadmarks_stats_show}</span></span>
 			{xen:phrase sidane_threadmark_statistics}
 
 			<span class="statsSecondary">{xen:phrase sidane_x_threadmarks, 'count={xen:count $threadmarks}'}</span>
 		</div>
+		</xen:if>
 
 		<ol class="threadmarkAuthorList">
 			<xen:foreach loop="$threadmarkAuthors" value="$threadmarkAuthor">
