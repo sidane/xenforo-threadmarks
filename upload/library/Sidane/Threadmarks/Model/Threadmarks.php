@@ -206,10 +206,12 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
             'post_id'   => $threadmark['post_id'],
             'post_date' => @$threadmark['post_date'],
             'position'  => @$threadmark['post_position'],
+            'likes'     => @$threadmark['post_likes'],
             'user_id'   => @$threadmark['post_user_id']
         );
         unset($threadmark['post_date']);
         unset($threadmark['post_position']);
+        unset($threadmark['post_likes']);
         unset($threadmark['post_user_id']);
     }
 
@@ -673,7 +675,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       if ($fetchOptions['join'] & self::FETCH_POSTS_MINIMAL)
       {
         $selectFields .= ',
-          post.post_date, post.position as post_position, post.user_id as post_user_id';
+          post.post_date, post.likes as post_likes, post.position as post_position, post.user_id as post_user_id';
         $joinTables .= '
           JOIN xf_post AS post ON
             (post.post_id = threadmarks.post_id)';
