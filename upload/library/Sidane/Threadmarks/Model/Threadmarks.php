@@ -43,6 +43,13 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
       return false;
     }
 
+    if (!$thread['discussion_open']
+        && !$this->_getThreadModel()->canLockUnlockThread($thread, $forum, $errorPhraseKey, $nodePermissions, $viewingUser))
+    {
+      $errorPhraseKey = 'you_may_not_perform_this_action_because_discussion_is_closed';
+      return false;
+    }
+
     if (XenForo_Permission::hasContentPermission($nodePermissions, 'sidane_tm_manage'))
     {
       return true;
@@ -73,6 +80,13 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     if (!$viewingUser['user_id'])
     {
+      return false;
+    }
+
+    if (!$thread['discussion_open']
+        && !$this->_getThreadModel()->canLockUnlockThread($thread, $forum, $errorPhraseKey, $nodePermissions, $viewingUser))
+    {
+      $errorPhraseKey = 'you_may_not_perform_this_action_because_discussion_is_closed';
       return false;
     }
 
@@ -114,6 +128,13 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     if (!$viewingUser['user_id'])
     {
+      return false;
+    }
+
+    if (!$thread['discussion_open']
+        && !$this->_getThreadModel()->canLockUnlockThread($thread, $forum, $errorPhraseKey, $nodePermissions, $viewingUser))
+    {
+      $errorPhraseKey = 'you_may_not_perform_this_action_because_discussion_is_closed';
       return false;
     }
 
@@ -840,7 +861,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
 
     if (empty($threadmarks))
     {
-        return;
+        return null;
     }
 
     $groupedThreadmarks = array();
@@ -1178,7 +1199,7 @@ class Sidane_Threadmarks_Model_Threadmarks extends XenForo_Model
   }
 
   /**
-   * @return XenForo_Model_Thread
+   * @return XenForo_Model|XenForo_Model_Thread
    */
   protected function _getThreadModel()
   {
