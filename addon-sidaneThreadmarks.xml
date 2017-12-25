@@ -1726,7 +1726,7 @@
 
 		<ol class="ThreadmarkCategory_{$activeThreadmarkCategory.threadmark_category_id}">
 			<xen:foreach loop="$threadmarks" value="$threadmark">
-				<li class="primaryContent threadmarkListItem _depth{$threadmark.depth}" data-author="{$threadmark.username}" data-likes="{$threadmark.likes}" data-content-date="{$threadmark.threadmark_date}" data-content-author="{$threadmark.post.username} data-content-date="{$threadmark.post.post_date}">
+ 				<li class="primaryContent threadmarkListItem _depth{$threadmark.depth}" data-likes="{$threadmark.post.likes}" data-content-date="{$threadmark.threadmark_date}" data-content-author="{$threadmarkAuthors.{$threadmark.user_id}.username}" data-content-date="{$threadmark.post.post_date}" {xen:if $threadmark.word_count, 'data-words="{$threadmark.word_count}"}'}>
 					<xen:if is="{$threadmark.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
 
 					<a
