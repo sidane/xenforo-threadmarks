@@ -2,8 +2,11 @@
 
 class Sidane_Threadmarks_NewsFeedHandler_Threadmark extends XenForo_NewsFeedHandler_Abstract
 {
+  /** @var Sidane_Threadmarks_Model_Threadmarks */
   protected $_threadmarkModel = null;
+  /** @var Sidane_Threadmarks_XenForo_Model_Post */
   protected $_postModel = null;
+  /** @var Sidane_Threadmarks_XenForo_Model_Thread */
   protected $_threadModel = null;
 
   public function getContentByIds(array $contentIds, $model, array $viewingUser)
@@ -24,8 +27,8 @@ class Sidane_Threadmarks_NewsFeedHandler_Threadmark extends XenForo_NewsFeedHand
   public function canViewNewsFeedItem(array $item, $content, array $viewingUser)
   {
     return $this->_getPostModel()->canViewPostAndContainer(
-      $content, $content, $content, $null, $content['permissions'], $viewingUser
-    ) && $this->_getThreadmarkModel()->canViewThreadmark($content, $content, $null, $content['permissions'], $viewingUser);
+        $content, $content, $content, $null, $content['permissions'], $viewingUser
+      ) && $this->_getThreadmarkModel()->canViewThreadmark($content, $content, $null, $content['permissions'], $viewingUser);
   }
 
   public function prepareNewsFeedItem(array $item, array $viewingUser)

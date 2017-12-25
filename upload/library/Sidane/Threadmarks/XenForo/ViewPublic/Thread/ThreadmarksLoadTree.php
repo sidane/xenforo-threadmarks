@@ -9,3 +9,8 @@ class Sidane_Threadmarks_XenForo_ViewPublic_Thread_ThreadmarksLoadTree extends X
     ));
   }
 }
+
+if (false)
+{
+  class XFCP_Sidane_Threadmarks_XenForo_ViewPublic_Thread_ThreadmarksLoadTree extends XenForo_ViewPublic_Base {}
+}

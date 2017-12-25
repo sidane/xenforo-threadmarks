@@ -2,8 +2,11 @@
 
 class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_DataHandler_Abstract
 {
+  /** @var Sidane_Threadmarks_Model_Threadmarks */
   protected $_threadmarkModel = null;
+  /** @var Sidane_Threadmarks_XenForo_Model_Post */
   protected $_postModel = null;
+  /** @var Sidane_Threadmarks_XenForo_Model_Thread */
   protected $_threadModel = null;
   protected $hasElasticEss = false;
 
@@ -124,7 +127,7 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
    * @param XenForo_Search_Indexer $indexer
    * @param array $contentIds
    *
-   * @return array List of content IDs indexed
+   * @return bool
    */
   public function quickIndex(XenForo_Search_Indexer $indexer, array $contentIds)
   {
@@ -217,15 +220,18 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
   public function canViewResult(array $result, array $viewingUser)
   {
     return $this->_getPostModel()->canViewPostAndContainer(
-      $result, $result, $result, $null, $result['permissions'], $viewingUser
-    ) && $this->_getThreadmarkModel()->canViewThreadmark($result, $result, $null, $result['permissions'], $viewingUser);
+        $result, $result, $result, $null, $result['permissions'], $viewingUser
+      ) && $this->_getThreadmarkModel()->canViewThreadmark($result, $result, $null, $result['permissions'], $viewingUser);
   }
 
   /**
-  * Prepares a result for display.
-  *
-  * @see XenForo_Search_DataHandler_Abstract::prepareResult()
-  */
+   * Prepares a result for display.
+   *
+   * @see XenForo_Search_DataHandler_Abstract::prepareResult()
+   * @param array $result
+   * @param array $viewingUser
+   * @return array
+   */
   public function prepareResult(array $result, array $viewingUser)
   {
     $result = $this->_getPostModel()->preparePost($result, $result, $result, $result['permissions'], $viewingUser);
@@ -355,6 +361,12 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
    * Process a type-specific constraint.
    *
    * @see XenForo_Search_DataHandler_Abstract::processConstraint()
+   * @param XenForo_Search_SourceHandler_Abstract $sourceHandler
+   * @param $constraint
+   * @param $constraintInfo
+   * @param array $constraints
+   * @return array|bool
+   * @throws XenForo_Exception
    */
   public function processConstraint(XenForo_Search_SourceHandler_Abstract $sourceHandler, $constraint, $constraintInfo, array $constraints)
   {
@@ -369,19 +381,19 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
           }
           if (SV_ElasticEss_Globals::$allVisibleNodes === null)
           {
+            /** @var XenForo_Model_Node $nodeModel */
             $nodeModel = XenForo_Model::create('XenForo_Model_Node');
             $nodeList = $nodeModel->getViewableNodeList(null, true);
             $nodeList = $nodeModel->filterOrphanNodes($nodeList);
             SV_ElasticEss_Globals::$allVisibleNodes = array_keys($nodeList);
           }
           $nodes = SV_ElasticEss_Globals::$allVisibleNodes;
-        }
-        else
+        } else
         {
-            $nodes = preg_split('/\D/', strval($constraintInfo));
+          $nodes = preg_split('/\D/', strval($constraintInfo));
         }
         return array(
-            'metadata' => array('node', array_map('intval', $nodes)),
+          'metadata' => array('node', array_map('intval', $nodes)),
         );
       case 'threadmark_count':
         $threadmarkCount = intval($constraintInfo);
@@ -430,6 +442,11 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
    * Gets the search form controller response for this type.
    *
    * @see XenForo_Search_DataHandler_Abstract::getSearchFormControllerResponse()
+   * @param XenForo_ControllerPublic_Abstract $controller
+   * @param XenForo_Input $input
+   * @param array $viewParams
+   * @return XenForo_ControllerResponse_View
+   * @throws XenForo_Exception
    */
   public function getSearchFormControllerResponse(XenForo_ControllerPublic_Abstract $controller, XenForo_Input $input, array $viewParams)
   {
@@ -440,8 +457,7 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
     if (!empty($params['prefix']))
     {
       $viewParams['search']['prefixes'] = array_fill_keys(explode(' ', $params['prefix']), true);
-    }
-    else
+    } else
     {
       $viewParams['search']['prefixes'] = array();
     }
@@ -498,6 +514,8 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
    * Gets the search order for a type-specific search.
    *
    * @see XenForo_Search_DataHandler_Abstract::getOrderClause()
+   * @param $order
+   * @return array|bool
    */
   public function getOrderClause($order)
   {
@@ -507,8 +525,7 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
         array('thread', 'reply_count', 'desc'),
         array('search_index', 'item_date', 'desc')
       );
-    }
-    else if ($order == 'threadmarks')
+    } else if ($order == 'threadmarks')
     {
       return array(
         array('thread', 'threadmark_count', 'desc'),
@@ -523,6 +540,8 @@ class Sidane_Threadmarks_Search_DataHandler_Threadmark extends XenForo_Search_Da
    * Gets the necessary join structure information for this type.
    *
    * @see XenForo_Search_DataHandler_Abstract::getJoinStructures()
+   * @param array $tables
+   * @return array
    */
   public function getJoinStructures(array $tables)
   {

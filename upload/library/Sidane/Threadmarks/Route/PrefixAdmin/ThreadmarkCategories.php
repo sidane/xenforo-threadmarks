@@ -6,7 +6,8 @@ class Sidane_Threadmarks_Route_PrefixAdmin_ThreadmarkCategories implements XenFo
     $routePath,
     Zend_Controller_Request_Http $request,
     XenForo_Router $router
-  ) {
+  )
+  {
     $action = $router->resolveActionWithIntegerParam(
       $routePath,
       $request,
@@ -27,7 +28,8 @@ class Sidane_Threadmarks_Route_PrefixAdmin_ThreadmarkCategories implements XenFo
     $extension,
     $data,
     array &$extraParams
-  ) {
+  )
+  {
     return XenForo_Link::buildBasicLinkWithIntegerParam(
       $outputPrefix,
       $action,

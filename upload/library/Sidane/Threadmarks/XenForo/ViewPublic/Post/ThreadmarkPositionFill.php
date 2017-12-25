@@ -6,7 +6,12 @@ class Sidane_Threadmarks_XenForo_ViewPublic_Post_ThreadmarkPositionFill extends 
   {
     return XenForo_ViewRenderer_Json::jsonEncodeForOutput(array(
       'previousThreadmark' => $this->_params['previousThreadmark'],
-      'lastThreadmark'     => $this->_params['lastThreadmark']
+      'lastThreadmark' => $this->_params['lastThreadmark']
     ));
   }
+}
+
+if (false)
+{
+  class XFCP_Sidane_Threadmarks_XenForo_ViewPublic_Post_ThreadmarkPositionFill extends XenForo_ViewPublic_Base {}
 }

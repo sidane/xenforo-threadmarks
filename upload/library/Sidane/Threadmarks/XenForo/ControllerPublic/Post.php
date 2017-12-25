@@ -6,6 +6,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
 
+    /** @var XenForo_ControllerHelper_ForumThreadPost $ftpHelper */
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
       $postId
@@ -30,7 +31,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     if ($this->_request->isPost())
     {
       $input = $this->_input->filter(array(
-        'label'                  => XenForo_Input::STRING,
+        'label' => XenForo_Input::STRING,
         'threadmark_category_id' => XenForo_Input::UINT
       ));
 
@@ -57,8 +58,9 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           $phrase = 'threadmark_deleted';
 
           $existingCategoryId = $existingThreadmark['threadmark_category_id'];
-          $existingCategory = 'Unknown Category';
-          if (!empty($threadmarkCategories[$existingCategoryId])) {
+          $existingCategory = array('title' => 'Unknown Category');
+          if (!empty($threadmarkCategories[$existingCategoryId]))
+          {
             $existingCategory = $threadmarkCategories[$existingCategoryId];
           }
 
@@ -67,13 +69,12 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
             $post,
             'delete_threadmark_2',
             array(
-              'category' => (string) $existingCategory['title'],
-              'label'    => $existingThreadmark['label']
+              'category' => (string)$existingCategory['title'],
+              'label' => $existingThreadmark['label']
             ),
             $thread
           );
-        }
-        else
+        } else
         {
           if (!$existingThreadmark['canEdit'])
           {
@@ -92,14 +93,16 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           $phrase = 'threadmark_updated';
 
           $existingCategoryId = $existingThreadmark['threadmark_category_id'];
-          $existingCategory = 'Unknown Category';
-          if (!empty($threadmarkCategories[$existingCategoryId])) {
+          $existingCategory = array('title' => 'Unknown Category');
+          if (!empty($threadmarkCategories[$existingCategoryId]))
+          {
             $existingCategory = $threadmarkCategories[$existingCategoryId];
           }
 
           $newCategoryId = $input['threadmark_category_id'];
-          $newCategory = 'Unknown Category';
-          if (!empty($threadmarkCategories[$newCategoryId])) {
+          $newCategory = array('title' => 'Unknown Category');
+          if (!empty($threadmarkCategories[$newCategoryId]))
+          {
             $newCategory = $threadmarkCategories[$newCategoryId];
           }
 
@@ -108,16 +111,15 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
             $post,
             'update_threadmark_2',
             array(
-              'old_category' => (string) $existingCategory['title'],
-              'old_label'    => $existingThreadmark['label'],
-              'new_category' => (string) $newCategory['title'],
-              'new_label'    => $input['label']
+              'old_category' => (string)$existingCategory['title'],
+              'old_label' => $existingThreadmark['label'],
+              'new_category' => (string)$newCategory['title'],
+              'new_label' => $input['label']
             ),
             $thread
           );
         }
-      }
-      else
+      } else
       {
         if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum))
         {
@@ -149,8 +151,9 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
         $phrase = 'threadmark_created';
 
         $categoryId = $input['threadmark_category_id'];
-        $category = 'Unknown Category';
-        if (!empty($threadmarkCategories[$categoryId])) {
+        $category = array('title' => 'Unknown Category');
+        if (!empty($threadmarkCategories[$categoryId]))
+        {
           $category = $threadmarkCategories[$categoryId];
         }
 
@@ -159,8 +162,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
           $post,
           'create_threadmark_2',
           array(
-            'category' => (string) $category['title'],
-            'label'    => $input['label']
+            'category' => (string)$category['title'],
+            'label' => $input['label']
           ),
           $thread
         );
@@ -170,18 +173,17 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       $controllerResponse->redirectMessage = new XenForo_Phrase($phrase);
 
       return $controllerResponse;
-    }
-    else
+    } else
     {
       $threadmarkCategoryOptions = $threadmarksModel
         ->getThreadmarkCategoryOptions($threadmarkCategories, true);
 
       $viewParams = array(
-        'post'                      => $post,
-        'thread'                    => $thread,
-        'forum'                     => $forum,
+        'post' => $post,
+        'thread' => $thread,
+        'forum' => $forum,
         'threadmarkCategoryOptions' => $threadmarkCategoryOptions,
-        'nodeBreadCrumbs'           => $ftpHelper->getNodeBreadCrumbs($forum),
+        'nodeBreadCrumbs' => $ftpHelper->getNodeBreadCrumbs($forum),
       );
 
       if ($existingThreadmark)
@@ -194,8 +196,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
         }
         $viewParams['threadmark'] = $existingThreadmark;
         $templateName = 'edit_threadmark';
-      }
-      else
+      } else
       {
         if (!$threadmarksModel->canAddThreadmark($post, $thread, $forum))
         {
@@ -241,6 +242,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
       XenForo_Input::UINT
     );
 
+    /** @var XenForo_ControllerHelper_ForumThreadPost $ftpHelper */
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
       $postId
@@ -285,8 +287,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
       $previousThreadmarkData = array(
         'position' => $previousThreadmark['threadmark_position'],
-        'label'    => $previousThreadmark['label'],
-        'link'     => $link
+        'label' => $previousThreadmark['label'],
+        'link' => $link
       );
     }
 
@@ -304,8 +306,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
       $lastThreadmarkData = array(
         'position' => $lastThreadmark['threadmark_position'],
-        'label'    => $lastThreadmark['label'],
-        'link'     => $link
+        'label' => $lastThreadmark['label'],
+        'link' => $link
       );
     }
 
@@ -313,7 +315,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
     $viewParams = array(
       'previousThreadmark' => $previousThreadmarkData,
-      'lastThreadmark'     => $lastThreadmarkData
+      'lastThreadmark' => $lastThreadmarkData
     );
 
     return $this->responseView(
@@ -326,6 +328,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
   public function actionThreadmarkPreview()
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
+    /** @var XenForo_ControllerHelper_ForumThreadPost $ftpHelper */
     $ftpHelper = $this->getHelper('ForumThreadPost');
 
     try
@@ -334,8 +337,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
         $postId,
         array('join' => XenForo_Model_Post::FETCH_USER)
       );
-    }
-    catch(Exception $e) {
+    } catch (Exception $e)
+    {
       return $this->responseView(
         'XenForo_ViewPublic_Thread_Preview',
         '',
@@ -346,7 +349,8 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     $threadmarksModel = $this->_getThreadmarksModel();
     $threadmark = $threadmarksModel->getByPostId($post['post_id']);
 
-    if (empty($threadmark)) {
+    if (empty($threadmark))
+    {
       return $this->responseView(
         'XenForo_ViewPublic_Thread_Preview',
         '',
@@ -356,9 +360,9 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
 
     $viewParams = array(
       'threadmark' => $threadmark,
-      'post'       => $post,
-      'thread'     => $thread,
-      'forum'      => $forum
+      'post' => $post,
+      'thread' => $thread,
+      'forum' => $forum
     );
 
     return $this->responseView(
@@ -372,6 +376,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
 
+    /** @var XenForo_ControllerHelper_ForumThreadPost $ftpHelper */
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
       $postId
@@ -394,6 +399,7 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
   {
     $postId = $this->_input->filterSingle('post_id', XenForo_Input::UINT);
 
+    /** @var XenForo_ControllerHelper_ForumThreadPost $ftpHelper */
     $ftpHelper = $this->getHelper('ForumThreadPost');
     list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable(
       $postId
@@ -412,8 +418,16 @@ class Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XFCP_Sidane_Threa
     return $this->getPostSpecificRedirect($post, $thread);
   }
 
+  /**
+   * @return XenForo_Model|Sidane_Threadmarks_Model_Threadmarks
+   */
   protected function _getThreadmarksModel()
   {
     return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
   }
+}
+
+if (false)
+{
+  class XFCP_Sidane_Threadmarks_XenForo_ControllerPublic_Post extends XenForo_ControllerPublic_Post {}
 }

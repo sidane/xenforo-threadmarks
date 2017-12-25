@@ -162,7 +162,7 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
   {
     parent::_postDelete();
 
-    $this->getModelFromCache('XenForo_Model_EditHistory')->deleteEditHistoryForContent(
+    $this->_getEditHistoryModel()->deleteEditHistoryForContent(
       $this->getContentType(), $this->getContentId()
     );
 
@@ -366,21 +366,41 @@ class Sidane_Threadmarks_DataWriter_Threadmark extends XenForo_DataWriter
     return false;
   }
 
+  /**
+   * @return XenForo_Search_DataHandler_Abstract|Sidane_Threadmarks_Search_DataHandler_Threadmark
+   */
   protected function _getSearchDataHandler()
   {
     return XenForo_Search_DataHandler_Abstract::create('Sidane_Threadmarks_Search_DataHandler_Threadmark');
   }
 
+  /**
+   * @return XenForo_Model|XenForo_Model_EditHistory
+   */
+  protected function _getEditHistoryModel()
+  {
+    return $this->getModelFromCache('XenForo_Model_EditHistory');
+  }
+
+  /**
+   * @return XenForo_Model|XenForo_Model_Thread|Sidane_Threadmarks_XenForo_Model_Thread
+   */
   protected function _getThreadModel()
   {
     return $this->getModelFromCache('XenForo_Model_Thread');
   }
 
+  /**
+   * @return XenForo_Model|Sidane_Threadmarks_Model_Threadmarks
+   */
   protected function _getThreadmarksModel()
   {
     return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
   }
 
+  /**
+   * @return XenForo_Model|XenForo_Model_NewsFeed
+   */
   protected function _getNewsFeedModel()
   {
     return $this->getModelFromCache('XenForo_Model_NewsFeed');

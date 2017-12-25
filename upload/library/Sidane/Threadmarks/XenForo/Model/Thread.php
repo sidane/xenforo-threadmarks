@@ -17,7 +17,7 @@ class Sidane_Threadmarks_XenForo_Model_Thread extends XFCP_Sidane_Threadmarks_Xe
   }
 
   /**
-   * @return Sidane_Threadmarks_Model_Threadmarks
+   * @return Sidane_Threadmarks_Model_Threadmarks|XenForo_Model
    */
   protected function _getThreadmarksModel()
   {

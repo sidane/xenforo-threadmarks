@@ -35,9 +35,10 @@ class Sidane_Threadmarks_ControllerAdmin_ThreadmarkCategory extends XenForo_Cont
       'allowed_user_group_ids' => 2
     );
 
-    $userGroups = $this
-        ->getModelFromCache('XenForo_Model_UserGroup')
-        ->getUserGroupOptions($threadmarkCategory['allowed_user_group_ids']);
+    /** @var XenForo_Model_UserGroup $userGoupModel */
+    $userGoupModel = $this->getModelFromCache('XenForo_Model_UserGroup');
+
+    $userGroups = $userGoupModel->getUserGroupOptions($threadmarkCategory['allowed_user_group_ids']);
 
     $viewParams = array(
       'threadmarkCategory' => $threadmarkCategory,
@@ -61,9 +62,10 @@ class Sidane_Threadmarks_ControllerAdmin_ThreadmarkCategory extends XenForo_Cont
       $threadmarkCategoryId
     );
 
-    $userGroups = $this
-        ->getModelFromCache('XenForo_Model_UserGroup')
-        ->getUserGroupOptions($threadmarkCategory['allowed_user_group_ids']);
+    /** @var XenForo_Model_UserGroup $userGoupModel */
+    $userGoupModel = $this->getModelFromCache('XenForo_Model_UserGroup');
+
+    $userGroups = $userGoupModel->getUserGroupOptions($threadmarkCategory['allowed_user_group_ids']);
 
     $viewParams = array(
       'threadmarkCategory' => $threadmarkCategory,
@@ -187,7 +189,7 @@ class Sidane_Threadmarks_ControllerAdmin_ThreadmarkCategory extends XenForo_Cont
   }
 
   /**
-   * @return Sidane_Model_Threadmarks
+   * @return Sidane_Threadmarks_Model_Threadmarks|XenForo_Model
    */
   protected function _getThreadmarksModel()
   {

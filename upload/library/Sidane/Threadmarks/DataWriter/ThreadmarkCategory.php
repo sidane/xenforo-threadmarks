@@ -9,15 +9,15 @@ class Sidane_Threadmarks_DataWriter_ThreadmarkCategory extends XenForo_DataWrite
     return array(
       'threadmark_category' => array(
         'threadmark_category_id' => array(
-          'type'          => self::TYPE_UINT,
+          'type' => self::TYPE_UINT,
           'autoIncrement' => true
         ),
         'display_order' => array(
           'type' => self::TYPE_UINT
         ),
         'allowed_user_group_ids' => array(
-          'type'         => self::TYPE_UNKNOWN,
-          'default'      => '2',
+          'type' => self::TYPE_UNKNOWN,
+          'default' => '2',
           'verification' => array(
             'XenForo_DataWriter_Helper_User',
             'verifyExtraUserGroupIds'
@@ -65,7 +65,8 @@ class Sidane_Threadmarks_DataWriter_ThreadmarkCategory extends XenForo_DataWrite
   protected function _postSave()
   {
     $titlePhrase = $this->getExtraData(self::DATA_TITLE);
-    if ($titlePhrase !== null) {
+    if ($titlePhrase !== null)
+    {
       $this->_insertOrUpdateMasterPhrase(
         $this->_getTitlePhraseName($this->get('threadmark_category_id')),
         $titlePhrase,
@@ -110,7 +111,7 @@ class Sidane_Threadmarks_DataWriter_ThreadmarkCategory extends XenForo_DataWrite
   }
 
   /**
-   * @return Sidane_Threadmarks_Model_Threadmarks
+   * @return Sidane_Threadmarks_Model_Threadmarks|XenForo_Model
    */
   protected function _getThreadmarksModel()
   {

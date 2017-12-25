@@ -9,6 +9,7 @@ class Sidane_Threadmarks_ControllerHelper_Threadmarks extends XenForo_Controller
       return null;
     }
 
+    /** @var Sidane_Threadmarks_Model_Threadmarks $threadmarksModel */
     $threadmarksModel = $this->_controller->getModelFromCache(
       'Sidane_Threadmarks_Model_Threadmarks'
     );

@@ -10,5 +10,7 @@ class Sidane_Threadmarks_Globals
 
   public static $threadmarkCategories = null;
 
-  private function __construct() {}
+  private function __construct()
+  {
+  }
 }

@@ -6,17 +6,17 @@ class Sidane_Threadmarks_Deferred_Cache extends XenForo_Deferred_Abstract
   {
     $data = array_merge(
       array(
-        'batch'    => 100,
+        'batch' => 100,
         'position' => 0,
-        'count'    => 0,
-        'resync'   => true,
+        'count' => 0,
+        'resync' => true,
       ),
       $data
     );
     $startTime = microtime(true);
     $resync = !empty($data['resync']);
 
-    /** @var Sidane_Threadmarks_Model_Threadmarks */
+    /** @var Sidane_Threadmarks_Model_Threadmarks $threadmarksModel */
     $threadmarksModel = XenForo_Model::create(
       'Sidane_Threadmarks_Model_Threadmarks'
     );

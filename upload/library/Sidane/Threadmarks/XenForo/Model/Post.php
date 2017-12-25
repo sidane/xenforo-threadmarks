@@ -73,11 +73,11 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
 
       $threadmarkedPostIds[] = $postId;
       $groupedThreadmarks[$post['threadmark_category_id']][$post['threadmark_position']] = array(
-        'post_id'                => $post['post_id'],
-        'position'               => $post['position'] ? $post['position'] : 1,
-        'threadmark_id'          => $post['threadmark_id'],
+        'post_id' => $post['post_id'],
+        'position' => $post['position'] ? $post['position'] : 1,
+        'threadmark_id' => $post['threadmark_id'],
         'threadmark_category_id' => $post['threadmark_category_id'],
-        'threadmark_position'    => $post['threadmark_position']
+        'threadmark_position' => $post['threadmark_position']
       );
     }
 
@@ -136,8 +136,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       if (isset($groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition + 1]))
       {
         $posts[$postId]['threadmark_next'] = $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition + 1];
-      }
-      else
+      } else
       {
         $posts[$postId]['threadmark_next'] = false;
       }
@@ -145,8 +144,7 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
       if (isset($groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition - 1]))
       {
         $posts[$postId]['threadmark_previous'] = $groupedThreadmarks[$threadmarkCategoryId][$threadmarkPosition - 1];
-      }
-      else
+      } else
       {
         $posts[$postId]['threadmark_previous'] = false;
       }
@@ -161,7 +159,8 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     array $forum,
     array $nodePermissions = null,
     array $viewingUser = null
-  ) {
+  )
+  {
     $post = parent::preparePost(
       $post,
       $thread,
@@ -236,7 +235,8 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     array $forum,
     array $nodePermissions = null,
     array $viewingUser = null
-  ) {
+  )
+  {
     $fetchOptions = parent::getPermissionBasedPostFetchOptions(
       $thread,
       $forum,
@@ -266,8 +266,16 @@ class Sidane_Threadmarks_XenForo_Model_Post extends XFCP_Sidane_Threadmarks_XenF
     return $data;
   }
 
+  /**
+   * @return XenForo_Model|Sidane_Threadmarks_Model_Threadmarks
+   */
   protected function _getThreadmarksModel()
   {
     return $this->getModelFromCache('Sidane_Threadmarks_Model_Threadmarks');
   }
+}
+
+if (false)
+{
+  class XFCP_Sidane_Threadmarks_XenForo_Model_Post extends XenForo_Model_Post {}
 }
