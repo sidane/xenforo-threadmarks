@@ -42,11 +42,16 @@ class Sidane_Threadmarks_Install
           last_edit_user_id INT NOT NULL DEFAULT 0,
           label VARCHAR(255) NOT NULL,
           UNIQUE KEY `thread_post_id` (`thread_id`,`post_id`),
-          KEY `thread_position` (`thread_id`,`position`),
+          KEY `thread_category_position` (`thread_id`,`threadmark_category_id`,`position`),
           KEY `user_id` (`user_id`),
           UNIQUE KEY `post_id` (`post_id`)
         ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci
       ");
+    }
+    else
+    {
+      SV_Utils_Install::addIndex('threadmarks', 'thread_category_position', array('thread_id', 'threadmark_category_id', 'position'));
+      SV_Utils_Install::dropColumn('threadmarks', 'thread_position');
     }
 
     if ($version == 1) {
